@@ -4,12 +4,12 @@
   "language": "it",
   "version": 1,
   "meta": {
-    "title": "Valutazione gratuita | ComproDiamanti",
+    "title": "Valutazione gratuita | Valutazione Diamanti",
     "description": "Acquisto diretto e valutazione gratuita di diamanti, gioielli e orologi a Milano. La Diamanteria, dal 2009."
   },
   "slots": {
     "valutazione-contenuto-001": {
-      "label": "◇ ComproDiamanti.it",
+      "label": "◇ Valutazione Diamanti",
       "href": "index.html"
     },
     "valutazione-contenuto-002": {

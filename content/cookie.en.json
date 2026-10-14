@@ -4,12 +4,12 @@
   "language": "en",
   "version": 1,
   "meta": {
-    "title": "Cookie policy | ComproDiamanti",
+    "title": "Cookie policy | Valutazione Diamanti",
     "description": "Free valuations and direct buying of diamonds, jewellery and luxury watches in Milan. La Diamanteria, established in 2009."
   },
   "slots": {
     "cookie-contenuto-001": {
-      "label": "◇ ComproDiamanti.it",
+      "label": "◇ Valutazione Diamanti",
       "href": "index.html"
     },
     "cookie-contenuto-002": {

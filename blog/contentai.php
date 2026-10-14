@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-// Ricevitore ContentAI Pro (Content Studio) -> blog di ComproDiamanti. Versione 2.1.21.
+// Ricevitore ContentAI Pro (Content Studio) -> blog di Valutazione Diamanti. Versione 2.1.21.
 // POST JSON con "Authorization: Bearer <token>" (lo stesso token del collegamento webhook in Admin > Blog).
 // Gli articoli arrivano sempre come BOZZA: la pubblicazione resta decisa dal backend (impostazione auto_publish).
 require_once __DIR__.'/../PHP di sistema/core.php';

@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-const APP_VERSION = '2.1.22';
+const APP_VERSION = '2.1.23';
 const ROOT = __DIR__ . '/..';
 const PAGE_SLUGS = ['home', 'acquistiamo', 'chisiamo', 'faq', 'valutazione', 'grazie', 'privacy', 'cookie'];
 require_once __DIR__.'/settings.php';
@@ -150,6 +150,7 @@ function build_html(string $slug,string $lang,array $c): string {
     }
     $doc->getElementsByTagName('body')->item(0)->appendChild($toolbar);
     $head=$doc->getElementsByTagName('head')->item(0);
+    $icon=$doc->createElement('link');$icon->setAttribute('rel','icon');$icon->setAttribute('type','image/svg+xml');$icon->setAttribute('href','../assets/logo.svg');$head->appendChild($icon);
     $css=$doc->createElement('link');$css->setAttribute('rel','stylesheet');$css->setAttribute('href','../assets/frontend-ui.css');$head->appendChild($css);
     foreach(['frontend-ui.js','frontend-editor.js'] as $file){$script=$doc->createElement('script');$script->setAttribute('src','../assets/'.$file);$script->setAttribute('defer','defer');$head->appendChild($script);}
     $mainNav=$xp->query('//header//nav[not(contains(@class,"language-nav"))]')->item(0);
@@ -165,7 +166,7 @@ function build_html(string $slug,string $lang,array $c): string {
 function publish(string $slug,string $lang,array $c): void { $name=$slug==='home'?'index':$slug; atomic_write(ROOT.'/'.$lang.'/'.$name.'.html',build_html($slug,$lang,$c),0644); }
 function seo_indexes(): void {
     $s=settings();$base=seo_base();$xml='<?xml version="1.0" encoding="UTF-8"?>'."\n".'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">';
-    $llms="# ComproDiamanti.it\n\nDirect buying and free valuations of natural diamonds, jewellery and selected watches by La Diamanteria in Milan.\n\n## Pages\n";
+    $llms="# Valutazione Diamanti\n\nDirect buying and free valuations of natural diamonds, jewellery and selected watches by La Diamanteria in Milan.\n\n## Pages\n";
     foreach(PAGE_SLUGS as $slug)if($slug!=='grazie')foreach(['it','en'] as $lang){$name=$slug==='home'?'index':$slug;$url=$base.'/'.$lang.'/'.$name.'.html';$c=content($slug,$lang);if($base)$xml.='<url><loc>'.htmlspecialchars($url,ENT_XML1).'</loc></url>';$llms.='- ['.$c['meta']['title'].']('.$url.")\n";}
     require_once __DIR__.'/blog.php';
     if($base){$xml.='<url><loc>'.htmlspecialchars($base.'/blog/',ENT_XML1).'</loc></url><url><loc>'.htmlspecialchars($base.'/blog/?lang=en',ENT_XML1).'</loc></url>';$posts=blog_seo_entries();

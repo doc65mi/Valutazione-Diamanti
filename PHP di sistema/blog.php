@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-const BLOG_VERSION = '2.1.22';
+const BLOG_VERSION = '2.1.23';
 const PRIVATE_DIR = ROOT . '/data';
 function blog_h($v): string { return htmlspecialchars((string)$v, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); }
 function blog_abort_request(int $code, string $message): void { http_response_code($code); echo blog_h($message); exit; }
@@ -20,7 +20,7 @@ function blog_config(): array {
     $file = PRIVATE_DIR . '/blog-config.json';
     $stored = is_file($file) ? json_decode(file_get_contents($file), true, 32, JSON_THROW_ON_ERROR) : [];
     return array_replace(['version'=>BLOG_VERSION,'db'=>['driver'=>'sqlite'],'webhook_hash'=>'','auto_publish'=>false],$stored,
-        ['base_url'=>blog_site_url().'/blog','site_url'=>blog_site_url(),'brand'=>'ComproDiamanti.it','subtitle'=>'Guide e approfondimenti su diamanti, gioielli e valutazione.']);
+        ['base_url'=>blog_site_url().'/blog','site_url'=>blog_site_url(),'brand'=>'Valutazione Diamanti','subtitle'=>'Guide e approfondimenti su diamanti, gioielli e valutazione.']);
 }
 function blog_save_config(array $c): void {
     unset($c['base_url'],$c['site_url'],$c['brand'],$c['subtitle']);

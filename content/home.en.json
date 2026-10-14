@@ -4,11 +4,11 @@
   "language": "en",
   "version": 1,
   "meta": {
-    "title": "Sell diamonds and jewellery in Milan | ComproDiamanti",
+    "title": "Sell diamonds and jewellery in Milan | Valutazione Diamanti",
     "description": "Free valuations and direct buying of diamonds, jewellery and luxury watches in Milan. La Diamanteria, established in 2009."
   },
   "slots": {
-    "home-contenuto-001": "ComproDiamanti.it",
+    "home-contenuto-001": "Valutazione Diamanti",
     "home-contenuto-002": "by La Diamanteria",
     "home-contenuto-003": {
       "label": "Sell a diamond",
@@ -30,7 +30,7 @@
       "label": "Request a free valuation",
       "href": "valutazione.html"
     },
-    "home-contenuto-008": "ComproDiamanti.it · by La Diamanteria",
+    "home-contenuto-008": "Valutazione Diamanti · by La Diamanteria",
     "home-contenuto-009": "Sell your diamond to people who",
     "home-contenuto-010": "truly understand it",
     "home-contenuto-011": "We buy diamonds, fine gemstones and valuable jewellery directly from private sellers. Free valuations, with no auctions or intermediaries. Established in Milan in 2009.",
@@ -111,7 +111,7 @@
     "home-contenuto-065": "Completely free, with no obligation",
     "home-contenuto-066": "Why sell to us",
     "home-contenuto-067": "We make our own offer",
-    "home-contenuto-068": "ComproDiamanti.it is La Diamanteria's direct buying service. We do not auction your diamond or offer it to a network of buyers. If it meets our requirements, we make you an offer ourselves.",
+    "home-contenuto-068": "Valutazione Diamanti is La Diamanteria's direct buying service. We do not auction your diamond or offer it to a network of buyers. If it meets our requirements, we make you an offer ourselves.",
     "home-contenuto-069": "One point of contact for a straightforward process.",
     "home-contenuto-070": "We buy directly",
     "home-contenuto-071": "The offer comes from us, with no intermediary involved.",
@@ -123,7 +123,7 @@
     "home-contenuto-077": "Appointments at Via Vincenzo Monti 47, with payment by bank transfer.",
     "home-contenuto-078": "By appointment",
     "home-contenuto-079": "Our showroom at Via Vincenzo Monti 47, Milan",
-    "home-contenuto-080": "ComproDiamanti.it is run by La Diamanteria at Via Vincenzo Monti 47 in Milan. A physical showroom, direct contact with the buyer and a professional valuation.",
+    "home-contenuto-080": "Valutazione Diamanti is run by La Diamanteria at Via Vincenzo Monti 47 in Milan. A physical showroom, direct contact with the buyer and a professional valuation.",
     "home-contenuto-081": {
       "label": "+39 02 466 891",
       "href": "tel:+3902466891"
@@ -202,7 +202,7 @@
       "label": "Immediate valuation on WhatsApp",
       "href": "https://wa.me/393929664987?text=Hello%2C%20I%20would%20like%20a%20free%20valuation%20of%20a%20diamond%2C%20a%20piece%20of%20jewellery%20or%20a%20watch."
     },
-    "home-contenuto-126": "ComproDiamanti.it",
+    "home-contenuto-126": "Valutazione Diamanti",
     "home-contenuto-127": "by La Diamanteria",
     "home-contenuto-128": "Direct buying and valuation of diamonds and jewellery from private sellers. Via Vincenzo Monti 47, Milan.",
     "home-contenuto-129": "Contact us",
@@ -240,7 +240,7 @@
       "label": "La Diamanteria ↗",
       "href": "https://www.ladiamanteria.com"
     },
-    "home-contenuto-141": "© 2026 ComproDiamanti.it by La Diamanteria · All rights reserved. · Cookies ·",
+    "home-contenuto-141": "© 2026 Valutazione Diamanti by La Diamanteria · All rights reserved. · Cookies ·",
     "home-contenuto-142": {
       "label": "Admin login",
       "href": "../../admin/"

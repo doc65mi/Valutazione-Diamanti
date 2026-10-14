@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-function seo_base(): string { return rtrim(settings()['site_url'] ?: 'https://comprodiamanti.piuper.site','/'); }
+function seo_base(): string { return rtrim(settings()['site_url'] ?: 'https://www.valutazionediamanti.it','/'); }
 function seo_markup(DOMDocument $doc,string $lang,string $url,string $title,string $description,string $type='WebPage',?array $article=null): void {
     $xp=new DOMXPath($doc);$head=$doc->getElementsByTagName('head')->item(0);
     foreach(iterator_to_array($xp->query('//script[@type="application/ld+json"]')) as $n)$n->parentNode->removeChild($n);
@@ -15,7 +15,7 @@ function seo_markup(DOMDocument $doc,string $lang,string $url,string $title,stri
         }
         $page['mainEntity']=$questions;
     }
-    $graph=[$org,['@type'=>'WebSite','@id'=>$base.'/#website','url'=>$base.'/','name'=>'ComproDiamanti.it','publisher'=>['@id'=>$org['@id']]],$page];
+    $graph=[$org,['@type'=>'WebSite','@id'=>$base.'/#website','url'=>$base.'/','name'=>'Valutazione Diamanti','publisher'=>['@id'=>$org['@id']]],$page];
     if($article){$post=['@type'=>'BlogPosting','@id'=>$url.'#article','url'=>$url,'mainEntityOfPage'=>['@id'=>$page['@id']],'headline'=>$article['title'],'description'=>$article['excerpt'],'datePublished'=>(new DateTimeImmutable($article['published_at']))->format(DATE_ATOM),'dateModified'=>(new DateTimeImmutable($article['updated_at']))->format(DATE_ATOM),'inLanguage'=>$lang,'articleSection'=>$article['category'],'author'=>['@id'=>$org['@id']],'publisher'=>['@id'=>$org['@id']]];if($article['image_url'])$post['image']=['@type'=>'ImageObject','url'=>$article['image_url'],'caption'=>$article['image_alt']];
         if(trim((string)($article['keywords']??''))!=='')$post['keywords']=trim($article['keywords']);
         $post['wordCount']=str_word_count(strip_tags($article['content']));$graph[]=$post;
