@@ -18,10 +18,19 @@ Il server rispondeva correttamente, ma il messaggio (successo o errore) veniva s
 - Se il token di sicurezza non è più valido (per esempio dopo un nuovo accesso in un'altra scheda) l'admin lo rinnova e riprova da solo una volta.
 - Se la sessione è davvero scaduta compare "Sessione scaduta: accedi di nuovo. I dati inseriti nel modulo non sono stati persi."; dopo l'accesso si torna alla stessa sezione con i valori ancora compilati.
 - Gli ID vengono ricavati anche da snippet incollati o scritti in minuscolo: `G-…`, `AW-…` (con `/etichetta` che compila "Etichetta conversione" se vuota), `GTM-…`, Meta Pixel da `fbq('init','…')`.
+- L'ID viene estratto già nel browser, prima dell'invio: lo snippet `<script>` non arriva più al server. Su Plesk il firewall applicativo (ModSecurity) blocca le richieste che contengono `<script>` e, con Fail2Ban attivo, può bannare per alcuni minuti l'IP di chi le invia: da quell'IP tutto il sito sembra "in crash".
 - Messaggi di errore chiari: "ID non valido per Google Ads: usa il formato AW-123456789."
 - `api/index.php` e `admin/index.php` usano `require_once`: il server di sviluppo (`dev-router.php`) non va più in errore "Cannot redeclare db()".
 
 Nessuna modifica al database, ai contenuti o alle pagine pubbliche.
+
+## Se il sito online smette di rispondere dopo il salvataggio
+
+In Plesk controllare:
+
+- **Domini → sito → Log**: righe `ModSecurity: Access denied` o errori PHP all'ora del salvataggio;
+- **Strumenti e impostazioni → Blocco indirizzi IP (Fail2Ban) → IP bannati**: se c'è il proprio IP, sbloccarlo;
+- che le cartelle `it/`, `en/`, `data/` e i file `sitemap.xml`, `llms.txt`, `robots.txt` siano scrivibili dall'utente PHP del dominio (il salvataggio rigenera tutte le pagine).
 
 ## Installazione
 
