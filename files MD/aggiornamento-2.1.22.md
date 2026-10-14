@@ -11,7 +11,15 @@ Il server rispondeva correttamente, ma il messaggio (successo o errore) veniva s
 - **sessione scaduta** dopo 30 minuti di inattività (tipico quando si esce dall'admin per copiare i codici dalle console Google): risposta "Sessione non valida. Ricarica la pagina.";
 - **valore rifiutato** quando si incolla lo snippet completo (`<script …gtag/js?id=AW-…>`) o l'ID con l'etichetta (`AW-123456789/AbCd`) o in minuscolo.
 
+## Causa del blocco del sito online (trovata nel log nginx di Plesk)
+
+`openat() "…/httpdocs/it/index.html" failed (13: Permission denied)`: salvando le impostazioni il sito rigenera tutte le pagine statiche (`it/`, `en/`, `sitemap.xml`, `llms.txt`, `robots.txt`). La scrittura usava un file temporaneo creato con permessi `0600` (leggibile solo dall'utente PHP); nginx, che su Plesk serve i file statici con un altro utente, non poteva più leggerli e tutto il sito pubblico rispondeva 403. Il codice Google Ads non c'entrava: succedeva con qualsiasi salvataggio delle impostazioni (e, per la singola pagina, con il salvataggio dall'editor).
+
+Ora le pagine pubbliche vengono scritte con permessi `0644`. I file riservati (contenuti JSON, credenziali) restano `0600`.
+
 ## Cosa cambia
+
+- Pagine pubbliche, sitemap, llms.txt e robots.txt rigenerati con permessi `0644`.
 
 - Il messaggio dell'admin resta fisso in alto mentre si scorre, quindi è sempre visibile dopo il salvataggio.
 - Mentre l'admin è aperto e usato nelle ultime 2 ore, la sessione viene mantenuta attiva (una verifica ogni 5 minuti). Senza attività la sessione scade come prima.
@@ -31,6 +39,14 @@ In Plesk controllare:
 - **Domini → sito → Log**: righe `ModSecurity: Access denied` o errori PHP all'ora del salvataggio;
 - **Strumenti e impostazioni → Blocco indirizzi IP (Fail2Ban) → IP bannati**: se c'è il proprio IP, sbloccarlo;
 - che le cartelle `it/`, `en/`, `data/` e i file `sitemap.xml`, `llms.txt`, `robots.txt` siano scrivibili dall'utente PHP del dominio (il salvataggio rigenera tutte le pagine).
+
+## Ripristino immediato sul server (prima dell'aggiornamento)
+
+Plesk → File Manager → `httpdocs`: selezionare i file `.html` in `it/` ed `en/` più `sitemap.xml`, `llms.txt`, `robots.txt` → **Modifica permessi** → `644` (lettura per tutti). Oppure via SSH dalla cartella `httpdocs`:
+
+```sh
+chmod 644 it/*.html en/*.html sitemap.xml llms.txt robots.txt
+```
 
 ## Installazione
 
