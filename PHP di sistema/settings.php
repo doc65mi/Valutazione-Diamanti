@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 function settings_defaults(): array {
-    return ['mail_enabled'=>false,'mail_from'=>'','mail_to'=>'','recaptcha_enabled'=>false,'recaptcha_site_key'=>'','recaptcha_secret'=>'','recaptcha_hostname'=>'','recaptcha_score'=>0.5,'analytics_enabled'=>false,'analytics_id'=>'','ads_enabled'=>false,'ads_id'=>'','ads_label'=>'','meta_enabled'=>false,'meta_id'=>'','gtm_enabled'=>false,'gtm_id'=>'','legal_company'=>'La Diamanteria','legal_address'=>'Via Vincenzo Monti 47, 20123 Milano','legal_vat'=>'','legal_email'=>'sl@ladiamanteria.com','retention_months'=>12,'site_url'=>'','consent_version'=>1,'menu_hidden'=>['blog']];
+    return ['mail_enabled'=>false,'mail_from'=>'','mail_to'=>'','recaptcha_enabled'=>false,'recaptcha_site_key'=>'','recaptcha_secret'=>'','recaptcha_hostname'=>'','recaptcha_score'=>0.5,'analytics_enabled'=>false,'analytics_id'=>'','ads_enabled'=>false,'ads_id'=>'','ads_label'=>'','meta_enabled'=>false,'meta_id'=>'','gtm_enabled'=>false,'gtm_id'=>'','legal_company'=>'La Diamanteria','legal_address'=>'Via Vincenzo Monti 47, 20123 Milano','legal_vat'=>'','legal_email'=>'sl@ladiamanteria.com','retention_months'=>12,'site_url'=>'','consent_version'=>1,'menu_hidden'=>['blog'],'mail_from_name'=>'Valutazione Diamanti','mail_transport'=>'php','smtp_host'=>'','smtp_port'=>587,'smtp_secure'=>'tls','smtp_user'=>'','smtp_pass'=>'','smtp_verify'=>true,'mail_check_domain'=>true]+customer_email_defaults();
 }
 function settings(): array {
     db()->exec('CREATE TABLE IF NOT EXISTS settings (id INTEGER PRIMARY KEY CHECK(id=1), value TEXT NOT NULL)');
@@ -52,6 +52,36 @@ function settings_save(array $input): array {
     foreach(['analytics','ads','meta','gtm'] as $service)if($s[$service.'_enabled']&&!$s[$service.'_id'])fail('Inserisci l’ID per '.TRACKING_LABELS[$service].'.');
     $old=settings();if(array_intersect_key($s,array_flip(['analytics_enabled','ads_enabled','meta_enabled','gtm_enabled','analytics_id','ads_id','meta_id','gtm_id']))!==array_intersect_key($old,array_flip(['analytics_enabled','ads_enabled','meta_enabled','gtm_enabled','analytics_id','ads_id','meta_id','gtm_id'])))$s['consent_version']=$old['consent_version']+1;
     db()->prepare('INSERT INTO settings(id,value) VALUES(1,?) ON CONFLICT(id) DO UPDATE SET value=excluded.value')->execute([json_encode($s,JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR)]);return $s;
+}
+/** Impostazioni della scheda Email: invio, SMTP, validazione del modulo e testi al cliente (2.1.28). */
+function email_settings_save(array $input): array {
+    $s=settings();
+    foreach(['mail_enabled','smtp_verify','mail_check_domain'] as $key){if(!is_bool($input[$key]??null))fail('Selezione non valida: '.$key);$s[$key]=$input[$key];}
+    foreach(['mail_from','mail_to'] as $key){$v=$input[$key]??'';if(!is_string($v)||strlen($v)>254||strpbrk($v,"\r\n"))fail('Indirizzo email non valido.');$s[$key]=trim($v);if($s[$key]!==''&&!filter_var($s[$key],FILTER_VALIDATE_EMAIL))fail('Indirizzo email non valido: '.($key==='mail_from'?'mittente':'email del gestore').'.');}
+    $name=$input['mail_from_name']??'';if(!is_string($name)||mb_strlen($name)>100||preg_match('/[<>"\x00-\x1F]/',$name))fail('Nome del mittente non valido (niente virgolette o simboli < >).');$s['mail_from_name']=trim($name);
+    $transport=$input['mail_transport']??'php';if(!in_array($transport,['php','smtp'],true))fail('Metodo di invio non valido.');$s['mail_transport']=$transport;
+    $host=$input['smtp_host']??'';if(!is_string($host)||strlen($host)>253||($host!==''&&!preg_match('/^[A-Za-z0-9.-]+$/',trim($host))))fail('Server SMTP non valido: scrivi solo il nome, es. mail.valutazionediamanti.it.');$s['smtp_host']=trim($host);
+    $port=$input['smtp_port']??587;if(!is_int($port)||$port<1||$port>65535)fail('Porta SMTP non valida.');$s['smtp_port']=$port;
+    $secure=$input['smtp_secure']??'tls';if(!in_array($secure,['tls','ssl','none'],true))fail('Sicurezza SMTP non valida.');$s['smtp_secure']=$secure;
+    $user=$input['smtp_user']??'';if(!is_string($user)||strlen($user)>254||preg_match('/[\x00-\x1F]/',$user))fail('Utente SMTP non valido.');$s['smtp_user']=trim($user);
+    $pass=$input['smtp_pass']??'';if(!is_string($pass)||strlen($pass)>300||preg_match('/[\x00-\x1F]/',$pass))fail('Password SMTP non valida.');if($pass!=='')$s['smtp_pass']=$pass;
+    if(($input['smtp_clear_pass']??false)===true)$s['smtp_pass']='';
+    foreach(['it','en'] as $lang){
+        $subject=$input['customer_subject_'.$lang]??'';$body=$input['customer_body_'.$lang]??'';
+        if(!is_string($subject)||mb_strlen($subject)>200||preg_match('/[\x00-\x1F]/',$subject))fail('Oggetto dell’email al cliente non valido ('.strtoupper($lang).').');
+        if(!is_string($body)||mb_strlen($body)>10000||preg_match('/[\x00-\x08\x0B\x0C\x0E-\x1F]/',$body))fail('Testo dell’email al cliente non valido ('.strtoupper($lang).'): massimo 10000 caratteri.');
+        $s['customer_subject_'.$lang]=trim($subject);$s['customer_body_'.$lang]=str_replace("\r\n","\n",$body);
+    }
+    if($s['mail_enabled']&&($s['mail_from']===''||$s['mail_to']===''))fail('Compila mittente e email del gestore prima di attivare gli invii.');
+    if($s['mail_transport']==='smtp'&&$s['smtp_host']==='')fail('Inserisci il server SMTP o scegli l’invio con la funzione mail del server.');
+    db()->prepare('INSERT INTO settings(id,value) VALUES(1,?) ON CONFLICT(id) DO UPDATE SET value=excluded.value')->execute([json_encode($s,JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR)]);return $s;
+}
+/** Il dominio dell'email del cliente deve esistere e ricevere posta (record MX, o A in mancanza di MX). */
+function email_domain_exists(string $email): bool {
+    $domain=strtolower(substr(strrchr($email,'@')?:'',1));if($domain==='')return false;
+    if(!function_exists('checkdnsrr'))return true;
+    $ascii=function_exists('idn_to_ascii')?(idn_to_ascii($domain,IDNA_DEFAULT,INTL_IDNA_VARIANT_UTS46)?:$domain):$domain;
+    return checkdnsrr($ascii.'.','MX')||checkdnsrr($ascii.'.','A')||checkdnsrr($ascii.'.','AAAA');
 }
 function public_settings(): array {
     $s=settings();$keys=['recaptcha_enabled','recaptcha_site_key','analytics_enabled','analytics_id','ads_enabled','ads_id','ads_label','meta_enabled','meta_id','gtm_enabled','gtm_id','consent_version'];return array_intersect_key($s,array_flip($keys));

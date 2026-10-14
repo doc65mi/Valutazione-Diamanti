@@ -34,6 +34,7 @@ function submit_request(): never {
     }
     if(mb_strlen($f['name'])<2||!preg_match('/\p{L}/u',$f['name'])) $error('Inserisci il tuo nome.','Please enter your name.');
     if(!filter_var($f['email'],FILTER_VALIDATE_EMAIL)) $error('Inserisci un indirizzo email valido.','Please enter a valid email address.');
+    if(settings()['mail_check_domain']&&!email_domain_exists($f['email'])) $error('Il dominio dell’indirizzo email non esiste o non riceve posta. Controlla di averlo scritto correttamente.','The domain of this email address does not exist or cannot receive email. Please check it is spelt correctly.');
     if($f['phone']!==''&&(!preg_match('/^\+?[0-9 ().-]{7,40}$/',$f['phone'])||strlen(preg_replace('/\D/','',$f['phone']))<7||strlen(preg_replace('/\D/','',$f['phone']))>15)) $error('Inserisci un numero di telefono valido.','Please enter a valid telephone number.');
     if(!in_array($f['pref'],['WhatsApp','phone','email'],true)||($f['pref']==='email'&&$f['email']==='')||($f['pref']!=='email'&&$f['phone']==='')) $error('Compila il contatto corrispondente alla tua preferenza.','Please provide the contact details for your preferred method.');
     if(($_POST['consent']??'')!=='1') $error('Conferma l’informativa sul trattamento dei dati.','Please acknowledge the information about how we use your data.');
