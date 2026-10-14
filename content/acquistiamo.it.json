@@ -4,11 +4,11 @@
   "language": "it",
   "version": 1,
   "meta": {
-    "title": "Cosa acquistiamo | ComproDiamanti",
+    "title": "Cosa acquistiamo | Valutazione Diamanti",
     "description": "Acquisto diretto e valutazione gratuita di diamanti, gioielli e orologi a Milano. La Diamanteria, dal 2009."
   },
   "slots": {
-    "acquistiamo-contenuto-001": "ComproDiamanti.it",
+    "acquistiamo-contenuto-001": "Valutazione Diamanti",
     "acquistiamo-contenuto-002": "by La Diamanteria",
     "acquistiamo-contenuto-003": {
       "label": "Vendere un diamante",
@@ -75,7 +75,7 @@
       "label": "Richiedi la quotazione gratuita →",
       "href": "valutazione.html"
     },
-    "acquistiamo-contenuto-050": "ComproDiamanti.it",
+    "acquistiamo-contenuto-050": "Valutazione Diamanti",
     "acquistiamo-contenuto-051": "by La Diamanteria",
     "acquistiamo-contenuto-052": "Servizio di acquisto diretto e valutazione di diamanti e gioielli da privati. Milano, Via Vincenzo Monti 47.",
     "acquistiamo-contenuto-053": "Contatti",
@@ -113,7 +113,7 @@
       "label": "La Diamanteria ↗",
       "href": "https://www.ladiamanteria.com"
     },
-    "acquistiamo-contenuto-065": "© 2026 ComproDiamanti.it by La Diamanteria · Tutti i diritti riservati. · Cookie ·",
+    "acquistiamo-contenuto-065": "© 2026 Valutazione Diamanti by La Diamanteria · Tutti i diritti riservati. · Cookie ·",
     "acquistiamo-contenuto-066": {
       "label": "Area riservata",
       "href": "../../admin/"

@@ -10,4 +10,4 @@ Disallow: /tools/
 Disallow: /old-page/
 Disallow: /Login.dc.html
 Disallow: /Admin.dc.html
-Sitemap: https://comprodiamanti.piuper.site/sitemap.xml
+Sitemap: https://www.valutazionediamanti.it/sitemap.xml

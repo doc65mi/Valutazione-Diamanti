@@ -14,6 +14,6 @@ function tidy_footer(DOMDocument $doc,string $lang): void {
         $row=$copyright->parentNode;$row->setAttribute('class',trim($row->getAttribute('class').' site-subfooter'));
         if($legal){$nav=$doc->createElement('nav');$nav->setAttribute('class','subfooter-links');$nav->setAttribute('aria-label',$lang==='en'?'Legal information':'Informazioni legali');while($legal->firstChild)$nav->appendChild($legal->firstChild);$row->appendChild($nav);$legal->parentNode->removeChild($legal);}
     }elseif($legal){
-        $legal->setAttribute('class','legal-footer site-subfooter');$copy=$doc->createElement('span',$lang==='en'?'© 2026 ComproDiamanti.it by La Diamanteria · All rights reserved.':'© 2026 ComproDiamanti.it by La Diamanteria · Tutti i diritti riservati.');$legal->insertBefore($copy,$legal->firstChild);
+        $legal->setAttribute('class','legal-footer site-subfooter');$copy=$doc->createElement('span',$lang==='en'?'© 2026 Valutazione Diamanti by La Diamanteria · All rights reserved.':'© 2026 Valutazione Diamanti by La Diamanteria · Tutti i diritti riservati.');$legal->insertBefore($copy,$legal->firstChild);
     }
 }

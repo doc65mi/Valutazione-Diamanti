@@ -4,11 +4,11 @@
   "language": "it",
   "version": 1,
   "meta": {
-    "title": "Vendi diamanti e gioielli a Milano | ComproDiamanti",
+    "title": "Vendi diamanti e gioielli a Milano | Valutazione Diamanti",
     "description": "Acquisto diretto e valutazione gratuita di diamanti, gioielli e orologi a Milano. La Diamanteria, dal 2009."
   },
   "slots": {
-    "home-contenuto-001": "ComproDiamanti.it",
+    "home-contenuto-001": "Valutazione Diamanti",
     "home-contenuto-002": "by La Diamanteria",
     "home-contenuto-003": {
       "label": "Vendere un diamante",
@@ -30,7 +30,7 @@
       "label": "Richiedi la quotazione gratuita",
       "href": "valutazione.html"
     },
-    "home-contenuto-008": "ComproDiamanti.it · by La Diamanteria",
+    "home-contenuto-008": "Valutazione Diamanti · by La Diamanteria",
     "home-contenuto-009": "Vendi il tuo diamante a chi lo conosce",
     "home-contenuto-010": "davvero",
     "home-contenuto-011": "Acquistiamo direttamente diamanti da privati, gemme di valore e gioielli importanti. Valutazione gratuita, senza aste né intermediari. Milano, dal 2009.",
@@ -111,7 +111,7 @@
     "home-contenuto-065": "Servizio 100% gratuito e senza impegno",
     "home-contenuto-066": "Perché venderlo a noi",
     "home-contenuto-067": "Compriamo direttamente",
-    "home-contenuto-068": "ComproDiamanti.it è il servizio di acquisto diretto di La Diamanteria. Non mettiamo il tuo diamante in asta e non lo proponiamo a una rete di acquirenti. Se rientra nei nostri criteri, siamo noi a formulare direttamente l'offerta.",
+    "home-contenuto-068": "Valutazione Diamanti è il servizio di acquisto diretto di La Diamanteria. Non mettiamo il tuo diamante in asta e non lo proponiamo a una rete di acquirenti. Se rientra nei nostri criteri, siamo noi a formulare direttamente l'offerta.",
     "home-contenuto-069": "Un solo interlocutore, un processo più lineare.",
     "home-contenuto-070": "Compratore diretto",
     "home-contenuto-071": "L'offerta arriva da noi, non da un intermediario.",
@@ -123,7 +123,7 @@
     "home-contenuto-077": "Appuntamento in Via Vincenzo Monti 47 e pagamento con bonifico tracciabile.",
     "home-contenuto-078": "Su appuntamento",
     "home-contenuto-079": "La nostra sede in Via Vincenzo Monti 47, Milano",
-    "home-contenuto-080": "Il servizio ComproDiamanti.it è gestito da La Diamanteria nella sede di Via Vincenzo Monti 47, Milano. Una sede fisica, un interlocutore diretto, una valutazione professionale.",
+    "home-contenuto-080": "Il servizio Valutazione Diamanti è gestito da La Diamanteria nella sede di Via Vincenzo Monti 47, Milano. Una sede fisica, un interlocutore diretto, una valutazione professionale.",
     "home-contenuto-081": {
       "label": "+39 02 466 891",
       "href": "tel:+3902466891"
@@ -202,7 +202,7 @@
       "label": "Valutazione immediata su WhatsApp",
       "href": "https://wa.me/393929664987?text=Buongiorno%2C%20vorrei%20una%20valutazione%20gratuita%20per%20un%20diamante%2C%20un%20gioiello%20o%20un%20orologio."
     },
-    "home-contenuto-126": "ComproDiamanti.it",
+    "home-contenuto-126": "Valutazione Diamanti",
     "home-contenuto-127": "by La Diamanteria",
     "home-contenuto-128": "Servizio di acquisto diretto e valutazione di diamanti e gioielli da privati. Milano, Via Vincenzo Monti 47.",
     "home-contenuto-129": "Contatti",
@@ -240,7 +240,7 @@
       "label": "La Diamanteria ↗",
       "href": "https://www.ladiamanteria.com"
     },
-    "home-contenuto-141": "© 2026 ComproDiamanti.it by La Diamanteria · Tutti i diritti riservati. · Cookie ·",
+    "home-contenuto-141": "© 2026 Valutazione Diamanti by La Diamanteria · Tutti i diritti riservati. · Cookie ·",
     "home-contenuto-142": {
       "label": "Area riservata",
       "href": "../../admin/"

@@ -4,11 +4,11 @@
   "language": "it",
   "version": 1,
   "meta": {
-    "title": "Domande frequenti | ComproDiamanti",
+    "title": "Domande frequenti | Valutazione Diamanti",
     "description": "Acquisto diretto e valutazione gratuita di diamanti, gioielli e orologi a Milano. La Diamanteria, dal 2009."
   },
   "slots": {
-    "faq-contenuto-001": "ComproDiamanti.it",
+    "faq-contenuto-001": "Valutazione Diamanti",
     "faq-contenuto-002": "by La Diamanteria",
     "faq-contenuto-003": {
       "label": "Vendere un diamante",
@@ -56,7 +56,7 @@
     "faq-contenuto-031": "WhatsApp +39 392 966 4987",
     "faq-contenuto-032": "Telefono",
     "faq-contenuto-033": "+39 02 466 891",
-    "faq-contenuto-034": "ComproDiamanti.it",
+    "faq-contenuto-034": "Valutazione Diamanti",
     "faq-contenuto-035": "by La Diamanteria",
     "faq-contenuto-036": "Servizio di acquisto diretto e valutazione di diamanti e gioielli da privati. Milano, Via Vincenzo Monti 47.",
     "faq-contenuto-037": "Contatti",
@@ -94,7 +94,7 @@
       "label": "La Diamanteria ↗",
       "href": "https://www.ladiamanteria.com"
     },
-    "faq-contenuto-049": "© 2026 ComproDiamanti.it by La Diamanteria · Tutti i diritti riservati. · Cookie ·",
+    "faq-contenuto-049": "© 2026 Valutazione Diamanti by La Diamanteria · Tutti i diritti riservati. · Cookie ·",
     "faq-contenuto-050": {
       "label": "Area riservata",
       "href": "../../admin/"

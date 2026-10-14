@@ -8,7 +8,7 @@
     "description": "Free valuations and direct buying of diamonds, jewellery and luxury watches in Milan. La Diamanteria, established in 2009."
   },
   "slots": {
-    "chisiamo-contenuto-001": "ComproDiamanti.it",
+    "chisiamo-contenuto-001": "Valutazione Diamanti",
     "chisiamo-contenuto-002": "by La Diamanteria",
     "chisiamo-contenuto-003": {
       "label": "Sell a diamond",
@@ -32,7 +32,7 @@
     },
     "chisiamo-contenuto-008": "About us",
     "chisiamo-contenuto-009": "La Diamanteria's direct buying service",
-    "chisiamo-contenuto-010": "ComproDiamanti.it helps private sellers have their diamonds and jewellery valued and sold. The service is run by La Diamanteria, established in Milan in 2009. The Silvera family spans five generations of",
+    "chisiamo-contenuto-010": "Valutazione Diamanti helps private sellers have their diamonds and jewellery valued and sold. The service is run by La Diamanteria, established in Milan in 2009. The Silvera family spans five generations of",
     "chisiamo-contenuto-011": "Diamantaires",
     "chisiamo-contenuto-012": ". The family's roots in the diamond trade go back more than 300 years, as documented in historical studies and articles.",
     "chisiamo-contenuto-013": "2009",
@@ -74,7 +74,7 @@
       "label": "Discover La Diamanteria ↗",
       "href": "https://www.ladiamanteria.com"
     },
-    "chisiamo-contenuto-037": "ComproDiamanti.it",
+    "chisiamo-contenuto-037": "Valutazione Diamanti",
     "chisiamo-contenuto-038": "by La Diamanteria",
     "chisiamo-contenuto-039": "Direct buying and valuation of diamonds and jewellery from private sellers. Via Vincenzo Monti 47, Milan.",
     "chisiamo-contenuto-040": "Contact us",
@@ -112,7 +112,7 @@
       "label": "La Diamanteria ↗",
       "href": "https://www.ladiamanteria.com"
     },
-    "chisiamo-contenuto-052": "© 2026 ComproDiamanti.it by La Diamanteria · All rights reserved. · Cookies ·",
+    "chisiamo-contenuto-052": "© 2026 Valutazione Diamanti by La Diamanteria · All rights reserved. · Cookies ·",
     "chisiamo-contenuto-053": {
       "label": "Admin login",
       "href": "../../admin/"
