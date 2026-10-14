@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-const APP_VERSION = '2.1.28';
+const APP_VERSION = '2.1.29';
 const ROOT = __DIR__ . '/..';
 const PAGE_SLUGS = ['home', 'acquistiamo', 'chisiamo', 'faq', 'valutazione', 'grazie', 'privacy', 'cookie'];
 require_once __DIR__.'/settings.php';
@@ -58,9 +58,11 @@ function rate(string $purpose,int $limit,int $window): void {
     $now=time(); $q->execute([$bucket,$now+$window,$now,$now]); if((int)$q->fetchColumn()>$limit) fail('Troppi tentativi. Riprova più tardi. / Too many attempts. Please try again later.',429);
     db()->prepare('DELETE FROM rate_limits WHERE expires < ?')->execute([$now-86400]);
 }
-function page_path(string $slug,string $lang): string { if(!in_array($slug,PAGE_SLUGS,true)||!in_array($lang,['it','en'],true)) fail('Pagina non valida.',404); return ROOT . '/content/' . $slug . '.' . $lang . '.json'; }
+// 2.1.29: il Pull di Plesk riporta alla versione del repository tutti i file tracciati, compresi content/*.json: le modifiche
+// fatte dall'editor del sito andavano perse. Ora i testi modificati vivono in data/content (fuori da git); content/ resta il testo di partenza.
+function page_path(string $slug,string $lang): string { if(!in_array($slug,PAGE_SLUGS,true)||!in_array($lang,['it','en'],true)) fail('Pagina non valida.',404); $dir=ROOT.'/data/content'; if(!is_dir($dir)) @mkdir($dir,0700,true); return $dir.'/'.$slug.'.'.$lang.'.json'; }
 function content(string $slug,string $lang): array {
-    $c=json_decode(file_get_contents(page_path($slug,$lang)),true,512,JSON_THROW_ON_ERROR);
+    $live=page_path($slug,$lang); $c=json_decode(file_get_contents(is_file($live)?$live:ROOT.'/content/'.$slug.'.'.$lang.'.json'),true,512,JSON_THROW_ON_ERROR);
     if($slug==='valutazione') {
         $doc=template_doc($slug,$lang);$xp=new DOMXPath($doc);
         foreach($xp->query('//*[@data-om-slot]') as $el) {
@@ -194,4 +196,21 @@ function seo_indexes(): void {
     atomic_write(ROOT.'/sitemap.xml',$xml.'</urlset>',0644);atomic_write(ROOT.'/llms.txt',$llms,0644);
     $robots="User-agent: *\nDisallow: /admin/\nDisallow: /api/\nDisallow: /data/\nDisallow: /uploads/clienti/\nDisallow: /pages-src/\nDisallow: /partials/\nDisallow: /content/\nDisallow: /tools/\nDisallow: /old-page/\nDisallow: /Login.dc.html\nDisallow: /Admin.dc.html\n";
     if($base)$robots.='Sitemap: '.$base."/sitemap.xml\n";atomic_write(ROOT.'/robots.txt',$robots,0644);
+    mark_published();
+}
+// Dopo un Pull le pagine in it/ en/ e sitemap, robots, llms tornano alla versione del repository: al primo accesso
+// all'API (ogni pagina pubblica la chiama) si rigenerano dai testi in data/content (2.1.29).
+function published_stamp(): string {
+    clearstatcache(); $s=APP_VERSION; $files=['sitemap.xml','robots.txt','llms.txt'];
+    foreach(PAGE_SLUGS as $slug) foreach(['it','en'] as $lang) $files[]=$lang.'/'.($slug==='home'?'index':$slug).'.html';
+    foreach($files as $f) $s.='|'.$f.':'.@filemtime(ROOT.'/'.$f).':'.@filesize(ROOT.'/'.$f);
+    return hash('sha256',$s);
+}
+function mark_published(): void { @file_put_contents(ROOT.'/data/published.stamp',published_stamp()); }
+function ensure_published(): void {
+    $file=ROOT.'/data/published.stamp'; if(is_file($file)&&trim((string)file_get_contents($file))===published_stamp()) return;
+    $lock=fopen(ROOT.'/data/build.lock','c'); if(!$lock) return; if(!flock($lock,LOCK_EX|LOCK_NB)) { fclose($lock); return; }
+    try { foreach(PAGE_SLUGS as $slug) foreach(['it','en'] as $lang) publish($slug,$lang,content($slug,$lang)); seo_indexes(); }
+    catch(Throwable $e) { error_log('Rigenerazione pagine non riuscita: '.$e->getMessage()); }
+    finally { flock($lock,LOCK_UN); fclose($lock); }
 }
