@@ -3,7 +3,7 @@ declare(strict_types=1);
 function mail_queue_schema(): void {
     db()->exec('CREATE TABLE IF NOT EXISTS mail_queue (id INTEGER PRIMARY KEY, request_id TEXT NOT NULL REFERENCES requests(id) ON DELETE CASCADE, kind TEXT NOT NULL, recipient TEXT NOT NULL, subject TEXT NOT NULL, body TEXT NOT NULL, reply_to TEXT NOT NULL, status TEXT NOT NULL DEFAULT "pending", attempts INTEGER NOT NULL DEFAULT 0, updated_at TEXT, UNIQUE(request_id,kind))');
 }
-/** Testi predefiniti dell'email di conferma al cliente, modificabili nella scheda Email dell'admin (2.1.26). */
+/** Testi predefiniti dell'email di conferma al cliente, modificabili nella scheda Email dell'admin (2.1.28). */
 function customer_email_defaults(): array {
     return [
         'customer_subject_it'=>'La tua richiesta di valutazione — {riferimento}',

@@ -35,6 +35,14 @@ try {
             db()->beginTransaction();settings_save($input);foreach(PAGE_SLUGS as $slug)foreach(['it','en'] as $lang)publish($slug,$lang,content($slug,$lang));seo_indexes();audit('settings','site');db()->commit();respond(['ok'=>true]);
         }catch(Throwable $e){if(db()->inTransaction())db()->rollBack();foreach(PAGE_SLUGS as $slug)foreach(['it','en'] as $lang)publish($slug,$lang,content($slug,$lang));seo_indexes();throw $e;}finally{flock($lock,LOCK_UN);fclose($lock);}
     }
+    // Pannello Menu: accende e spegne le voci di header e footer, poi ripubblica tutte le pagine e la sitemap (2.1.27).
+    if($action==='menu'&&$method==='GET'){admin_user();$items=[];foreach(MENU_ITEMS as $key=>$item)$items[]=['key'=>$key,'label'=>$item['label'],'enabled'=>menu_enabled($key)];respond(['items'=>$items]);}
+    if($action==='menu'&&$method==='POST'){
+        admin_user();$lock=fopen(ROOT.'/data/build.lock','c');if(!$lock||!flock($lock,LOCK_EX))throw new RuntimeException('Build occupata.');
+        try{
+            db()->beginTransaction();menu_save($input);foreach(PAGE_SLUGS as $slug)foreach(['it','en'] as $lang)publish($slug,$lang,content($slug,$lang));seo_indexes();audit('menu','site');db()->commit();respond(['ok'=>true]);
+        }catch(Throwable $e){if(db()->inTransaction())db()->rollBack();foreach(PAGE_SLUGS as $slug)foreach(['it','en'] as $lang)publish($slug,$lang,content($slug,$lang));seo_indexes();throw $e;}finally{flock($lock,LOCK_UN);fclose($lock);}
+    }
     if($action==='me'&&$method==='GET') respond(['user'=>$u,'csrf'=>$_SESSION['csrf']]);
     if($action==='upload-image'&&$method==='POST'){require __DIR__.'/../PHP di sistema/image-upload.php';upload_site_image($u);}
     if($action==='password'&&$method==='POST') {

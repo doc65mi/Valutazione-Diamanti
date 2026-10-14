@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-const APP_VERSION = '2.1.26';
+const APP_VERSION = '2.1.28';
 const ROOT = __DIR__ . '/..';
 const PAGE_SLUGS = ['home', 'acquistiamo', 'chisiamo', 'faq', 'valutazione', 'grazie', 'privacy', 'cookie'];
 require_once __DIR__.'/settings.php';
@@ -42,6 +42,12 @@ function csrf(): void { if (!hash_equals($_SESSION['csrf'], $_SERVER['HTTP_X_CSR
 function user(): array {
     $q=db()->prepare('SELECT id,username,role,pages,password_hash FROM users WHERE id=?'); $q->execute([$_SESSION['uid'] ?? 0]);
     $u=$q->fetch(); if (!$u||!hash_equals(hash('sha256',$u['password_hash']),$_SESSION['credential_stamp']??'')) fail('Accesso richiesto.',401); unset($u['password_hash']); $u['pages']=json_decode($u['pages'],true); return $u;
+}
+// Vero solo per un amministratore già collegato; non apre sessioni per i visitatori (2.1.27).
+function admin_session(): bool {
+    if(empty($_COOKIE[session_name()]))return false; session_start_secure();
+    $q=db()->prepare('SELECT role,password_hash FROM users WHERE id=?'); $q->execute([$_SESSION['uid'] ?? 0]); $u=$q->fetch();
+    return $u&&$u['role']==='admin'&&hash_equals(hash('sha256',$u['password_hash']),$_SESSION['credential_stamp']??'');
 }
 function can_page(array $u,string $slug): void { if ($u['role'] !== 'admin' && !in_array($slug,$u['pages'],true)) fail('Pagina non assegnata.',403); }
 function admin_user(): array { $u=user(); if($u['role']!=='admin') fail('Permesso richiesto.',403); return $u; }
@@ -154,22 +160,28 @@ function build_html(string $slug,string $lang,array $c): string {
     $css=$doc->createElement('link');$css->setAttribute('rel','stylesheet');$css->setAttribute('href','../assets/frontend-ui.css');$head->appendChild($css);
     foreach(['frontend-ui.js','frontend-editor.js'] as $file){$script=$doc->createElement('script');$script->setAttribute('src','../assets/'.$file);$script->setAttribute('defer','defer');$head->appendChild($script);}
     $mainNav=$xp->query('//header//nav[not(contains(@class,"language-nav"))]')->item(0);
-    if($mainNav){$blogLink=$doc->createElement('a','Blog');$blogLink->setAttribute('href','../blog/');$blogLink->setAttribute('class','site-blog-link');if($lang==='en')$blogLink->setAttribute('href','../blog/?lang=en');$mainNav->appendChild($blogLink);}
-    $footer=$doc->getElementsByTagName('footer')->item(0);
+    if($mainNav&&menu_enabled('blog')){$blogLink=$doc->createElement('a','Blog');$blogLink->setAttribute('href','../blog/');$blogLink->setAttribute('class','site-blog-link');if($lang==='en')$blogLink->setAttribute('href','../blog/?lang=en');$mainNav->appendChild($blogLink);}
+    hide_menu_items($xp);
 
     tidy_footer($doc,$lang);
     $url=seo_base().'/'.$lang.'/'.($slug==='home'?'index':$slug).'.html';
     seo_markup($doc,$lang,$url,$c['meta']['title'],$c['meta']['description'],$slug==='faq'?'FAQPage':($slug==='chisiamo'?'AboutPage':'WebPage'));
-    if($slug==='grazie'){$meta=$doc->createElement('meta');$meta->setAttribute('name','robots');$meta->setAttribute('content','noindex,follow');$head->appendChild($meta);}
+    if($slug==='grazie'||in_array($slug,hidden_page_slugs(),true)){$meta=$doc->createElement('meta');$meta->setAttribute('name','robots');$meta->setAttribute('content','noindex,follow');$head->appendChild($meta);}
     return str_replace('../../assets/', '../assets/', $doc->saveHTML());
+}
+// Toglie da header e footer i link delle voci spente nel pannello Menu (2.1.27).
+function hide_menu_items(DOMXPath $xp): void {
+    $off=[];foreach(MENU_ITEMS as $key=>$item)if(!menu_enabled($key))$off[]=$item['href'];if(!$off)return;
+    foreach(iterator_to_array($xp->query('//header//a|//footer//a')) as $a)if(in_array($a->getAttribute('href'),$off,true))$a->parentNode->removeChild($a);
 }
 function publish(string $slug,string $lang,array $c): void { $name=$slug==='home'?'index':$slug; atomic_write(ROOT.'/'.$lang.'/'.$name.'.html',build_html($slug,$lang,$c),0644); }
 function seo_indexes(): void {
     $s=settings();$base=seo_base();$xml='<?xml version="1.0" encoding="UTF-8"?>'."\n".'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">';
     $llms="# Valutazione Diamanti\n\nDirect buying and free valuations of natural diamonds, jewellery and selected watches by La Diamanteria in Milan.\n\n## Pages\n";
-    foreach(PAGE_SLUGS as $slug)if($slug!=='grazie')foreach(['it','en'] as $lang){$name=$slug==='home'?'index':$slug;$url=$base.'/'.$lang.'/'.$name.'.html';$c=content($slug,$lang);if($base)$xml.='<url><loc>'.htmlspecialchars($url,ENT_XML1).'</loc></url>';$llms.='- ['.$c['meta']['title'].']('.$url.")\n";}
+    $hiddenPages=hidden_page_slugs();foreach(PAGE_SLUGS as $slug)if($slug!=='grazie'&&!in_array($slug,$hiddenPages,true))foreach(['it','en'] as $lang){$name=$slug==='home'?'index':$slug;$url=$base.'/'.$lang.'/'.$name.'.html';$c=content($slug,$lang);if($base)$xml.='<url><loc>'.htmlspecialchars($url,ENT_XML1).'</loc></url>';$llms.='- ['.$c['meta']['title'].']('.$url.")\n";}
     require_once __DIR__.'/blog.php';
-    if($base){$xml.='<url><loc>'.htmlspecialchars($base.'/blog/',ENT_XML1).'</loc></url><url><loc>'.htmlspecialchars($base.'/blog/?lang=en',ENT_XML1).'</loc></url>';$posts=blog_seo_entries();
+    $blogOn=menu_enabled('blog');$posts=[];
+    if($base&&$blogOn){$xml.='<url><loc>'.htmlspecialchars($base.'/blog/',ENT_XML1).'</loc></url><url><loc>'.htmlspecialchars($base.'/blog/?lang=en',ENT_XML1).'</loc></url>';$posts=blog_seo_entries();
         foreach($posts as $post){
             $xml.='<url><loc>'.htmlspecialchars(blog_article_url(['base_url'=>$base.'/blog'],$post),ENT_XML1).'</loc>';
             if(preg_match('/^\d{4}-\d{2}-\d{2}/',(string)$post['updated_at'],$day))$xml.='<lastmod>'.$day[0].'</lastmod>';
@@ -177,7 +189,7 @@ function seo_indexes(): void {
             $xml.='</url>';
         }
     }
-    $llms.='- [Blog]('.$base.'/blog/)' . "\n";
+    if($blogOn)$llms.='- [Blog]('.$base.'/blog/)' . "\n";
     if($base&&!empty($posts)){$llms.="\n## Blog articles\n";foreach(array_slice($posts,0,100) as $post)$llms.='- ['.trim(str_replace(['[',']','(',')',"\r","\n"],' ',(string)$post['title'])).']('.blog_article_url(['base_url'=>$base.'/blog'],$post).")\n";}
     atomic_write(ROOT.'/sitemap.xml',$xml.'</urlset>',0644);atomic_write(ROOT.'/llms.txt',$llms,0644);
     $robots="User-agent: *\nDisallow: /admin/\nDisallow: /api/\nDisallow: /data/\nDisallow: /uploads/clienti/\nDisallow: /pages-src/\nDisallow: /partials/\nDisallow: /content/\nDisallow: /tools/\nDisallow: /old-page/\nDisallow: /Login.dc.html\nDisallow: /Admin.dc.html\n";

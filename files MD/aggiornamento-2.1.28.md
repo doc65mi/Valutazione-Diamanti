@@ -1,4 +1,4 @@
-# Aggiornamento 2.1.26 — Scheda Email nell'admin e pagina di ringraziamento
+# Aggiornamento 2.1.28 — Scheda Email nell'admin e pagina di ringraziamento
 
 ## Pagina di ringraziamento (IT/EN)
 

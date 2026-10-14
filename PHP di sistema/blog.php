@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-const BLOG_VERSION = '2.1.26';
+const BLOG_VERSION = '2.1.28';
 const PRIVATE_DIR = ROOT . '/data';
 function blog_h($v): string { return htmlspecialchars((string)$v, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); }
 function blog_abort_request(int $code, string $message): void { http_response_code($code); echo blog_h($message); exit; }
