@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-const APP_VERSION = '2.1.21';
+const APP_VERSION = '2.1.22';
 const ROOT = __DIR__ . '/..';
 const PAGE_SLUGS = ['home', 'acquistiamo', 'chisiamo', 'faq', 'valutazione', 'grazie', 'privacy', 'cookie'];
 require_once __DIR__.'/settings.php';
@@ -66,9 +66,11 @@ function content(string $slug,string $lang): array {
     }
     return $c;
 }
-function atomic_write(string $path,string $text): void {
+// tempnam() crea il file con permessi 0600: le pagine pubbliche vanno rese leggibili (0644), altrimenti
+// nginx su Plesk (che serve i file statici con un altro utente) risponde 403 a tutto il sito (2.1.22).
+function atomic_write(string $path,string $text,int $mode=0600): void {
     $tmp=tempnam(dirname($path),'.write-'); if($tmp===false) throw new RuntimeException('Scrittura non disponibile.');
-    try { if(file_put_contents($tmp,$text)===false || !rename($tmp,$path)) throw new RuntimeException('Salvataggio non riuscito.'); } finally { if(is_file($tmp)) unlink($tmp); }
+    try { if(file_put_contents($tmp,$text)===false || !chmod($tmp,$mode) || !rename($tmp,$path)) throw new RuntimeException('Salvataggio non riuscito.'); } finally { if(is_file($tmp)) unlink($tmp); }
 }
 function template_doc(string $slug,string $lang): DOMDocument {
     page_path($slug,$lang); $doc=new DOMDocument('1.0','UTF-8');
@@ -160,7 +162,7 @@ function build_html(string $slug,string $lang,array $c): string {
     if($slug==='grazie'){$meta=$doc->createElement('meta');$meta->setAttribute('name','robots');$meta->setAttribute('content','noindex,follow');$head->appendChild($meta);}
     return str_replace('../../assets/', '../assets/', $doc->saveHTML());
 }
-function publish(string $slug,string $lang,array $c): void { $name=$slug==='home'?'index':$slug; atomic_write(ROOT.'/'.$lang.'/'.$name.'.html',build_html($slug,$lang,$c)); }
+function publish(string $slug,string $lang,array $c): void { $name=$slug==='home'?'index':$slug; atomic_write(ROOT.'/'.$lang.'/'.$name.'.html',build_html($slug,$lang,$c),0644); }
 function seo_indexes(): void {
     $s=settings();$base=seo_base();$xml='<?xml version="1.0" encoding="UTF-8"?>'."\n".'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">';
     $llms="# ComproDiamanti.it\n\nDirect buying and free valuations of natural diamonds, jewellery and selected watches by La Diamanteria in Milan.\n\n## Pages\n";
@@ -176,7 +178,7 @@ function seo_indexes(): void {
     }
     $llms.='- [Blog]('.$base.'/blog/)' . "\n";
     if($base&&!empty($posts)){$llms.="\n## Blog articles\n";foreach(array_slice($posts,0,100) as $post)$llms.='- ['.trim(str_replace(['[',']','(',')',"\r","\n"],' ',(string)$post['title'])).']('.blog_article_url(['base_url'=>$base.'/blog'],$post).")\n";}
-    atomic_write(ROOT.'/sitemap.xml',$xml.'</urlset>');atomic_write(ROOT.'/llms.txt',$llms);
+    atomic_write(ROOT.'/sitemap.xml',$xml.'</urlset>',0644);atomic_write(ROOT.'/llms.txt',$llms,0644);
     $robots="User-agent: *\nDisallow: /admin/\nDisallow: /api/\nDisallow: /data/\nDisallow: /uploads/clienti/\nDisallow: /pages-src/\nDisallow: /partials/\nDisallow: /content/\nDisallow: /tools/\nDisallow: /old-page/\nDisallow: /Login.dc.html\nDisallow: /Admin.dc.html\n";
-    if($base)$robots.='Sitemap: '.$base."/sitemap.xml\n";atomic_write(ROOT.'/robots.txt',$robots);
+    if($base)$robots.='Sitemap: '.$base."/sitemap.xml\n";atomic_write(ROOT.'/robots.txt',$robots,0644);
 }

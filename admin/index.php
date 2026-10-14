@@ -1,5 +1,5 @@
 <?php
-require __DIR__.'/../PHP di sistema/core.php';
+require_once __DIR__.'/../PHP di sistema/core.php';
 security_headers(true); session_start_secure();
 ?>
 <!doctype html><html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex, nofollow, noarchive"><title>Amministrazione · ComproDiamanti</title><link rel="stylesheet" href="../assets/site.css"><script src="../assets/admin.js" defer></script><script src="../assets/blog-admin.js" defer></script><link rel="stylesheet" href="../assets/frontend-ui.css"></head>

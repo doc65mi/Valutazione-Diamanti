@@ -7,17 +7,30 @@ function settings(): array {
     db()->exec('CREATE TABLE IF NOT EXISTS settings (id INTEGER PRIMARY KEY CHECK(id=1), value TEXT NOT NULL)');
     $v=db()->query('SELECT value FROM settings WHERE id=1')->fetchColumn();return array_replace(settings_defaults(),$v?json_decode($v,true):[]);
 }
+const TRACKING_LABELS = ['analytics'=>'Google Analytics 4','ads'=>'Google Ads','meta'=>'Meta Pixel','gtm'=>'Google Tag Manager'];
+/** Ricava l'ID anche quando si incolla lo snippet completo o l'ID scritto in minuscolo (es. "aw-123/etichetta"). */
+function settings_tracking_ids(array $input): array {
+    $patterns=['analytics_id'=>'/\bG-[A-Z0-9]{4,}\b/i','gtm_id'=>'/\bGTM-[A-Z0-9]{4,}\b/i','ads_id'=>'~\bAW-[0-9]{4,}(?:/([A-Za-z0-9_-]{1,100}))?~i'];
+    foreach($patterns as $key=>$pattern){
+        $v=$input[$key]??'';if(!is_string($v)||strlen($v)>20000)continue;$v=trim($v);
+        if($v!==''&&($key==='ads_id'&&preg_match('~\\bAW-[0-9]{4,}/([A-Za-z0-9_-]{1,100})~i',$v,$m)||preg_match($pattern,$v,$m))){$input[$key]=strtoupper(explode('/',$m[0])[0]);if($key==='ads_id'&&!empty($m[1])&&trim((string)($input['ads_label']??''))==='')$input['ads_label']=$m[1];}
+    }
+    $meta=$input['meta_id']??'';
+    if(is_string($meta)&&strlen($meta)<=20000&&preg_match('/fbq\(\s*[\'"]init[\'"]\s*,\s*[\'"]?([0-9]{5,30})/',$meta,$m))$input['meta_id']=$m[1];
+    return $input;
+}
 function settings_save(array $input): array {
+    $input=settings_tracking_ids($input);
     $s=settings();
     if(isset($input['mail_enabled'])){if(!is_bool($input['mail_enabled']))fail('Selezione email non valida.');$s['mail_enabled']=$input['mail_enabled'];}
     foreach(['mail_from','mail_to'] as $key)if(isset($input[$key])){if(!is_string($input[$key])||strlen($input[$key])>254||strpbrk($input[$key],"\r\n"))fail('Indirizzo email non valido.');$s[$key]=trim($input[$key]);}
     foreach(['mail_from','mail_to'] as $key)if($s[$key]!==''&&!filter_var($s[$key],FILTER_VALIDATE_EMAIL))fail('Indirizzo email non valido: '.$key);
     if($s['mail_enabled']&&($s['mail_from']===''||$s['mail_to']===''))fail('Compila mittente e destinatario delle notifiche.');
     foreach(['analytics','ads','meta','gtm','recaptcha'] as $service){ $key=$service.'_enabled';if(!is_bool($input[$key]??null))fail('Selezione non valida: '.$service);$s[$key]=$input[$key]; }
-    foreach(['recaptcha_site_key','recaptcha_hostname','analytics_id','ads_id','ads_label','meta_id','gtm_id','legal_company','legal_address','legal_vat','legal_email','site_url'] as $key){$v=$input[$key]??'';if(!is_string($v)||strlen($v)>500||preg_match('/[<>\x00-\x1F]/',$v))fail('Valore non valido: '.$key);$s[$key]=trim($v);}
+    foreach(['recaptcha_site_key','recaptcha_hostname','analytics_id','ads_id','ads_label','meta_id','gtm_id','legal_company','legal_address','legal_vat','legal_email','site_url'] as $key){$v=$input[$key]??'';if(!is_string($v)||strlen($v)>500||preg_match('/[<>\x00-\x1F]/',$v))fail(isset(TRACKING_LABELS[substr($key,0,-3)])?'ID non valido per '.TRACKING_LABELS[substr($key,0,-3)].': inserisci solo l’ID, non lo snippet di codice.':'Valore non valido: '.$key);$s[$key]=trim($v);}
     $secret=$input['recaptcha_secret']??'';if(!is_string($secret)||strlen($secret)>300)fail('Chiave segreta non valida.');if($secret!=='')$s['recaptcha_secret']=trim($secret);
     if(($input['recaptcha_clear_secret']??false)===true)$s['recaptcha_secret']='';
-    foreach(['analytics_id'=>'/^G-[A-Z0-9]+$/','ads_id'=>'/^AW-[0-9]+$/','meta_id'=>'/^[0-9]{5,30}$/','gtm_id'=>'/^GTM-[A-Z0-9]+$/'] as $key=>$pattern)if($s[$key]!==''&&!preg_match($pattern,$s[$key]))fail('ID non valido: '.$key);
+    foreach(['analytics_id'=>['/^G-[A-Z0-9]+$/','G-XXXXXXXXXX'],'ads_id'=>['/^AW-[0-9]+$/','AW-123456789'],'meta_id'=>['/^[0-9]{5,30}$/','solo cifre, es. 123456789012345'],'gtm_id'=>['/^GTM-[A-Z0-9]+$/','GTM-XXXXXXX']] as $key=>[$pattern,$example])if($s[$key]!==''&&!preg_match($pattern,$s[$key]))fail('ID non valido per '.TRACKING_LABELS[substr($key,0,-3)].': usa il formato '.$example.'.');
     if($s['ads_label']!==''&&!preg_match('/^[A-Za-z0-9_-]{1,100}$/',$s['ads_label']))fail('Etichetta conversione non valida.');
     if(!filter_var($s['legal_email'],FILTER_VALIDATE_EMAIL)||$s['legal_company']===''||$s['legal_address']==='')fail('Compila titolare, indirizzo e contatto privacy.');
     if($s['site_url']!==''&&(!filter_var($s['site_url'],FILTER_VALIDATE_URL)||!preg_match('~^https?://~',$s['site_url'])||strpbrk($s['site_url'],'?#')))fail('Inserisci l’URL pubblico del sito senza query o frammenti.');
@@ -26,7 +39,7 @@ function settings_save(array $input): array {
     foreach(['recaptcha_site_key','recaptcha_secret'] as $key)if($s[$key]!==''&&!preg_match('/^[a-zA-Z0-9_-]{10,300}$/',$s[$key]))fail('Chiave reCAPTCHA non valida.');
     if($s['recaptcha_hostname']!==''&&!preg_match('/^[a-zA-Z0-9.-]+$/',$s['recaptcha_hostname']))fail('Inserisci il dominio reCAPTCHA senza protocollo o percorso.');
     if($s['recaptcha_enabled']&&(!$s['recaptcha_site_key']||!$s['recaptcha_secret']||!$s['recaptcha_hostname']))fail('Per attivare reCAPTCHA servono entrambe le chiavi e il dominio.');
-    foreach(['analytics','ads','meta','gtm'] as $service)if($s[$service.'_enabled']&&!$s[$service.'_id'])fail('Inserisci l’ID per '.$service.'.');
+    foreach(['analytics','ads','meta','gtm'] as $service)if($s[$service.'_enabled']&&!$s[$service.'_id'])fail('Inserisci l’ID per '.TRACKING_LABELS[$service].'.');
     $old=settings();if(array_intersect_key($s,array_flip(['analytics_enabled','ads_enabled','meta_enabled','gtm_enabled','analytics_id','ads_id','meta_id','gtm_id']))!==array_intersect_key($old,array_flip(['analytics_enabled','ads_enabled','meta_enabled','gtm_enabled','analytics_id','ads_id','meta_id','gtm_id'])))$s['consent_version']=$old['consent_version']+1;
     db()->prepare('INSERT INTO settings(id,value) VALUES(1,?) ON CONFLICT(id) DO UPDATE SET value=excluded.value')->execute([json_encode($s,JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR)]);return $s;
 }
