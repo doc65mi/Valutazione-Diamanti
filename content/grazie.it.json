@@ -1,0 +1,27 @@
+{
+  "spec": "1.00",
+  "slug": "grazie",
+  "language": "it",
+  "version": 1,
+  "meta": {
+    "title": "Grazie per la richiesta | ComproDiamanti",
+    "description": "Acquisto diretto e valutazione gratuita di diamanti, gioielli e orologi a Milano. La Diamanteria, dal 2009."
+  },
+  "slots": {
+    "grazie-contenuto-001": {
+      "label": "◇ ComproDiamanti.it",
+      "href": "index.html"
+    },
+    "grazie-contenuto-002": "Valutazione gratuita",
+    "grazie-contenuto-003": "Grazie per la tua richiesta",
+    "grazie-contenuto-004": "Un nostro gemmologo esaminerà le informazioni e gli allegati inviati e ti contatterà con il metodo che hai scelto. La valutazione definitiva richiede l’esame dell’oggetto.",
+    "grazie-contenuto-005": "I prossimi passaggi",
+    "grazie-contenuto-006": "Esame della richiesta da parte del gemmologo.",
+    "grazie-contenuto-007": "Se necessario, appuntamento nella nostra sede di Milano.",
+    "grazie-contenuto-008": "Offerta diretta e pagamento con bonifico se decidi di vendere.",
+    "grazie-contenuto-009": {
+      "label": "Torna al sito",
+      "href": "index.html"
+    }
+  }
+}

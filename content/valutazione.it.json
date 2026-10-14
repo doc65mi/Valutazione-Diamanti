@@ -1,0 +1,98 @@
+{
+  "spec": "1.00",
+  "slug": "valutazione",
+  "language": "it",
+  "version": 1,
+  "meta": {
+    "title": "Valutazione gratuita | ComproDiamanti",
+    "description": "Acquisto diretto e valutazione gratuita di diamanti, gioielli e orologi a Milano. La Diamanteria, dal 2009."
+  },
+  "slots": {
+    "valutazione-contenuto-001": {
+      "label": "◇ ComproDiamanti.it",
+      "href": "index.html"
+    },
+    "valutazione-contenuto-002": {
+      "label": "Cosa acquistiamo",
+      "href": "acquistiamo.html"
+    },
+    "valutazione-contenuto-003": {
+      "label": "Chi siamo",
+      "href": "chisiamo.html"
+    },
+    "valutazione-contenuto-004": {
+      "label": "FAQ",
+      "href": "faq.html"
+    },
+    "valutazione-contenuto-005": "Servizio 100% gratuito e senza impegno",
+    "valutazione-contenuto-006": "Quotazione gratuita e senza impegno",
+    "valutazione-contenuto-007": "Il servizio di acquisto diretto di La Diamanteria. Senza aste né intermediari. Milano, dal 2009.",
+    "valutazione-contenuto-008": "Compratore diretto",
+    "valutazione-contenuto-009": "Bonifico tracciabile",
+    "valutazione-contenuto-010": "GIA / HRD / IGI",
+    "valutazione-contenuto-011": "Valutiamo diamanti naturali da 1 carato per pietra, gemme di colore anche più piccole e orologi dei marchi indicati.",
+    "valutazione-contenuto-012": "Website",
+    "valutazione-contenuto-013": "Quale oggetto vuoi vendere?",
+    "valutazione-contenuto-014": "Tipo di oggetto",
+    "valutazione-contenuto-015": "Hai altri oggetti?",
+    "valutazione-contenuto-016": "Più oggetti da valutare",
+    "valutazione-contenuto-017": "Descrivi gli altri oggetti",
+    "valutazione-contenuto-018": "Dettagli dell’oggetto",
+    "valutazione-contenuto-019": "Marca dell’orologio",
+    "valutazione-contenuto-020": "Tipo di pietra",
+    "valutazione-contenuto-021": "Peso della pietra principale",
+    "valutazione-contenuto-022": "Origine del diamante",
+    "valutazione-contenuto-023": "Non acquistiamo diamanti creati in laboratorio.",
+    "valutazione-contenuto-024": "Certificati e documenti",
+    "valutazione-contenuto-025": "Certificato disponibile",
+    "valutazione-contenuto-026": "Non acquistiamo diamanti con certificati AIG, GRA, GWLAB o ALGT.",
+    "valutazione-contenuto-027": "Corredo disponibile",
+    "valutazione-contenuto-028": "Foto e certificati",
+    "valutazione-contenuto-029": "Facoltativo: allega foto nitide dell’oggetto e gli eventuali certificati.",
+    "valutazione-contenuto-030": "Scatta o carica una foto",
+    "valutazione-contenuto-031": "JPG, PNG, WebP o PDF. Massimo 6 file, 5 MB ciascuno e 20 MB complessivi.",
+    "valutazione-contenuto-032": "Come possiamo contattarti?",
+    "valutazione-contenuto-033": "Nome e cognome",
+    "valutazione-contenuto-034": "Contatto preferito",
+    "valutazione-contenuto-035": "Telefono",
+    "valutazione-contenuto-036": "Email",
+    "valutazione-contenuto-037": "Come utilizziamo i tuoi dati",
+    "valutazione-contenuto-038": "La Diamanteria utilizza i contatti e gli allegati che invii per esaminare l’oggetto e rispondere alla richiesta di valutazione. Gli allegati sono accessibili solo agli amministratori autorizzati. Non caricare documenti d’identità: saranno richiesti solo se concludiamo la vendita. Per informazioni sul trattamento dei dati contatta sl@ladiamanteria.com.",
+    "valutazione-contenuto-039": "Ho letto le informazioni sul trattamento dei dati per questa richiesta.",
+    "valutazione-contenuto-040": "Riepilogo",
+    "valutazione-contenuto-041": "Indietro",
+    "valutazione-contenuto-042": "Continua",
+    "valutazione-contenuto-043": "Attiva JavaScript per utilizzare il modulo oppure contattaci via email:",
+    "valutazione-contenuto-044": {
+      "label": "sl@ladiamanteria.com",
+      "href": "mailto:sl@ladiamanteria.com"
+    },
+    "valutazione-contenuto-045": ".",
+    "valutazione-contenuto-046": "La Diamanteria · Via Vincenzo Monti 47, Milano ·",
+    "valutazione-contenuto-047": {
+      "label": "+39 02 466891",
+      "href": "tel:+3902466891"
+    },
+    "valutazione-ripristino-001": "Come funziona",
+    "valutazione-ripristino-002": "Richiedi la valutazione.",
+    "valutazione-ripristino-003": "Valutazione professionale.",
+    "valutazione-ripristino-004": "Offerta diretta.",
+    "valutazione-ripristino-005": "Pagamento.",
+    "valutazione-ripristino-006": {
+      "src": "https://diamond-shine-guide.lovable.app/__l5e/assets-v1/0ad06598-6c3d-430f-b1d8-aaa6800911a7/showroom-2.jpg",
+      "alt": "Ingresso della sede La Diamanteria"
+    },
+    "valutazione-ripristino-008": "La Diamanteria · Via Vincenzo Monti 47, Milano",
+    "valutazione-ripristino-009": "Cosa non valutiamo",
+    "valutazione-ripristino-010": "Diamanti inferiori a 1 carato per singola pietra o creati in laboratorio.",
+    "valutazione-ripristino-011": "Diamanti con certificati AIG, GRA, GWLAB o ALGT.",
+    "valutazione-ripristino-012": "Orologi di marchi non trattati.",
+    "valutazione-ripristino-013": "Le pietre preziose vengono valutate anche sotto i 2 carati.",
+    "valutazione-ripristino-014": "Recensioni Google",
+    "valutazione-ripristino-015": "Le recensioni sono pubblicate direttamente sul nostro profilo Google.",
+    "valutazione-ripristino-016": {
+      "href": "https://www.google.com/maps/place/?q=place_id:ChIJFR80gkTBhkcRJGjlclhYteg",
+      "label": "Leggi le recensioni su Google ↗"
+    }
+  }
+}

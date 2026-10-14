@@ -1,0 +1,13 @@
+User-agent: *
+Disallow: /admin/
+Disallow: /api/
+Disallow: /data/
+Disallow: /uploads/clienti/
+Disallow: /pages-src/
+Disallow: /partials/
+Disallow: /content/
+Disallow: /tools/
+Disallow: /old-page/
+Disallow: /Login.dc.html
+Disallow: /Admin.dc.html
+Sitemap: https://comprodiamanti.piuper.site/sitemap.xml

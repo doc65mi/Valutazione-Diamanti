@@ -1,0 +1,52 @@
+<?php
+declare(strict_types=1);
+require_once __DIR__.'/blog.php';
+function blog_reauthenticate(array $input): void {
+    $q=db()->prepare('SELECT password_hash FROM users WHERE id=?');$q->execute([$_SESSION['uid']??0]);
+    $p=$input['current_password']??null;
+    if(!is_string($p)||!password_verify($p,(string)$q->fetchColumn()))fail('Password amministratore attuale non valida.',403);
+}
+function blog_api(string $action,string $method,array $input): never {
+    $lock=blog_lock($method!=='GET');$c=blog_config();$db=blog_db();
+    try {
+        if($action==='blog-list'&&$method==='GET')respond(['articles'=>blog_rows($db,'SELECT id,title,slug,language,status,featured,published_at FROM blog_articles ORDER BY id DESC')]);
+        if($action==='blog-get'&&$method==='GET'){$a=blog_one($db,'SELECT * FROM blog_articles WHERE id=?',[(int)($_GET['id']??0)]);if(!$a)fail('Articolo non trovato.',404);respond(['article'=>$a]);}
+        if($action==='blog-save'&&$method==='POST'){
+            $id=(int)($input['id']??0);$old=$id?blog_one($db,'SELECT * FROM blog_articles WHERE id=?',[$id]):null;
+            if($id&&!$old)fail('Articolo non trovato.',404);
+            if($old&&($input['base_version']??'')!==$old['updated_at'])fail('Articolo modificato da un altro utente. Ricaricare prima di salvare.',409);
+            $a=blog_article_data($input,false,$c);if($old)$a['source_id']=$old['source_id'];
+            $a['updated_at']=(new DateTimeImmutable('now',new DateTimeZone('UTC')))->format('Y-m-d\TH:i:s.u\Z');
+            $saved=blog_persist_article($db,$a,$id?:null);audit('blog-save',(string)$saved);seo_indexes();respond(['id'=>$saved]);
+        }
+        if($action==='blog-delete'&&$method==='POST'){
+            if(($input['confirm']??false)!==true)fail('Confermare l’eliminazione.');
+            $db->prepare('DELETE FROM blog_articles WHERE id=?')->execute([(int)($input['id']??0)]);audit('blog-delete',(string)($input['id']??0));seo_indexes();respond(['ok'=>true]);
+        }
+        if($action==='blog-config'&&$method==='GET'){
+            $visible=$c;unset($visible['webhook_hash'],$visible['db']['password']);$visible['token_set']=$c['webhook_hash']!=='';
+            respond(['config'=>$visible]);
+        }
+        if(in_array($action,['blog-config','blog-token','blog-database'],true)&&$method==='POST')blog_reauthenticate($input);
+        if($action==='blog-config'&&$method==='POST'){
+            if(!is_bool($input['auto_publish']??null))fail('Selezione non valida.');$c['auto_publish']=$input['auto_publish'];blog_save_config($c);audit('blog-config','publication');respond(['ok'=>true]);
+        }
+        if($action==='blog-token'&&$method==='POST'){
+            $token=bin2hex(random_bytes(32));$c['webhook_hash']=hash('sha256',$token);blog_save_config($c);audit('blog-token','rotated');respond(['token'=>$token]);
+        }
+        if($action==='blog-database'&&$method==='POST'){
+            if(($input['confirm']??'')!=='TRASFERISCI')fail('Scrivi TRASFERISCI per confermare.');
+            $destination=['driver'=>($input['driver']??'')==='mysql'?'mysql':'sqlite'];
+            if($destination['driver']==='mysql'){
+                $port=(int)($input['port']??3306);if($port<1||$port>65535)fail('Porta non valida.');
+                foreach(['host','database','username','password'] as $key)if(!is_string($input[$key]??null))fail('Compilare i campi database.');
+                $destination+=['host'=>trim($input['host']),'port'=>$port,'database'=>trim($input['database']),'username'=>trim($input['username']),'password'=>$input['password']];
+            }
+            if($destination===$c['db'])fail('Questo database è già attivo.');
+            blog_db_move($db,$destination,$c);audit('blog-database',$destination['driver']);seo_indexes();respond(['ok'=>true]);
+        }
+        fail('Operazione blog non disponibile.',404);
+    } catch(InvalidArgumentException $e){fail($e->getMessage());}
+    catch(PDOException $e){error_log('Blog database error: '.$e->getCode());fail('Operazione database non riuscita: verificare connessione, destinazione vuota e slug univoci.',409);}
+    catch(RuntimeException $e){fail($e->getMessage());}
+}

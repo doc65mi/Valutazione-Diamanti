@@ -1,0 +1,64 @@
+{
+  "spec": "1.00",
+  "slug": "cookie",
+  "language": "en",
+  "version": 1,
+  "meta": {
+    "title": "Cookie policy | ComproDiamanti",
+    "description": "Free valuations and direct buying of diamonds, jewellery and luxury watches in Milan. La Diamanteria, established in 2009."
+  },
+  "slots": {
+    "cookie-contenuto-001": {
+      "label": "◇ ComproDiamanti.it",
+      "href": "index.html"
+    },
+    "cookie-contenuto-002": {
+      "label": "Free valuation",
+      "href": "valutazione.html"
+    },
+    "cookie-contenuto-003": "Cookie policy",
+    "cookie-contenuto-004": "Last updated: 8 October 2026",
+    "cookie-contenuto-005": "How your preferences work",
+    "cookie-contenuto-006": "The website uses tools required for it to function. Analytics and advertising are disabled by default. You can accept all categories, reject optional tools or choose analytics and marketing separately. Closing the preferences window does not mean you accept. You can change your choice at any time using “Cookie preferences”.",
+    "cookie-contenuto-007": "Necessary tools",
+    "cookie-contenuto-008": "PHPSESSID maintains the technical session for admin access and form protection; it is a session cookie. cd_consent stores your preference in the browser for six months, including the policy version and selected categories. cd_receipt is stored only in the browser session to display your enquiry reference and prevent duplicate events. These tools are not used for advertising. If configured, reCAPTCHA v3 is called when the form is submitted for security and may use Google’s technical tools.",
+    "cookie-contenuto-009": "Analytics: Google Analytics",
+    "cookie-contenuto-010": "When configured and allowed under the Analytics category, Google Analytics 4 measures visits and page usage. This integration does not send names, email addresses, telephone numbers, form contents or URL parameters. Cookies such as _ga and _ga_* may be used; this integration sets their lifetime to six months. Google Signals is disabled. Google’s administrative settings may affect analytics data retention.",
+    "cookie-contenuto-011": "Marketing: Google Ads and Meta Pixel",
+    "cookie-contenuto-012": "Google Ads and Meta Pixel, when configured, are enabled only with Marketing consent. They may record a successfully submitted enquiry as a conversion, without attachments or contact details. They may use identifiers, IP addresses and technical information; common cookies include _gcl_* for Google and _fbp / _fbc for Meta. Their duration and operation depend on the providers’ settings and policies. This integration does not enable Meta Advanced Matching or automatic event configuration.",
+    "cookie-contenuto-013": "Google Tag Manager",
+    "cookie-contenuto-014": "Tag Manager is a container for other tags. As a precaution, this website loads it only when both Analytics and Marketing are allowed. Container tags must respect the user’s choices and must not duplicate integrations already enabled. The controller is responsible for configuring the container and updating this policy if additional services are introduced.",
+    "cookie-contenuto-015": "Withdrawal and browser settings",
+    "cookie-contenuto-016": "When you withdraw a category, the website updates your consent, attempts to remove accessible cookies belonging to the relevant services and reloads the page to stop tags that have already loaded. It cannot delete cookies on an external provider’s domain; you can manage these through your browser settings. Withdrawal prevents new optional tags from loading but does not automatically delete data already collected by providers. For other requests, contact {{legal.email}}.",
+    "cookie-contenuto-017": {
+      "label": "Google Privacy",
+      "href": "https://policies.google.com/privacy"
+    },
+    "cookie-contenuto-018": "·",
+    "cookie-contenuto-019": {
+      "label": "Google Cookies",
+      "href": "https://policies.google.com/technologies/cookies"
+    },
+    "cookie-contenuto-020": "·",
+    "cookie-contenuto-021": {
+      "label": "Meta Privacy",
+      "href": "https://www.facebook.com/privacy/policy/"
+    },
+    "cookie-contenuto-022": "·",
+    "cookie-contenuto-023": {
+      "label": "Meta Cookies",
+      "href": "https://www.facebook.com/privacy/policies/cookies/"
+    },
+    "cookie-contenuto-024": "·",
+    "cookie-contenuto-025": {
+      "label": "Garante Privacy",
+      "href": "https://www.garanteprivacy.it/"
+    },
+    "cookie-contenuto-026": {
+      "label": "Privacy policy",
+      "href": "privacy.html"
+    },
+    "cookie-contenuto-027": "Enabled services",
+    "cookie-contenuto-028": "Cookie preferences"
+  }
+}

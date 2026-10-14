@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+html,body{margin:0;padding:0;background:#F5F5F5;color:#1C1B19;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+a{color:#1C1B19;text-underline-offset:3px}
+a:hover{color:#7A6236}
+button,input,select{font-family:inherit}
+</style>
+</helmet>
+<div style="font-family:Manrope,system-ui,sans-serif;font-size:15px;line-height:1.5;color:#1C1B19;background:#F5F5F5;min-height:100vh;display:flex;flex-direction:column">
+
+<header style="background:#1C1B19;color:#F5F5F5">
+  <div style="max-width:1440px;margin:0 auto;padding:14px clamp(16px,2vw,28px);display:flex;align-items:center;gap:16px">
+    <span style="width:12px;height:12px;transform:rotate(45deg);border:1.5px solid #C9B48A;flex:none"></span>
+    <span style="display:flex;flex-direction:column;line-height:1.05">
+      <span style="font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:600;white-space:nowrap">ComproDiamanti.it</span>
+      <span style="font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:#C9B48A">Area riservata</span>
+    </span>
+    <span style="flex:1"></span>
+    <sc-if value="{{ never }}" hint-placeholder-val="{{ false }}">
+      <span style="font-size:13px;color:#BDBDBD">{{ userLabel }}</span>
+      <button onClick="{{ logout }}" style="min-height:40px;background:none;border:1px solid #5A5A5A;color:#F5F5F5;padding:0 14px;font-size:13px;font-weight:600;cursor:pointer;border-radius:2px">Esci</button>
+    </sc-if>
+  </div>
+</header>
+
+<sc-if value="{{ notLogged }}" hint-placeholder-val="{{ true }}">
+<main style="flex:1;display:flex;align-items:center;justify-content:center;padding:48px 16px">
+  <form onSubmit="{{ login }}" style="width:100%;max-width:400px;background:#FFFFFF;border:1px solid #E2E2E2;padding:36px 32px;display:flex;flex-direction:column;gap:18px">
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <h1 style="margin:0;font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:500;line-height:1.1">Accedi</h1>
+      <p style="margin:0;color:#5F5F5F;font-size:14px">Gestione delle richieste di valutazione.</p>
+    </div>
+    <label style="display:flex;flex-direction:column;gap:6px;font-size:13.5px;font-weight:600">Utente
+      <input value="{{ u }}" onChange="{{ onU }}" autocomplete="username" style="min-height:48px;border:1px solid #CFCFCF;padding:10px 12px;font-size:16px;font-weight:400;border-radius:2px">
+    </label>
+    <label style="display:flex;flex-direction:column;gap:6px;font-size:13.5px;font-weight:600">Password
+      <input type="password" value="{{ p }}" onChange="{{ onP }}" autocomplete="current-password" style="min-height:48px;border:1px solid #CFCFCF;padding:10px 12px;font-size:16px;font-weight:400;border-radius:2px">
+    </label>
+    <sc-if value="{{ loginErr }}" hint-placeholder-val="{{ false }}">
+      <div style="font-size:13.5px;color:#9A2B1E;background:#F8ECEA;border:1px solid #E8CFCB;padding:10px 12px">Utente o password non corretti.</div>
+    </sc-if>
+    <button type="submit" style="min-height:50px;background:#1C1B19;color:#F5F5F5;border:0;font-size:15px;font-weight:700;cursor:pointer;border-radius:2px">Entra</button>
+    <a href="ComproDiamanti.dc.html" style="font-size:13px;color:#4A4A4A;text-align:center">← Torna al sito</a>
+    <p style="margin:0;font-size:12.5px;color:#7A7A7A">Demo: utente <strong>admin</strong> · password <strong>diamanti2026</strong></p>
+  </form>
+</main>
+</sc-if>
+
+<sc-if value="{{ logged }}" hint-placeholder-val="{{ false }}">
+<main style="flex:1;max-width:1440px;width:100%;margin:0 auto;padding:32px clamp(16px,2vw,28px) 56px;display:flex;flex-direction:column;gap:22px">
+  <div style="display:flex;flex-wrap:wrap;align-items:flex-end;gap:16px">
+    <div style="display:flex;flex-direction:column;gap:4px">
+      <h1 style="margin:0;font-family:'Cormorant Garamond',serif;font-size:40px;font-weight:500;line-height:1.05">Richieste di valutazione</h1>
+      <span style="font-size:14px;color:#5F5F5F">{{ countLabel }}</span>
+    </div>
+    <span style="flex:1"></span>
+    <button onClick="{{ exportXls }}" style="min-height:46px;background:#1C1B19;color:#F5F5F5;border:0;padding:0 20px;font-size:14px;font-weight:700;cursor:pointer;border-radius:2px;display:flex;align-items:center;gap:10px">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F5F5F5" stroke-width="1.8" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"></path></svg>Scarica Excel</button>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,160px),1fr));gap:10px">
+    <sc-for list="{{ stats }}" as="s" hint-placeholder-count="4">
+      <button onClick="{{ s.pick }}" style="text-align:left;background:{{ s.bg }};border:1px solid {{ s.bd }};padding:14px 16px;cursor:pointer;display:flex;flex-direction:column;gap:2px;border-radius:2px;color:{{ s.fg }}">
+        <span style="font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:{{ s.sub }};font-weight:600">{{ s.label }}</span>
+        <span style="font-family:'Cormorant Garamond',serif;font-size:32px;line-height:1.1">{{ s.n }}</span>
+      </button>
+    </sc-for>
+  </div>
+
+  <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center">
+    <input value="{{ search }}" onChange="{{ onSearch }}" placeholder="Cerca nome, telefono, email, oggetto…" style="flex:1 1 280px;min-height:44px;border:1px solid #CFCFCF;background:#FFFFFF;padding:8px 12px;font-size:15px;border-radius:2px">
+    <select value="{{ cat }}" onChange="{{ onCat }}" style="min-height:44px;border:1px solid #CFCFCF;background:#FFFFFF;padding:8px 12px;font-size:14px;border-radius:2px">
+      <sc-for list="{{ catOptions }}" as="c" hint-placeholder-count="5"><option value="{{ c.v }}">{{ c.l }}</option></sc-for>
+    </select>
+    <sc-if value="{{ isDemo }}" hint-placeholder-val="{{ false }}">
+      <span style="font-size:12.5px;color:#7A6236;background:#F3EDE2;border:1px solid #E2D6BF;padding:6px 10px">Dati di esempio · le richieste reali inviate dal modulo appaiono qui</span>
+    </sc-if>
+  </div>
+
+  <div style="background:#FFFFFF;border:1px solid #E2E2E2;overflow-x:auto">
+    <table style="width:100%;border-collapse:collapse;min-width:960px;font-size:14px">
+      <thead>
+        <tr style="background:#FAFAFA;text-align:left">
+          <th style="padding:12px 14px;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:#5F5F5F;font-weight:700;border-bottom:1px solid #E2E2E2">Data</th>
+          <th style="padding:12px 14px;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:#5F5F5F;font-weight:700;border-bottom:1px solid #E2E2E2">Cliente</th>
+          <th style="padding:12px 14px;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:#5F5F5F;font-weight:700;border-bottom:1px solid #E2E2E2">Contatti</th>
+          <th style="padding:12px 14px;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:#5F5F5F;font-weight:700;border-bottom:1px solid #E2E2E2">Oggetto</th>
+          <th style="padding:12px 14px;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:#5F5F5F;font-weight:700;border-bottom:1px solid #E2E2E2">Dettagli</th>
+          <th style="padding:12px 14px;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:#5F5F5F;font-weight:700;border-bottom:1px solid #E2E2E2">Più oggetti</th>
+          <th style="padding:12px 14px;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:#5F5F5F;font-weight:700;border-bottom:1px solid #E2E2E2">Stato</th>
+        </tr>
+      </thead>
+      <tbody>
+        <sc-for list="{{ rows }}" as="r" hint-placeholder-count="5">
+          <tr style="border-bottom:1px solid #EEEEEE;vertical-align:top">
+            <td style="padding:14px;white-space:nowrap;color:#4A4A4A">{{ r.date }}<br><span style="font-size:12px;color:#8A8A8A">{{ r.id }}</span></td>
+            <td style="padding:14px;font-weight:600">{{ r.name }}<br><span style="font-size:12px;color:#7A6236;font-weight:500">Preferisce {{ r.pref }}</span></td>
+            <td style="padding:14px"><a href="{{ r.tel }}" style="text-decoration:none">{{ r.phone }}</a><br><a href="{{ r.mail }}" style="font-size:13px;color:#4A4A4A">{{ r.email }}</a></td>
+            <td style="padding:14px">{{ r.cat }}</td>
+            <td style="padding:14px;color:#4A4A4A;max-width:260px">{{ r.details }}</td>
+            <td style="padding:14px;color:#4A4A4A;max-width:220px">{{ r.multi }}</td>
+            <td style="padding:14px">
+              <select value="{{ r.stato }}" onChange="{{ r.setStato }}" style="min-height:36px;border:1px solid {{ r.bd }};background:{{ r.bg }};padding:4px 8px;font-size:13px;font-weight:600;border-radius:2px;color:#1C1B19">
+                <option value="Nuova">Nuova</option><option value="Contattato">Contattato</option><option value="Appuntamento">Appuntamento</option><option value="Chiusa">Chiusa</option>
+              </select>
+            </td>
+          </tr>
+        </sc-for>
+      </tbody>
+    </table>
+    <sc-if value="{{ empty }}" hint-placeholder-val="{{ false }}">
+      <div style="padding:40px;text-align:center;color:#5F5F5F">Nessuna richiesta corrisponde ai filtri.</div>
+    </sc-if>
+  </div>
+</main>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const KEY = 'cd_richieste';
+const CREDS = { admin: 'diamanti2026' };
+const DEMO = [
+  { id:'R-DEMO1', data:'2026-10-07T16:42:00', stato:'Nuova', cat:'Anello solitario', multi:'Sì', others:'Orecchini con diamanti', ct:'2–3 ct', cert:'GIA', name:'Giulia Ferri', phone:'+39 333 123 4567', email:'giulia.ferri@example.com', pref:'WhatsApp', files:['anello.jpg','gia.pdf'] },
+  { id:'R-DEMO2', data:'2026-10-07T10:15:00', stato:'Contattato', cat:'Orologio', multi:'No', brand:'Rolex', kit:'Scatola e garanzia', name:'Marco Bellini', phone:'+39 347 555 0192', email:'', pref:'Telefono', files:[] },
+  { id:'R-DEMO3', data:'2026-10-06T18:03:00', stato:'Appuntamento', cat:'Pietra sciolta', multi:'No', ct:'1–2 ct', cert:'Nessun certificato', name:'Anna Rossi', phone:'', email:'anna.rossi@example.com', pref:'Email', files:['pietra.jpg'] },
+  { id:'R-DEMO4', data:'2026-10-05T12:30:00', stato:'Chiusa', cat:'Pietra preziosa (rubino, zaffiro, smeraldo…)', stone:'Zaffiro', multi:'Sì', others:'Spilla vintage', ct:'2–5 ct', cert:'IGI', name:'Paolo Conti', phone:'+39 320 888 2211', email:'p.conti@example.com', pref:'WhatsApp', files:[] }
+];
+const STATI = { Nuova:['#F3EDE2','#D9CBB0'], Contattato:['#EAF0F6','#C6D3E1'], Appuntamento:['#EDF4EC','#C9DCC6'], Chiusa:['#EEEEEE','#D0D0D0'] };
+const short = c => (c || '').replace(' (rubino, zaffiro, smeraldo…)', '');
+const details = r => [r.brand, r.stone, r.ct, r.cert && ('Cert. ' + r.cert), r.kit, (r.files && r.files.length) ? r.files.length + ' allegati' : ''].filter(Boolean).join(' · ') || '—';
+const fmt = iso => { const d = new Date(iso); return isNaN(d) ? '' : d.toLocaleDateString('it-IT') + ' ' + d.toLocaleTimeString('it-IT', { hour:'2-digit', minute:'2-digit' }); };
+
+class Component extends DCLogic {
+  state = { logged: false, u: '', p: '', err: false, list: [], demo: false, search: '', cat: '', stato: '' };
+  componentDidMount() {
+    let logged = false; try { logged = sessionStorage.getItem('cd_admin') === '1'; } catch (e) {}
+    try { sessionStorage.removeItem('cd_admin'); } catch (e) {}
+    this.load();
+  }
+  load() {
+    let L = []; try { L = JSON.parse(localStorage.getItem(KEY) || '[]'); } catch (e) {}
+    this.setState(L.length ? { list: L, demo: false } : { list: DEMO, demo: true });
+  }
+  save(list) { this.setState({ list }); if (!this.state.demo) try { localStorage.setItem(KEY, JSON.stringify(list)); } catch (e) {} }
+  filtered() {
+    const { list, search, cat, stato } = this.state, s = search.trim().toLowerCase();
+    return list.filter(r => (!cat || r.cat === cat) && (!stato || r.stato === stato) &&
+      (!s || [r.name, r.phone, r.email, r.cat, r.others, r.brand, r.stone].join(' ').toLowerCase().includes(s)));
+  }
+  exportXls() {
+    const rows = this.filtered();
+    const head = ['ID','Data','Stato','Nome','Telefono','Email','Contatto preferito','Oggetto','Marca','Pietra','Peso','Certificato','Corredo','Più oggetti','Altri oggetti','Allegati'];
+    const esc = v => String(v ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    const cell = v => `<Cell><Data ss:Type="String">${esc(v)}</Data></Cell>`;
+    const xml = `<?xml version="1.0" encoding="UTF-8"?><?mso-application progid="Excel.Sheet"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">
+<Styles><Style ss:ID="h"><Font ss:Bold="1"/><Interior ss:Color="#EEEEEE" ss:Pattern="Solid"/></Style></Styles>
+<Worksheet ss:Name="Richieste"><Table>
+<Row ss:StyleID="h">${head.map(cell).join('')}</Row>
+${rows.map(r => `<Row>${[r.id, fmt(r.data), r.stato, r.name, r.phone, r.email, r.pref, short(r.cat), r.brand, r.stone, r.ct, r.cert, r.kit, r.multi, r.others, (r.files||[]).join(', ')].map(cell).join('')}</Row>`).join('\n')}
+</Table></Worksheet></Workbook>`;
+    const blob = new Blob([xml], { type: 'application/vnd.ms-excel' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'richieste-valutazione-' + new Date().toISOString().slice(0, 10) + '.xls';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  }
+  renderVals() {
+    const { logged, u, p, err, list, demo, search, cat, stato } = this.state;
+    const rows = this.filtered();
+    const cats = [...new Set(list.map(r => r.cat))];
+    const statBtn = (label, v, n) => { const on = stato === v; return { label, n, bg: on ? '#1C1B19' : '#FFFFFF', bd: on ? '#1C1B19' : '#E2E2E2', fg: on ? '#F5F5F5' : '#1C1B19', sub: on ? '#C9B48A' : '#5F5F5F', pick: () => this.setState({ stato: on ? '' : v }) }; };
+    return {
+      never: false, logged: false, notLogged: true, u, p, loginErr: err, userLabel: 'admin',
+      onU: e => this.setState({ u: e.target.value, err: false }), onP: e => this.setState({ p: e.target.value, err: false }),
+      login: e => { e.preventDefault(); if (CREDS[u.trim()] && CREDS[u.trim()] === p) { try { sessionStorage.setItem('cd_admin', '1'); } catch (x) {} window.location.href = 'Admin.dc.html'; } else this.setState({ err: true }); },
+      logout: () => { try { sessionStorage.removeItem('cd_admin'); } catch (x) {} this.setState({ logged: false }); },
+      countLabel: rows.length + (rows.length === 1 ? ' richiesta' : ' richieste') + (rows.length !== list.length ? ' su ' + list.length : ''),
+      stats: [statBtn('Nuove','Nuova',list.filter(r=>r.stato==='Nuova').length), statBtn('Contattati','Contattato',list.filter(r=>r.stato==='Contattato').length), statBtn('Appuntamenti','Appuntamento',list.filter(r=>r.stato==='Appuntamento').length), statBtn('Chiuse','Chiusa',list.filter(r=>r.stato==='Chiusa').length)]
+        .map(s => ({ ...s, label: s.label })),
+      search, onSearch: e => this.setState({ search: e.target.value }),
+      cat, onCat: e => this.setState({ cat: e.target.value }),
+      catOptions: [{ v: '', l: 'Tutti gli oggetti' }, ...cats.map(c => ({ v: c, l: short(c) }))],
+      isDemo: demo, empty: rows.length === 0,
+      exportXls: () => this.exportXls(),
+      rows: rows.map(r => ({
+        id: r.id, date: fmt(r.data), name: r.name || '—', pref: r.pref || '—',
+        phone: r.phone || '—', tel: r.phone ? 'tel:' + r.phone.replace(/\s/g, '') : undefined,
+        email: r.email || '', mail: r.email ? 'mailto:' + r.email : undefined,
+        cat: short(r.cat), details: details(r), multi: r.multi === 'Sì' ? ('Sì' + (r.others ? ' — ' + r.others : '')) : (r.multi || '—'),
+        stato: r.stato || 'Nuova', bg: (STATI[r.stato] || STATI.Nuova)[0], bd: (STATI[r.stato] || STATI.Nuova)[1],
+        setStato: e => { const v = e.target.value; this.save(this.state.list.map(x => x.id === r.id ? { ...x, stato: v } : x)); }
+      }))
+    };
+  }
+}
+</script>
+</body>
+</html>

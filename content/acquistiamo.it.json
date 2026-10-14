@@ -1,0 +1,122 @@
+{
+  "spec": "1.00",
+  "slug": "acquistiamo",
+  "language": "it",
+  "version": 1,
+  "meta": {
+    "title": "Cosa acquistiamo | ComproDiamanti",
+    "description": "Acquisto diretto e valutazione gratuita di diamanti, gioielli e orologi a Milano. La Diamanteria, dal 2009."
+  },
+  "slots": {
+    "acquistiamo-contenuto-001": "ComproDiamanti.it",
+    "acquistiamo-contenuto-002": "by La Diamanteria",
+    "acquistiamo-contenuto-003": {
+      "label": "Vendere un diamante",
+      "href": "acquistiamo.html"
+    },
+    "acquistiamo-contenuto-004": {
+      "label": "Come funziona",
+      "href": "index.html#come-funziona"
+    },
+    "acquistiamo-contenuto-005": {
+      "label": "Chi siamo",
+      "href": "chisiamo.html"
+    },
+    "acquistiamo-contenuto-006": {
+      "label": "FAQ",
+      "href": "faq.html"
+    },
+    "acquistiamo-contenuto-007": {
+      "label": "Richiedi la quotazione gratuita",
+      "href": "valutazione.html"
+    },
+    "acquistiamo-contenuto-008": "Acquisto diretto da privati",
+    "acquistiamo-contenuto-009": "Cosa acquistiamo e come vendere a Milano",
+    "acquistiamo-contenuto-010": "Diamanti naturali, gemme di valore, gioielli vintage rari e orologi selezionati. Valutazione gratuita e senza impegno: l'offerta è formulata direttamente da La Diamanteria.",
+    "acquistiamo-contenuto-011": "Diamanti",
+    "acquistiamo-contenuto-012": "Diamanti naturali da 1 ct per singola pietra, certificati GIA, HRD, IGI o senza certificato.",
+    "acquistiamo-contenuto-013": "Quotazione gratuita →",
+    "acquistiamo-contenuto-014": "Gioielli con diamanti",
+    "acquistiamo-contenuto-015": "Solitari e gioielli con più pietre, valutati con domande dedicate.",
+    "acquistiamo-contenuto-016": "Quotazione gratuita →",
+    "acquistiamo-contenuto-017": "Pietre preziose",
+    "acquistiamo-contenuto-018": "Rubini, zaffiri e smeraldi, anche sotto 2 ct.",
+    "acquistiamo-contenuto-019": "Quotazione gratuita →",
+    "acquistiamo-contenuto-020": "Gioielli vintage e firmati",
+    "acquistiamo-contenuto-021": "Pezzi rari, con particolare attenzione alla qualità delle gemme.",
+    "acquistiamo-contenuto-022": "Quotazione gratuita →",
+    "acquistiamo-contenuto-023": "Orologi di alta gamma",
+    "acquistiamo-contenuto-024": "Solo i marchi trattati: verifica i criteri prima di inviarci la richiesta.",
+    "acquistiamo-contenuto-025": "Quotazione gratuita →",
+    "acquistiamo-contenuto-026": "Chi può vendere",
+    "acquistiamo-contenuto-027": "Acquistiamo direttamente da privati. Se hai ereditato un gioiello, vuoi vendere una pietra sciolta o stai valutando la vendita di un pezzo vintage, puoi iniziare con una richiesta gratuita e senza impegno.",
+    "acquistiamo-contenuto-028": "Cosa preparare",
+    "acquistiamo-contenuto-029": "Invia foto nitide e, se disponibile, un certificato GIA, HRD o IGI. Puoi proporci anche un diamante senza certificato. Il documento d'identità è necessario se concludiamo la vendita.",
+    "acquistiamo-contenuto-030": "Come valutiamo",
+    "acquistiamo-contenuto-031": "Esaminiamo peso, colore, purezza e taglio, insieme a fluorescenza, proporzioni, certificazione e stato del gioiello. Per più pietre raccogliamo dettagli dedicati; la prima richiesta non sostituisce l'esame in sede.",
+    "acquistiamo-contenuto-032": "Cosa influenza l'offerta",
+    "acquistiamo-contenuto-033": "Due pietre dello stesso peso possono avere valori diversi. Contano qualità gemmologica, eventuali trattamenti, documentazione e caratteristiche dell'oggetto. La nostra offerta viene formulata dopo la verifica.",
+    "acquistiamo-contenuto-034": "In sede e pagamento",
+    "acquistiamo-contenuto-035": "Se necessario fissiamo un appuntamento in Via Vincenzo Monti 47, Milano, per esaminare l'oggetto. Se accetti la nostra offerta, paghiamo con bonifico tracciabile.",
+    "acquistiamo-contenuto-036": "Compriamo direttamente",
+    "acquistiamo-contenuto-037": "Non mettiamo il tuo diamante in asta e non lo proponiamo a una rete di acquirenti. Se rientra nei nostri criteri, siamo noi a formulare direttamente l'offerta. Un solo interlocutore, un processo più lineare.",
+    "acquistiamo-contenuto-038": "Cosa non acquistiamo",
+    "acquistiamo-contenuto-039": "Valutiamo anche rubini, zaffiri e smeraldi sotto i 2 carati. I gioielli con più pietre seguono un percorso dedicato nel modulo.",
+    "acquistiamo-contenuto-040": "—",
+    "acquistiamo-contenuto-041": "Diamanti inferiori a 1 carato per singola pietra",
+    "acquistiamo-contenuto-042": "—",
+    "acquistiamo-contenuto-043": "Diamanti sintetici o creati in laboratorio",
+    "acquistiamo-contenuto-044": "—",
+    "acquistiamo-contenuto-045": "Diamanti con certificati AIG, GRA, GWLAB o ALGT",
+    "acquistiamo-contenuto-046": "—",
+    "acquistiamo-contenuto-047": "Orologi di marchi diversi da quelli trattati: Rolex, Patek Philippe, Audemars Piguet, Cartier, Vacheron Constantin, Richard Mille, Piaget e Jacob & Co",
+    "acquistiamo-contenuto-048": "Il tuo oggetto rientra nei criteri?",
+    "acquistiamo-contenuto-049": {
+      "label": "Richiedi la quotazione gratuita →",
+      "href": "valutazione.html"
+    },
+    "acquistiamo-contenuto-050": "ComproDiamanti.it",
+    "acquistiamo-contenuto-051": "by La Diamanteria",
+    "acquistiamo-contenuto-052": "Servizio di acquisto diretto e valutazione di diamanti e gioielli da privati. Milano, Via Vincenzo Monti 47.",
+    "acquistiamo-contenuto-053": "Contatti",
+    "acquistiamo-contenuto-054": {
+      "label": "+39 02 466 891",
+      "href": "tel:+3902466891"
+    },
+    "acquistiamo-contenuto-055": {
+      "label": "WhatsApp +39 392 966 4987",
+      "href": "https://wa.me/393929664987"
+    },
+    "acquistiamo-contenuto-056": {
+      "label": "sl@ladiamanteria.com",
+      "href": "mailto:sl@ladiamanteria.com"
+    },
+    "acquistiamo-contenuto-057": "Via Vincenzo Monti 47, 20123 Milano",
+    "acquistiamo-contenuto-058": "Sito",
+    "acquistiamo-contenuto-059": {
+      "label": "Vendere un diamante",
+      "href": "acquistiamo.html"
+    },
+    "acquistiamo-contenuto-060": {
+      "label": "Come funziona",
+      "href": "index.html#come-funziona"
+    },
+    "acquistiamo-contenuto-061": {
+      "label": "Chi siamo",
+      "href": "chisiamo.html"
+    },
+    "acquistiamo-contenuto-062": {
+      "label": "FAQ",
+      "href": "faq.html"
+    },
+    "acquistiamo-contenuto-063": {
+      "label": "La Diamanteria ↗",
+      "href": "https://www.ladiamanteria.com"
+    },
+    "acquistiamo-contenuto-065": "© 2026 ComproDiamanti.it by La Diamanteria · Tutti i diritti riservati. · Cookie ·",
+    "acquistiamo-contenuto-066": {
+      "label": "Area riservata",
+      "href": "../../admin/"
+    }
+  }
+}

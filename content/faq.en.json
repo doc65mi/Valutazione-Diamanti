@@ -1,0 +1,103 @@
+{
+  "spec": "1.00",
+  "slug": "faq",
+  "language": "en",
+  "version": 1,
+  "meta": {
+    "title": "Frequently asked questions | ComproDiamanti",
+    "description": "Free valuations and direct buying of diamonds, jewellery and luxury watches in Milan. La Diamanteria, established in 2009."
+  },
+  "slots": {
+    "faq-contenuto-001": "ComproDiamanti.it",
+    "faq-contenuto-002": "by La Diamanteria",
+    "faq-contenuto-003": {
+      "label": "Sell a diamond",
+      "href": "acquistiamo.html"
+    },
+    "faq-contenuto-004": {
+      "label": "How it works",
+      "href": "index.html#come-funziona"
+    },
+    "faq-contenuto-005": {
+      "label": "About us",
+      "href": "chisiamo.html"
+    },
+    "faq-contenuto-006": {
+      "label": "FAQ",
+      "href": "faq.html"
+    },
+    "faq-contenuto-007": {
+      "label": "Request a free valuation",
+      "href": "valutazione.html"
+    },
+    "faq-contenuto-008": "FAQ",
+    "faq-contenuto-009": "Frequently asked questions",
+    "faq-contenuto-010": "Who should I contact to sell my diamond ring?",
+    "faq-contenuto-011": "−",
+    "faq-contenuto-012": "Contact a specialist diamond buyer. La Diamanteria has been buying directly from private sellers in Milan since 2009. We assess each stone using gemmological criteria and, if it meets our requirements, make our own offer, with no auctions or intermediaries.",
+    "faq-contenuto-013": "Which diamonds do you buy?",
+    "faq-contenuto-014": "−",
+    "faq-contenuto-015": "We assess natural diamonds of one carat or more per stone, with a GIA, HRD or IGI report, or without a report. We do not buy synthetic diamonds or diamonds with AIG, GRA, GWLAB or ALGT reports. We also assess rubies, sapphires and emeralds under two carats.",
+    "faq-contenuto-016": "How long does an initial valuation take?",
+    "faq-contenuto-017": "−",
+    "faq-contenuto-018": "For an immediate valuation, message us on WhatsApp or call +39 02 466891. Alternatively, complete our online enquiry form. A gemmologist will review your request; the final valuation is made after examining the stone at our showroom.",
+    "faq-contenuto-019": "How is a diamond's value determined?",
+    "faq-contenuto-020": "−",
+    "faq-contenuto-021": "A diamond's price depends on the 4Cs: carat weight, colour, clarity and cut. Fluorescence, proportions and an internationally recognised grading report also matter. We refer to current market prices in Antwerp, Tel Aviv, New York, Dubai and Mumbai.",
+    "faq-contenuto-022": "What should I prepare?",
+    "faq-contenuto-023": "−",
+    "faq-contenuto-024": "Send clear photographs and a GIA, HRD or IGI report if you have one. We also consider diamonds without a report. Proof of identity is required if you decide to sell to us.",
+    "faq-contenuto-025": "How will I be paid?",
+    "faq-contenuto-026": "−",
+    "faq-contenuto-027": "If needed, we arrange an appointment at Via Vincenzo Monti 47 in Milan to examine your item. If you accept our offer, we pay by bank transfer.",
+    "faq-contenuto-028": "Online enquiry",
+    "faq-contenuto-029": "Request a free valuation →",
+    "faq-contenuto-030": "Get in touch now",
+    "faq-contenuto-031": "WhatsApp +39 392 966 4987",
+    "faq-contenuto-032": "Telephone",
+    "faq-contenuto-033": "+39 02 466 891",
+    "faq-contenuto-034": "ComproDiamanti.it",
+    "faq-contenuto-035": "by La Diamanteria",
+    "faq-contenuto-036": "Direct buying and valuation of diamonds and jewellery from private sellers. Via Vincenzo Monti 47, Milan.",
+    "faq-contenuto-037": "Contact us",
+    "faq-contenuto-038": {
+      "label": "+39 02 466 891",
+      "href": "tel:+3902466891"
+    },
+    "faq-contenuto-039": {
+      "label": "WhatsApp +39 392 966 4987",
+      "href": "https://wa.me/393929664987"
+    },
+    "faq-contenuto-040": {
+      "label": "sl@ladiamanteria.com",
+      "href": "mailto:sl@ladiamanteria.com"
+    },
+    "faq-contenuto-041": "Via Vincenzo Monti 47, 20123 Milan",
+    "faq-contenuto-042": "Explore",
+    "faq-contenuto-043": {
+      "label": "Sell a diamond",
+      "href": "acquistiamo.html"
+    },
+    "faq-contenuto-044": {
+      "label": "How it works",
+      "href": "index.html#come-funziona"
+    },
+    "faq-contenuto-045": {
+      "label": "About us",
+      "href": "chisiamo.html"
+    },
+    "faq-contenuto-046": {
+      "label": "FAQ",
+      "href": "faq.html"
+    },
+    "faq-contenuto-047": {
+      "label": "La Diamanteria ↗",
+      "href": "https://www.ladiamanteria.com"
+    },
+    "faq-contenuto-049": "© 2026 ComproDiamanti.it by La Diamanteria · All rights reserved. · Cookies ·",
+    "faq-contenuto-050": {
+      "label": "Admin login",
+      "href": "../../admin/"
+    }
+  }
+}

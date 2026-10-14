@@ -1,0 +1,64 @@
+{
+  "spec": "1.00",
+  "slug": "privacy",
+  "language": "it",
+  "version": 1,
+  "meta": {
+    "title": "Informativa privacy | ComproDiamanti",
+    "description": "Acquisto diretto e valutazione gratuita di diamanti, gioielli e orologi a Milano. La Diamanteria, dal 2009."
+  },
+  "slots": {
+    "privacy-contenuto-001": {
+      "label": "◇ ComproDiamanti.it",
+      "href": "index.html"
+    },
+    "privacy-contenuto-002": {
+      "label": "Valutazione gratuita",
+      "href": "valutazione.html"
+    },
+    "privacy-contenuto-003": "Informativa privacy",
+    "privacy-contenuto-004": "Ultimo aggiornamento: 8 ottobre 2026",
+    "privacy-contenuto-005": "Titolare e contatti",
+    "privacy-contenuto-006": "Il titolare del trattamento è {{legal.company}}, con sede in {{legal.address}}. Partita IVA / identificativo fiscale: {{legal.vat}}. Per informazioni sui dati personali e per esercitare i tuoi diritti scrivi a {{legal.email}}.",
+    "privacy-contenuto-007": "Dati trattati e finalità",
+    "privacy-contenuto-008": "Se invii il modulo di valutazione, trattiamo nome, contatti, preferenza di contatto, informazioni sull’oggetto, fotografie e certificati che scegli di allegare. Questi dati servono a esaminare la richiesta, risponderti e gestire gli eventuali contatti successivi. Non richiediamo documenti d’identità tramite questo modulo. I sistemi registrano inoltre i dati tecnici necessari per la sicurezza, come indirizzo IP, sessione e tentativi di accesso.",
+    "privacy-contenuto-009": "Base giuridica e conferimento",
+    "privacy-contenuto-010": "Il trattamento delle richieste si basa sulle misure precontrattuali adottate su tua richiesta (art. 6, par. 1, lett. b, GDPR). Il trattamento per la sicurezza si basa sul legittimo interesse a proteggere il sito e prevenire abusi (lett. f). Le analisi non necessarie e i tracciamenti pubblicitari si attivano esclusivamente con il consenso (lett. a). I dati di contatto richiesti sono necessari per risponderti; gli allegati sono facoltativi. La conferma di lettura dell’informativa nel modulo non autorizza attività di marketing.",
+    "privacy-contenuto-011": "Conservazione",
+    "privacy-contenuto-012": "Le richieste e i relativi allegati sono conservati per un massimo di {{legal.retention}} mesi dall’invio, poi eliminati dal sistema. La pulizia avviene quando si ricevono nuove richieste, si consulta il backend e tramite il comando di manutenzione. Se si conclude una vendita, gli eventuali documenti contrattuali e gli adempimenti di legge sono gestiti separatamente. Le preferenze cookie vengono ricordate per sei mesi; la sessione amministrativa scade dopo 30 minuti di inattività. I tempi degli strumenti esterni dipendono dalle impostazioni e dalle informative dei fornitori.",
+    "privacy-contenuto-013": "Accesso ai dati e fornitori",
+    "privacy-contenuto-014": "Le richieste e gli allegati sono accessibili agli amministratori autorizzati. Possono intervenire fornitori di hosting e manutenzione per erogare e proteggere il servizio. Se abilitati dal titolare, Google fornisce reCAPTCHA, Analytics, Ads e Tag Manager; Meta fornisce il Pixel. I servizi di analisi e pubblicità sono caricati solo con le preferenze cookie appropriate. I caratteri del sito possono essere forniti da Google Fonts, che riceve i dati tecnici della connessione. I link esterni, incluso WhatsApp, portano a servizi con proprie informative.",
+    "privacy-contenuto-015": "reCAPTCHA e trasferimenti",
+    "privacy-contenuto-016": "Se attivo, reCAPTCHA v3 viene eseguito al momento dell’invio del modulo per contrastare invii automatizzati. Google analizza segnali tecnici per attribuire un punteggio di rischio; il server verifica tale punteggio. Se la verifica fallisce la richiesta non viene registrata e puoi contattarci via email o telefono. I servizi Google e Meta possono comportare trattamenti fuori dallo Spazio Economico Europeo, secondo le garanzie e i termini applicabili dei rispettivi fornitori. Consulta le loro informative per dettagli aggiornati.",
+    "privacy-contenuto-017": "I tuoi diritti",
+    "privacy-contenuto-018": "Nei casi previsti dal GDPR puoi chiedere accesso, rettifica, cancellazione, limitazione, portabilità dei dati e opposizione al trattamento. Puoi revocare il consenso ai tracciamenti in qualsiasi momento dal pulsante “Preferenze cookie”, senza pregiudicare i trattamenti precedenti. Per le altre richieste scrivi a {{legal.email}}. Puoi presentare reclamo al Garante per la protezione dei dati personali o all’autorità di controllo competente.",
+    "privacy-contenuto-019": {
+      "label": "Google Privacy",
+      "href": "https://policies.google.com/privacy"
+    },
+    "privacy-contenuto-020": "·",
+    "privacy-contenuto-021": {
+      "label": "Google Cookies",
+      "href": "https://policies.google.com/technologies/cookies"
+    },
+    "privacy-contenuto-022": "·",
+    "privacy-contenuto-023": {
+      "label": "Meta Privacy",
+      "href": "https://www.facebook.com/privacy/policy/"
+    },
+    "privacy-contenuto-024": "·",
+    "privacy-contenuto-025": {
+      "label": "Meta Cookies",
+      "href": "https://www.facebook.com/privacy/policies/cookies/"
+    },
+    "privacy-contenuto-026": "·",
+    "privacy-contenuto-027": {
+      "label": "Garante Privacy",
+      "href": "https://www.garanteprivacy.it/"
+    },
+    "privacy-contenuto-028": {
+      "label": "Informativa cookie",
+      "href": "cookie.html"
+    }
+  }
+}

@@ -1,0 +1,17 @@
+/data/*.sqlite*
+/data/first-login.txt
+/data/sessions/*
+/uploads/clienti/*
+!/uploads/clienti/.htaccess
+/data/*.lock
+/tools/snapshots.json
+/data/*.bak
+/data/*.log
+/data/local-response.html
+/data/admin-local.html
+/data/mobile-form.png
+/uploads/site/*
+!/uploads/site/.htaccess
+*.zip
+__pycache__/
+.thumbnail

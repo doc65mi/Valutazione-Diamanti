@@ -1,0 +1,98 @@
+{
+  "spec": "1.00",
+  "slug": "valutazione",
+  "language": "en",
+  "version": 1,
+  "meta": {
+    "title": "Free valuation | ComproDiamanti",
+    "description": "Free valuations and direct buying of diamonds, jewellery and luxury watches in Milan. La Diamanteria, established in 2009."
+  },
+  "slots": {
+    "valutazione-contenuto-001": {
+      "label": "◇ ComproDiamanti.it",
+      "href": "index.html"
+    },
+    "valutazione-contenuto-002": {
+      "label": "What we buy",
+      "href": "acquistiamo.html"
+    },
+    "valutazione-contenuto-003": {
+      "label": "About us",
+      "href": "chisiamo.html"
+    },
+    "valutazione-contenuto-004": {
+      "label": "FAQ",
+      "href": "faq.html"
+    },
+    "valutazione-contenuto-005": "Completely free, with no obligation",
+    "valutazione-contenuto-006": "A free, no-obligation valuation",
+    "valutazione-contenuto-007": "La Diamanteria’s direct buying service. No auctions or intermediaries. Established in Milan in 2009.",
+    "valutazione-contenuto-008": "Direct buyer",
+    "valutazione-contenuto-009": "Bank transfer",
+    "valutazione-contenuto-010": "GIA / HRD / IGI",
+    "valutazione-contenuto-011": "We assess natural diamonds of one carat or more per stone, smaller coloured gemstones and watches from the brands listed below.",
+    "valutazione-contenuto-012": "Website",
+    "valutazione-contenuto-013": "What would you like to sell?",
+    "valutazione-contenuto-014": "Item type",
+    "valutazione-contenuto-015": "Do you have other items?",
+    "valutazione-contenuto-016": "Other items to be valued",
+    "valutazione-contenuto-017": "Describe your other items",
+    "valutazione-contenuto-018": "Item details",
+    "valutazione-contenuto-019": "Watch brand",
+    "valutazione-contenuto-020": "Gemstone type",
+    "valutazione-contenuto-021": "Carat weight of the main stone",
+    "valutazione-contenuto-022": "Diamond origin",
+    "valutazione-contenuto-023": "We do not buy laboratory-grown diamonds.",
+    "valutazione-contenuto-024": "Grading reports and documents",
+    "valutazione-contenuto-025": "Grading report available",
+    "valutazione-contenuto-026": "We do not buy diamonds accompanied by AIG, GRA, GWLAB or ALGT reports.",
+    "valutazione-contenuto-027": "Box and papers available",
+    "valutazione-contenuto-028": "Photographs and grading reports",
+    "valutazione-contenuto-029": "Optional: attach clear photographs of your item and any grading reports.",
+    "valutazione-contenuto-030": "Take or upload a photograph",
+    "valutazione-contenuto-031": "JPG, PNG, WebP or PDF. Up to 6 files, 5 MB each and 20 MB in total.",
+    "valutazione-contenuto-032": "How can we contact you?",
+    "valutazione-contenuto-033": "Full name",
+    "valutazione-contenuto-034": "Preferred contact method",
+    "valutazione-contenuto-035": "Telephone",
+    "valutazione-contenuto-036": "Email",
+    "valutazione-contenuto-037": "How we use your data",
+    "valutazione-contenuto-038": "La Diamanteria uses the contact details and attachments you submit to assess your item and respond to your valuation enquiry. Attachments can only be accessed by authorised administrators. Please do not upload identity documents: these are required only if you decide to sell to us. For information about how your data is used, contact sl@ladiamanteria.com.",
+    "valutazione-contenuto-039": "I have read the information about how my data will be used for this enquiry.",
+    "valutazione-contenuto-040": "Your enquiry at a glance",
+    "valutazione-contenuto-041": "Back",
+    "valutazione-contenuto-042": "Continue",
+    "valutazione-contenuto-043": "Please enable JavaScript to use the form, or contact us by email:",
+    "valutazione-contenuto-044": {
+      "label": "sl@ladiamanteria.com",
+      "href": "mailto:sl@ladiamanteria.com"
+    },
+    "valutazione-contenuto-045": ".",
+    "valutazione-contenuto-046": "La Diamanteria · Via Vincenzo Monti 47, Milano ·",
+    "valutazione-contenuto-047": {
+      "label": "+39 02 466891",
+      "href": "tel:+3902466891"
+    },
+    "valutazione-ripristino-001": "How it works",
+    "valutazione-ripristino-002": "Request a valuation.",
+    "valutazione-ripristino-003": "Expert assessment.",
+    "valutazione-ripristino-004": "Direct offer.",
+    "valutazione-ripristino-005": "Payment.",
+    "valutazione-ripristino-006": {
+      "src": "https://diamond-shine-guide.lovable.app/__l5e/assets-v1/0ad06598-6c3d-430f-b1d8-aaa6800911a7/showroom-2.jpg",
+      "alt": "Entrance to La Diamanteria"
+    },
+    "valutazione-ripristino-008": "La Diamanteria · Via Vincenzo Monti 47, Milano",
+    "valutazione-ripristino-009": "Items we do not value",
+    "valutazione-ripristino-010": "Diamonds under 1 carat per stone or laboratory-grown diamonds.",
+    "valutazione-ripristino-011": "Diamonds with AIG, GRA, GWLAB or ALGT certificates.",
+    "valutazione-ripristino-012": "Watches from brands we do not buy.",
+    "valutazione-ripristino-013": "We also value coloured gemstones weighing less than 2 carats.",
+    "valutazione-ripristino-014": "Google reviews",
+    "valutazione-ripristino-015": "Reviews are published directly on our Google profile.",
+    "valutazione-ripristino-016": {
+      "href": "https://www.google.com/maps/place/?q=place_id:ChIJFR80gkTBhkcRJGjlclhYteg",
+      "label": "Read our Google reviews ↗"
+    }
+  }
+}

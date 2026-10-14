@@ -1,0 +1,122 @@
+{
+  "spec": "1.00",
+  "slug": "acquistiamo",
+  "language": "en",
+  "version": 1,
+  "meta": {
+    "title": "What we buy | ComproDiamanti",
+    "description": "Free valuations and direct buying of diamonds, jewellery and luxury watches in Milan. La Diamanteria, established in 2009."
+  },
+  "slots": {
+    "acquistiamo-contenuto-001": "ComproDiamanti.it",
+    "acquistiamo-contenuto-002": "by La Diamanteria",
+    "acquistiamo-contenuto-003": {
+      "label": "Sell a diamond",
+      "href": "acquistiamo.html"
+    },
+    "acquistiamo-contenuto-004": {
+      "label": "How it works",
+      "href": "index.html#come-funziona"
+    },
+    "acquistiamo-contenuto-005": {
+      "label": "About us",
+      "href": "chisiamo.html"
+    },
+    "acquistiamo-contenuto-006": {
+      "label": "FAQ",
+      "href": "faq.html"
+    },
+    "acquistiamo-contenuto-007": {
+      "label": "Request a free valuation",
+      "href": "valutazione.html"
+    },
+    "acquistiamo-contenuto-008": "Buying directly from private sellers",
+    "acquistiamo-contenuto-009": "What we buy and how to sell to us in Milan",
+    "acquistiamo-contenuto-010": "Natural diamonds, fine gemstones, rare vintage jewellery and selected watches. Our valuations are free and carry no obligation: La Diamanteria makes its own offer directly.",
+    "acquistiamo-contenuto-011": "Diamonds",
+    "acquistiamo-contenuto-012": "Natural diamonds of one carat or more per stone, with a GIA, HRD or IGI report, or without a report.",
+    "acquistiamo-contenuto-013": "Free valuation →",
+    "acquistiamo-contenuto-014": "Diamond jewellery",
+    "acquistiamo-contenuto-015": "Solitaire rings and multi-stone jewellery, assessed through tailored questions.",
+    "acquistiamo-contenuto-016": "Free valuation →",
+    "acquistiamo-contenuto-017": "Coloured gemstones",
+    "acquistiamo-contenuto-018": "Rubies, sapphires and emeralds, including stones under two carats.",
+    "acquistiamo-contenuto-019": "Free valuation →",
+    "acquistiamo-contenuto-020": "Vintage and designer jewellery",
+    "acquistiamo-contenuto-021": "Rare pieces, with particular attention to the quality of their gemstones.",
+    "acquistiamo-contenuto-022": "Free valuation →",
+    "acquistiamo-contenuto-023": "Luxury watches",
+    "acquistiamo-contenuto-024": "Selected brands only: please check our criteria before submitting your enquiry.",
+    "acquistiamo-contenuto-025": "Free valuation →",
+    "acquistiamo-contenuto-026": "Who can sell to us",
+    "acquistiamo-contenuto-027": "We buy directly from private sellers. Whether you have inherited a piece of jewellery, wish to sell a loose stone or are considering selling a vintage piece, you can start with a free, no-obligation enquiry.",
+    "acquistiamo-contenuto-028": "What to prepare",
+    "acquistiamo-contenuto-029": "Send clear photographs and a GIA, HRD or IGI report if you have one. We also consider diamonds without a report. Proof of identity is required if you decide to sell to us.",
+    "acquistiamo-contenuto-030": "How we assess your item",
+    "acquistiamo-contenuto-031": "We assess carat weight, colour, clarity and cut, alongside fluorescence, proportions, grading reports and the condition of the jewellery. For pieces with several stones, we collect additional details. An initial enquiry does not replace an in-person examination.",
+    "acquistiamo-contenuto-032": "What affects our offer",
+    "acquistiamo-contenuto-033": "Two stones of the same weight can have different values. Gemmological quality, any treatments, documentation and the item's characteristics all matter. We make our offer after examining the item.",
+    "acquistiamo-contenuto-034": "Your appointment and payment",
+    "acquistiamo-contenuto-035": "If needed, we arrange an appointment at Via Vincenzo Monti 47 in Milan to examine your item. If you accept our offer, we pay by bank transfer.",
+    "acquistiamo-contenuto-036": "We make our own offer",
+    "acquistiamo-contenuto-037": "We do not auction your diamond or offer it to a network of buyers. If it meets our requirements, we make you an offer ourselves. One point of contact for a straightforward process.",
+    "acquistiamo-contenuto-038": "What we do not buy",
+    "acquistiamo-contenuto-039": "We also assess rubies, sapphires and emeralds weighing less than two carats. Our form includes tailored questions for multi-stone jewellery.",
+    "acquistiamo-contenuto-040": "—",
+    "acquistiamo-contenuto-041": "Diamonds weighing less than one carat per stone",
+    "acquistiamo-contenuto-042": "—",
+    "acquistiamo-contenuto-043": "Synthetic or laboratory-grown diamonds",
+    "acquistiamo-contenuto-044": "—",
+    "acquistiamo-contenuto-045": "Diamonds accompanied by AIG, GRA, GWLAB or ALGT reports",
+    "acquistiamo-contenuto-046": "—",
+    "acquistiamo-contenuto-047": "Watch brands other than those we buy: Rolex, Patek Philippe, Audemars Piguet, Cartier, Vacheron Constantin, Richard Mille, Piaget and Jacob & Co",
+    "acquistiamo-contenuto-048": "Does your item meet our requirements?",
+    "acquistiamo-contenuto-049": {
+      "label": "Request a free valuation →",
+      "href": "valutazione.html"
+    },
+    "acquistiamo-contenuto-050": "ComproDiamanti.it",
+    "acquistiamo-contenuto-051": "by La Diamanteria",
+    "acquistiamo-contenuto-052": "Direct buying and valuation of diamonds and jewellery from private sellers. Via Vincenzo Monti 47, Milan.",
+    "acquistiamo-contenuto-053": "Contact us",
+    "acquistiamo-contenuto-054": {
+      "label": "+39 02 466 891",
+      "href": "tel:+3902466891"
+    },
+    "acquistiamo-contenuto-055": {
+      "label": "WhatsApp +39 392 966 4987",
+      "href": "https://wa.me/393929664987"
+    },
+    "acquistiamo-contenuto-056": {
+      "label": "sl@ladiamanteria.com",
+      "href": "mailto:sl@ladiamanteria.com"
+    },
+    "acquistiamo-contenuto-057": "Via Vincenzo Monti 47, 20123 Milan",
+    "acquistiamo-contenuto-058": "Explore",
+    "acquistiamo-contenuto-059": {
+      "label": "Sell a diamond",
+      "href": "acquistiamo.html"
+    },
+    "acquistiamo-contenuto-060": {
+      "label": "How it works",
+      "href": "index.html#come-funziona"
+    },
+    "acquistiamo-contenuto-061": {
+      "label": "About us",
+      "href": "chisiamo.html"
+    },
+    "acquistiamo-contenuto-062": {
+      "label": "FAQ",
+      "href": "faq.html"
+    },
+    "acquistiamo-contenuto-063": {
+      "label": "La Diamanteria ↗",
+      "href": "https://www.ladiamanteria.com"
+    },
+    "acquistiamo-contenuto-065": "© 2026 ComproDiamanti.it by La Diamanteria · All rights reserved. · Cookies ·",
+    "acquistiamo-contenuto-066": {
+      "label": "Admin login",
+      "href": "../../admin/"
+    }
+  }
+}

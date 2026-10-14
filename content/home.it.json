@@ -1,0 +1,249 @@
+{
+  "spec": "1.00",
+  "slug": "home",
+  "language": "it",
+  "version": 1,
+  "meta": {
+    "title": "Vendi diamanti e gioielli a Milano | ComproDiamanti",
+    "description": "Acquisto diretto e valutazione gratuita di diamanti, gioielli e orologi a Milano. La Diamanteria, dal 2009."
+  },
+  "slots": {
+    "home-contenuto-001": "ComproDiamanti.it",
+    "home-contenuto-002": "by La Diamanteria",
+    "home-contenuto-003": {
+      "label": "Vendere un diamante",
+      "href": "acquistiamo.html"
+    },
+    "home-contenuto-004": {
+      "label": "Come funziona",
+      "href": "index.html#come-funziona"
+    },
+    "home-contenuto-005": {
+      "label": "Chi siamo",
+      "href": "chisiamo.html"
+    },
+    "home-contenuto-006": {
+      "label": "FAQ",
+      "href": "faq.html"
+    },
+    "home-contenuto-007": {
+      "label": "Richiedi la quotazione gratuita",
+      "href": "valutazione.html"
+    },
+    "home-contenuto-008": "ComproDiamanti.it · by La Diamanteria",
+    "home-contenuto-009": "Vendi il tuo diamante a chi lo conosce",
+    "home-contenuto-010": "davvero",
+    "home-contenuto-011": "Acquistiamo direttamente diamanti da privati, gemme di valore e gioielli importanti. Valutazione gratuita, senza aste né intermediari. Milano, dal 2009.",
+    "home-contenuto-012": {
+      "label": "Richiedi la quotazione gratuita →",
+      "href": "valutazione.html"
+    },
+    "home-contenuto-013": {
+      "label": "WhatsApp",
+      "href": "https://wa.me/393929664987?text=Buongiorno%2C%20vorrei%20una%20valutazione%20gratuita%20per%20un%20diamante%2C%20un%20gioiello%20o%20un%20orologio."
+    },
+    "home-contenuto-014": {
+      "src": "https://diamond-shine-guide.lovable.app/__l5e/assets-v1/d5eae2bd-354c-41cb-ad4c-84c8cab40091/showroom-1.jpg",
+      "alt": "Vetrine e lampadario della sede La Diamanteria"
+    },
+    "home-contenuto-015": {
+      "src": "https://diamond-shine-guide.lovable.app/__l5e/assets-v1/0ad06598-6c3d-430f-b1d8-aaa6800911a7/showroom-2.jpg",
+      "alt": "Ingresso e vetrina della sede La Diamanteria"
+    },
+    "home-contenuto-016": {
+      "src": "https://diamond-shine-guide.lovable.app/__l5e/assets-v1/9db47547-dde6-44b5-afeb-bfdd16092d85/showroom-4.jpg",
+      "alt": "Ambiente interno e vetrine dello showroom La Diamanteria"
+    },
+    "home-contenuto-017": "“Un solo interlocutore, un processo più lineare.”",
+    "home-contenuto-018": "Via Vincenzo Monti 47, Milano",
+    "home-contenuto-019": "Dal 2009 · compratore diretto",
+    "home-contenuto-020": "Bonifico tracciabile",
+    "home-contenuto-021": "Cinque generazioni di Diamantaires",
+    "home-contenuto-022": "◆",
+    "home-contenuto-023": "Valutazione gemmologica",
+    "home-contenuto-024": "◆",
+    "home-contenuto-025": "Certificati riconosciuti: GIA / HRD / IGI",
+    "home-contenuto-026": "Inizia da qui",
+    "home-contenuto-027": "Cosa acquistiamo",
+    "home-contenuto-028": "Scegli cosa vuoi vendere: ti portiamo direttamente al modulo di quotazione, gratuito e senza impegno.",
+    "home-contenuto-029": {
+      "label": "Criteri di acquisto →",
+      "href": "acquistiamo.html"
+    },
+    "home-contenuto-030": "01",
+    "home-contenuto-031": "Diamanti",
+    "home-contenuto-032": "Diamanti naturali da 1 ct per singola pietra, certificati GIA, HRD, IGI o senza certificato.",
+    "home-contenuto-033": "Richiedi una quotazione →",
+    "home-contenuto-034": "02",
+    "home-contenuto-035": "Gioielli con diamanti",
+    "home-contenuto-036": "Solitari e gioielli con più pietre, valutati con domande dedicate.",
+    "home-contenuto-037": "Richiedi una quotazione →",
+    "home-contenuto-038": "03",
+    "home-contenuto-039": "Pietre preziose",
+    "home-contenuto-040": "Rubini, zaffiri e smeraldi, anche sotto 2 ct.",
+    "home-contenuto-041": "Richiedi una quotazione →",
+    "home-contenuto-042": "04",
+    "home-contenuto-043": "Gioielli vintage e firmati",
+    "home-contenuto-044": "Pezzi rari, con particolare attenzione alla qualità delle gemme.",
+    "home-contenuto-045": "Richiedi una quotazione →",
+    "home-contenuto-046": "05",
+    "home-contenuto-047": "Orologi di alta gamma",
+    "home-contenuto-048": "Solo i marchi trattati: verifica i criteri prima di inviarci la richiesta.",
+    "home-contenuto-049": "Richiedi una quotazione →",
+    "home-contenuto-050": "Quattro passaggi",
+    "home-contenuto-051": "Come funziona",
+    "home-contenuto-052": "01",
+    "home-contenuto-053": "Richiedi la valutazione",
+    "home-contenuto-054": "Invia il modulo o scrivici su WhatsApp, allegando foto e certificati se li hai.",
+    "home-contenuto-055": "02",
+    "home-contenuto-056": "Valutazione professionale",
+    "home-contenuto-057": "Un gemmologo esamina la richiesta e, se necessario, fissa un appuntamento.",
+    "home-contenuto-058": "03",
+    "home-contenuto-059": "Offerta diretta",
+    "home-contenuto-060": "La Diamanteria formula la propria offerta, senza aste né intermediari.",
+    "home-contenuto-061": "04",
+    "home-contenuto-062": "Pagamento",
+    "home-contenuto-063": "Se accetti, il pagamento avviene con bonifico tracciabile.",
+    "home-contenuto-064": {
+      "label": "Richiedi la quotazione gratuita →",
+      "href": "valutazione.html"
+    },
+    "home-contenuto-065": "Servizio 100% gratuito e senza impegno",
+    "home-contenuto-066": "Perché venderlo a noi",
+    "home-contenuto-067": "Compriamo direttamente",
+    "home-contenuto-068": "ComproDiamanti.it è il servizio di acquisto diretto di La Diamanteria. Non mettiamo il tuo diamante in asta e non lo proponiamo a una rete di acquirenti. Se rientra nei nostri criteri, siamo noi a formulare direttamente l'offerta.",
+    "home-contenuto-069": "Un solo interlocutore, un processo più lineare.",
+    "home-contenuto-070": "Compratore diretto",
+    "home-contenuto-071": "L'offerta arriva da noi, non da un intermediario.",
+    "home-contenuto-072": "Cinque generazioni di Diamantaires",
+    "home-contenuto-073": "Una storia familiare documentata nel commercio dei diamanti.",
+    "home-contenuto-074": "Valutazione gemmologica",
+    "home-contenuto-075": "Esaminiamo le caratteristiche della pietra e i documenti disponibili.",
+    "home-contenuto-076": "Sede a Milano",
+    "home-contenuto-077": "Appuntamento in Via Vincenzo Monti 47 e pagamento con bonifico tracciabile.",
+    "home-contenuto-078": "Su appuntamento",
+    "home-contenuto-079": "La nostra sede in Via Vincenzo Monti 47, Milano",
+    "home-contenuto-080": "Il servizio ComproDiamanti.it è gestito da La Diamanteria nella sede di Via Vincenzo Monti 47, Milano. Una sede fisica, un interlocutore diretto, una valutazione professionale.",
+    "home-contenuto-081": {
+      "label": "+39 02 466 891",
+      "href": "tel:+3902466891"
+    },
+    "home-contenuto-082": {
+      "src": "https://diamond-shine-guide.lovable.app/__l5e/assets-v1/d5eae2bd-354c-41cb-ad4c-84c8cab40091/showroom-1.jpg",
+      "alt": "Vetrine e lampadario della sede La Diamanteria"
+    },
+    "home-contenuto-083": {
+      "src": "https://diamond-shine-guide.lovable.app/__l5e/assets-v1/0ad06598-6c3d-430f-b1d8-aaa6800911a7/showroom-2.jpg",
+      "alt": "Ingresso e vetrina della sede La Diamanteria"
+    },
+    "home-contenuto-084": {
+      "src": "https://diamond-shine-guide.lovable.app/__l5e/assets-v1/9db47547-dde6-44b5-afeb-bfdd16092d85/showroom-4.jpg",
+      "alt": "Ambiente interno e vetrine dello showroom La Diamanteria"
+    },
+    "home-contenuto-085": "Requisiti principali",
+    "home-contenuto-086": "Diamanti naturali da 1 ct per singola pietra, con GIA/HRD/IGI o senza certificato. Non acquistiamo lab-grown o diamanti con certificati AIG, GRA, GWLAB e ALGT. Per gli orologi trattiamo solo marchi selezionati; rubini, zaffiri e smeraldi anche sotto 2 ct.",
+    "home-contenuto-087": {
+      "label": "Tutti i criteri →",
+      "href": "acquistiamo.html"
+    },
+    "home-contenuto-088": "Recensioni Google",
+    "home-contenuto-089": "Leggi le esperienze dei nostri clienti",
+    "home-contenuto-090": "Le recensioni sono pubblicate direttamente sul nostro profilo Google. Se ti sei rivolto a noi, la tua opinione aiuta chi deve scegliere a chi affidare un diamante.",
+    "home-contenuto-091": {
+      "label": "Leggi le recensioni su Google ↗",
+      "href": "https://www.google.com/maps/place/?q=place_id:ChIJFR80gkTBhkcRJGjlclhYteg"
+    },
+    "home-contenuto-092": {
+      "label": "Lascia una recensione ↗",
+      "href": "https://search.google.com/local/writereview?placeid=ChIJFR80gkTBhkcRJGjlclhYteg"
+    },
+    "home-contenuto-093": "Domande frequenti",
+    "home-contenuto-094": "Per una valutazione immediata contattaci su WhatsApp o chiamaci al 02 466891.",
+    "home-contenuto-095": {
+      "label": "Tutte le domande →",
+      "href": "faq.html"
+    },
+    "home-contenuto-096": "Devo vendere il mio anello con diamante: a chi posso rivolgermi?",
+    "home-contenuto-097": "−",
+    "home-contenuto-098": "A un acquirente specializzato in diamanti. La Diamanteria acquista direttamente da privati dal 2009 a Milano: esaminiamo la pietra con criteri gemmologici e, se rientra nei nostri criteri, formuliamo la nostra offerta senza aste né intermediari.",
+    "home-contenuto-099": "Quali diamanti acquistate?",
+    "home-contenuto-100": "−",
+    "home-contenuto-101": "Valutiamo diamanti naturali a partire da 1 carato per singola pietra, con certificato GIA, HRD o IGI oppure senza certificato. Non acquistiamo diamanti sintetici né diamanti certificati AIG, GRA, GWLAB o ALGT. Valutiamo anche rubini, zaffiri e smeraldi sotto i 2 carati.",
+    "home-contenuto-102": "Quanto tempo serve per avere una prima valutazione?",
+    "home-contenuto-103": "−",
+    "home-contenuto-104": "Per una valutazione immediata contattaci su WhatsApp o chiamaci al 02 466891. In alternativa compila il modulo di quotazione online: un nostro gemmologo esamina la richiesta e la valutazione definitiva avviene dopo l'esame della pietra in sede.",
+    "home-contenuto-105": "Come viene calcolato il valore di un diamante?",
+    "home-contenuto-106": "−",
+    "home-contenuto-107": "Il prezzo dipende dalle 4C: peso in carati, colore, purezza e taglio. Contano anche fluorescenza, proporzioni e la presenza di un certificato internazionale. Il riferimento sono le quotazioni aggiornate delle borse di Anversa, Tel Aviv, New York, Dubai e Mumbai.",
+    "home-contenuto-108": "Guide e approfondimenti",
+    "home-contenuto-109": {
+      "label": "Tutte le guide ↗",
+      "href": "https://diamond-shine-guide.lovable.app/guide"
+    },
+    "home-contenuto-110": "20 settembre 2026",
+    "home-contenuto-111": "Come vendere un anello con diamante: guida completa",
+    "home-contenuto-112": "Documenti utili, criteri di valutazione e passaggi per vendere un anello con diamante direttamente a un acquirente.",
+    "home-contenuto-113": "Leggi →",
+    "home-contenuto-114": "10 settembre 2026",
+    "home-contenuto-115": "Certificati GIA, HRD e IGI: perché contano quando vendi",
+    "home-contenuto-116": "Non tutti i certificati hanno lo stesso valore sul mercato. Ecco quali sono riconosciuti a livello internazionale.",
+    "home-contenuto-117": "Leggi →",
+    "home-contenuto-118": "28 agosto 2026",
+    "home-contenuto-119": "Quanto vale un diamante da 1 carato?",
+    "home-contenuto-120": "Colore, purezza e taglio possono far variare il prezzo di un diamante da 1 carato di molte volte.",
+    "home-contenuto-121": "Leggi →",
+    "home-contenuto-122": "Una valutazione gratuita, un'offerta diretta.",
+    "home-contenuto-123": "Invia il modulo o scrivici su WhatsApp, allegando foto e certificati se li hai. Un gemmologo esamina la richiesta.",
+    "home-contenuto-124": {
+      "label": "Richiedi la quotazione gratuita →",
+      "href": "valutazione.html"
+    },
+    "home-contenuto-125": {
+      "label": "Valutazione immediata su WhatsApp",
+      "href": "https://wa.me/393929664987?text=Buongiorno%2C%20vorrei%20una%20valutazione%20gratuita%20per%20un%20diamante%2C%20un%20gioiello%20o%20un%20orologio."
+    },
+    "home-contenuto-126": "ComproDiamanti.it",
+    "home-contenuto-127": "by La Diamanteria",
+    "home-contenuto-128": "Servizio di acquisto diretto e valutazione di diamanti e gioielli da privati. Milano, Via Vincenzo Monti 47.",
+    "home-contenuto-129": "Contatti",
+    "home-contenuto-130": {
+      "label": "+39 02 466 891",
+      "href": "tel:+3902466891"
+    },
+    "home-contenuto-131": {
+      "label": "WhatsApp +39 392 966 4987",
+      "href": "https://wa.me/393929664987"
+    },
+    "home-contenuto-132": {
+      "label": "sl@ladiamanteria.com",
+      "href": "mailto:sl@ladiamanteria.com"
+    },
+    "home-contenuto-133": "Via Vincenzo Monti 47, 20123 Milano",
+    "home-contenuto-134": "Sito",
+    "home-contenuto-135": {
+      "label": "Vendere un diamante",
+      "href": "acquistiamo.html"
+    },
+    "home-contenuto-136": {
+      "label": "Come funziona",
+      "href": "index.html#come-funziona"
+    },
+    "home-contenuto-137": {
+      "label": "Chi siamo",
+      "href": "chisiamo.html"
+    },
+    "home-contenuto-138": {
+      "label": "FAQ",
+      "href": "faq.html"
+    },
+    "home-contenuto-139": {
+      "label": "La Diamanteria ↗",
+      "href": "https://www.ladiamanteria.com"
+    },
+    "home-contenuto-141": "© 2026 ComproDiamanti.it by La Diamanteria · Tutti i diritti riservati. · Cookie ·",
+    "home-contenuto-142": {
+      "label": "Area riservata",
+      "href": "../../admin/"
+    }
+  }
+}

@@ -1,0 +1,103 @@
+{
+  "spec": "1.00",
+  "slug": "faq",
+  "language": "it",
+  "version": 1,
+  "meta": {
+    "title": "Domande frequenti | ComproDiamanti",
+    "description": "Acquisto diretto e valutazione gratuita di diamanti, gioielli e orologi a Milano. La Diamanteria, dal 2009."
+  },
+  "slots": {
+    "faq-contenuto-001": "ComproDiamanti.it",
+    "faq-contenuto-002": "by La Diamanteria",
+    "faq-contenuto-003": {
+      "label": "Vendere un diamante",
+      "href": "acquistiamo.html"
+    },
+    "faq-contenuto-004": {
+      "label": "Come funziona",
+      "href": "index.html#come-funziona"
+    },
+    "faq-contenuto-005": {
+      "label": "Chi siamo",
+      "href": "chisiamo.html"
+    },
+    "faq-contenuto-006": {
+      "label": "FAQ",
+      "href": "faq.html"
+    },
+    "faq-contenuto-007": {
+      "label": "Richiedi la quotazione gratuita",
+      "href": "valutazione.html"
+    },
+    "faq-contenuto-008": "FAQ",
+    "faq-contenuto-009": "Domande frequenti",
+    "faq-contenuto-010": "Devo vendere il mio anello con diamante: a chi posso rivolgermi?",
+    "faq-contenuto-011": "−",
+    "faq-contenuto-012": "A un acquirente specializzato in diamanti. La Diamanteria acquista direttamente da privati dal 2009 a Milano: esaminiamo la pietra con criteri gemmologici e, se rientra nei nostri criteri, formuliamo la nostra offerta senza aste né intermediari.",
+    "faq-contenuto-013": "Quali diamanti acquistate?",
+    "faq-contenuto-014": "−",
+    "faq-contenuto-015": "Valutiamo diamanti naturali a partire da 1 carato per singola pietra, con certificato GIA, HRD o IGI oppure senza certificato. Non acquistiamo diamanti sintetici né diamanti certificati AIG, GRA, GWLAB o ALGT. Valutiamo anche rubini, zaffiri e smeraldi sotto i 2 carati.",
+    "faq-contenuto-016": "Quanto tempo serve per avere una prima valutazione?",
+    "faq-contenuto-017": "−",
+    "faq-contenuto-018": "Per una valutazione immediata contattaci su WhatsApp o chiamaci al 02 466891. In alternativa compila il modulo di quotazione online: un nostro gemmologo esamina la richiesta e la valutazione definitiva avviene dopo l'esame della pietra in sede.",
+    "faq-contenuto-019": "Come viene calcolato il valore di un diamante?",
+    "faq-contenuto-020": "−",
+    "faq-contenuto-021": "Il prezzo dipende dalle 4C: peso in carati, colore, purezza e taglio. Contano anche fluorescenza, proporzioni e la presenza di un certificato internazionale. Il riferimento sono le quotazioni aggiornate delle borse di Anversa, Tel Aviv, New York, Dubai e Mumbai.",
+    "faq-contenuto-022": "Cosa devo preparare?",
+    "faq-contenuto-023": "−",
+    "faq-contenuto-024": "Invia foto nitide e, se disponibile, un certificato GIA, HRD o IGI. Puoi proporci anche un diamante senza certificato. Il documento d'identità è necessario se concludiamo la vendita.",
+    "faq-contenuto-025": "Come avviene il pagamento?",
+    "faq-contenuto-026": "−",
+    "faq-contenuto-027": "Se necessario fissiamo un appuntamento in Via Vincenzo Monti 47, Milano, per esaminare l'oggetto. Se accetti la nostra offerta, paghiamo con bonifico tracciabile.",
+    "faq-contenuto-028": "Modulo online",
+    "faq-contenuto-029": "Richiedi la quotazione gratuita →",
+    "faq-contenuto-030": "Immediata",
+    "faq-contenuto-031": "WhatsApp +39 392 966 4987",
+    "faq-contenuto-032": "Telefono",
+    "faq-contenuto-033": "+39 02 466 891",
+    "faq-contenuto-034": "ComproDiamanti.it",
+    "faq-contenuto-035": "by La Diamanteria",
+    "faq-contenuto-036": "Servizio di acquisto diretto e valutazione di diamanti e gioielli da privati. Milano, Via Vincenzo Monti 47.",
+    "faq-contenuto-037": "Contatti",
+    "faq-contenuto-038": {
+      "label": "+39 02 466 891",
+      "href": "tel:+3902466891"
+    },
+    "faq-contenuto-039": {
+      "label": "WhatsApp +39 392 966 4987",
+      "href": "https://wa.me/393929664987"
+    },
+    "faq-contenuto-040": {
+      "label": "sl@ladiamanteria.com",
+      "href": "mailto:sl@ladiamanteria.com"
+    },
+    "faq-contenuto-041": "Via Vincenzo Monti 47, 20123 Milano",
+    "faq-contenuto-042": "Sito",
+    "faq-contenuto-043": {
+      "label": "Vendere un diamante",
+      "href": "acquistiamo.html"
+    },
+    "faq-contenuto-044": {
+      "label": "Come funziona",
+      "href": "index.html#come-funziona"
+    },
+    "faq-contenuto-045": {
+      "label": "Chi siamo",
+      "href": "chisiamo.html"
+    },
+    "faq-contenuto-046": {
+      "label": "FAQ",
+      "href": "faq.html"
+    },
+    "faq-contenuto-047": {
+      "label": "La Diamanteria ↗",
+      "href": "https://www.ladiamanteria.com"
+    },
+    "faq-contenuto-049": "© 2026 ComproDiamanti.it by La Diamanteria · Tutti i diritti riservati. · Cookie ·",
+    "faq-contenuto-050": {
+      "label": "Area riservata",
+      "href": "../../admin/"
+    }
+  }
+}

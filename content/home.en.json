@@ -1,0 +1,249 @@
+{
+  "spec": "1.00",
+  "slug": "home",
+  "language": "en",
+  "version": 1,
+  "meta": {
+    "title": "Sell diamonds and jewellery in Milan | ComproDiamanti",
+    "description": "Free valuations and direct buying of diamonds, jewellery and luxury watches in Milan. La Diamanteria, established in 2009."
+  },
+  "slots": {
+    "home-contenuto-001": "ComproDiamanti.it",
+    "home-contenuto-002": "by La Diamanteria",
+    "home-contenuto-003": {
+      "label": "Sell a diamond",
+      "href": "acquistiamo.html"
+    },
+    "home-contenuto-004": {
+      "label": "How it works",
+      "href": "index.html#come-funziona"
+    },
+    "home-contenuto-005": {
+      "label": "About us",
+      "href": "chisiamo.html"
+    },
+    "home-contenuto-006": {
+      "label": "FAQ",
+      "href": "faq.html"
+    },
+    "home-contenuto-007": {
+      "label": "Request a free valuation",
+      "href": "valutazione.html"
+    },
+    "home-contenuto-008": "ComproDiamanti.it · by La Diamanteria",
+    "home-contenuto-009": "Sell your diamond to people who",
+    "home-contenuto-010": "truly understand it",
+    "home-contenuto-011": "We buy diamonds, fine gemstones and valuable jewellery directly from private sellers. Free valuations, with no auctions or intermediaries. Established in Milan in 2009.",
+    "home-contenuto-012": {
+      "label": "Request a free valuation →",
+      "href": "valutazione.html"
+    },
+    "home-contenuto-013": {
+      "label": "WhatsApp",
+      "href": "https://wa.me/393929664987?text=Hello%2C%20I%20would%20like%20a%20free%20valuation%20of%20a%20diamond%2C%20a%20piece%20of%20jewellery%20or%20a%20watch."
+    },
+    "home-contenuto-014": {
+      "src": "https://diamond-shine-guide.lovable.app/__l5e/assets-v1/d5eae2bd-354c-41cb-ad4c-84c8cab40091/showroom-1.jpg",
+      "alt": "Display cabinets and chandelier at La Diamanteria"
+    },
+    "home-contenuto-015": {
+      "src": "https://diamond-shine-guide.lovable.app/__l5e/assets-v1/0ad06598-6c3d-430f-b1d8-aaa6800911a7/showroom-2.jpg",
+      "alt": "Entrance and window display at La Diamanteria"
+    },
+    "home-contenuto-016": {
+      "src": "https://diamond-shine-guide.lovable.app/__l5e/assets-v1/9db47547-dde6-44b5-afeb-bfdd16092d85/showroom-4.jpg",
+      "alt": "Interior and display cabinets at the La Diamanteria showroom"
+    },
+    "home-contenuto-017": "“One point of contact for a straightforward process.”",
+    "home-contenuto-018": "Via Vincenzo Monti 47, Milan",
+    "home-contenuto-019": "Buying directly since 2009",
+    "home-contenuto-020": "Payment by bank transfer",
+    "home-contenuto-021": "Five generations of diamantaires",
+    "home-contenuto-022": "◆",
+    "home-contenuto-023": "Gemmological assessment",
+    "home-contenuto-024": "◆",
+    "home-contenuto-025": "Accepted grading reports: GIA / HRD / IGI",
+    "home-contenuto-026": "Start here",
+    "home-contenuto-027": "What we buy",
+    "home-contenuto-028": "Choose the item you would like to sell to go straight to our free, no-obligation valuation form.",
+    "home-contenuto-029": {
+      "label": "Our buying criteria →",
+      "href": "acquistiamo.html"
+    },
+    "home-contenuto-030": "01",
+    "home-contenuto-031": "Diamonds",
+    "home-contenuto-032": "Natural diamonds of one carat or more per stone, with a GIA, HRD or IGI report, or without a report.",
+    "home-contenuto-033": "Request a valuation →",
+    "home-contenuto-034": "02",
+    "home-contenuto-035": "Diamond jewellery",
+    "home-contenuto-036": "Solitaire rings and multi-stone jewellery, assessed through tailored questions.",
+    "home-contenuto-037": "Request a valuation →",
+    "home-contenuto-038": "03",
+    "home-contenuto-039": "Coloured gemstones",
+    "home-contenuto-040": "Rubies, sapphires and emeralds, including stones under two carats.",
+    "home-contenuto-041": "Request a valuation →",
+    "home-contenuto-042": "04",
+    "home-contenuto-043": "Vintage and designer jewellery",
+    "home-contenuto-044": "Rare pieces, with particular attention to the quality of their gemstones.",
+    "home-contenuto-045": "Request a valuation →",
+    "home-contenuto-046": "05",
+    "home-contenuto-047": "Luxury watches",
+    "home-contenuto-048": "Selected brands only: please check our criteria before submitting your enquiry.",
+    "home-contenuto-049": "Request a valuation →",
+    "home-contenuto-050": "Four simple steps",
+    "home-contenuto-051": "How it works",
+    "home-contenuto-052": "01",
+    "home-contenuto-053": "Request a valuation",
+    "home-contenuto-054": "Complete the form or message us on WhatsApp, attaching photographs and grading reports if available.",
+    "home-contenuto-055": "02",
+    "home-contenuto-056": "Professional valuation",
+    "home-contenuto-057": "A gemmologist reviews your enquiry and arranges an appointment if needed.",
+    "home-contenuto-058": "03",
+    "home-contenuto-059": "Our direct offer",
+    "home-contenuto-060": "La Diamanteria makes its own offer, with no auctions or intermediaries.",
+    "home-contenuto-061": "04",
+    "home-contenuto-062": "Payment",
+    "home-contenuto-063": "If you accept our offer, we pay by bank transfer.",
+    "home-contenuto-064": {
+      "label": "Request a free valuation →",
+      "href": "valutazione.html"
+    },
+    "home-contenuto-065": "Completely free, with no obligation",
+    "home-contenuto-066": "Why sell to us",
+    "home-contenuto-067": "We make our own offer",
+    "home-contenuto-068": "ComproDiamanti.it is La Diamanteria's direct buying service. We do not auction your diamond or offer it to a network of buyers. If it meets our requirements, we make you an offer ourselves.",
+    "home-contenuto-069": "One point of contact for a straightforward process.",
+    "home-contenuto-070": "We buy directly",
+    "home-contenuto-071": "The offer comes from us, with no intermediary involved.",
+    "home-contenuto-072": "Five generations of diamantaires",
+    "home-contenuto-073": "A documented family history in the diamond trade.",
+    "home-contenuto-074": "Gemmological assessment",
+    "home-contenuto-075": "We examine the stone's characteristics and any available documentation.",
+    "home-contenuto-076": "Based in Milan",
+    "home-contenuto-077": "Appointments at Via Vincenzo Monti 47, with payment by bank transfer.",
+    "home-contenuto-078": "By appointment",
+    "home-contenuto-079": "Our showroom at Via Vincenzo Monti 47, Milan",
+    "home-contenuto-080": "ComproDiamanti.it is run by La Diamanteria at Via Vincenzo Monti 47 in Milan. A physical showroom, direct contact with the buyer and a professional valuation.",
+    "home-contenuto-081": {
+      "label": "+39 02 466 891",
+      "href": "tel:+3902466891"
+    },
+    "home-contenuto-082": {
+      "src": "https://diamond-shine-guide.lovable.app/__l5e/assets-v1/d5eae2bd-354c-41cb-ad4c-84c8cab40091/showroom-1.jpg",
+      "alt": "Display cabinets and chandelier at La Diamanteria"
+    },
+    "home-contenuto-083": {
+      "src": "https://diamond-shine-guide.lovable.app/__l5e/assets-v1/0ad06598-6c3d-430f-b1d8-aaa6800911a7/showroom-2.jpg",
+      "alt": "Entrance and window display at La Diamanteria"
+    },
+    "home-contenuto-084": {
+      "src": "https://diamond-shine-guide.lovable.app/__l5e/assets-v1/9db47547-dde6-44b5-afeb-bfdd16092d85/showroom-4.jpg",
+      "alt": "Interior and display cabinets at the La Diamanteria showroom"
+    },
+    "home-contenuto-085": "Our main requirements",
+    "home-contenuto-086": "We assess natural diamonds of one carat or more per stone, with a GIA, HRD or IGI report, or without a report. We do not buy laboratory-grown diamonds or diamonds with AIG, GRA, GWLAB or ALGT reports. We buy selected watch brands and also assess rubies, sapphires and emeralds weighing less than two carats.",
+    "home-contenuto-087": {
+      "label": "View all criteria →",
+      "href": "acquistiamo.html"
+    },
+    "home-contenuto-088": "Google reviews",
+    "home-contenuto-089": "Read what our clients say",
+    "home-contenuto-090": "Reviews are published directly on our Google profile. If you have used our service, your feedback can help others choose a trusted diamond buyer.",
+    "home-contenuto-091": {
+      "label": "Read our Google reviews ↗",
+      "href": "https://www.google.com/maps/place/?q=place_id:ChIJFR80gkTBhkcRJGjlclhYteg"
+    },
+    "home-contenuto-092": {
+      "label": "Leave a review ↗",
+      "href": "https://search.google.com/local/writereview?placeid=ChIJFR80gkTBhkcRJGjlclhYteg"
+    },
+    "home-contenuto-093": "Frequently asked questions",
+    "home-contenuto-094": "For an immediate valuation, message us on WhatsApp or call +39 02 466891.",
+    "home-contenuto-095": {
+      "label": "All questions →",
+      "href": "faq.html"
+    },
+    "home-contenuto-096": "Who should I contact to sell my diamond ring?",
+    "home-contenuto-097": "−",
+    "home-contenuto-098": "Contact a specialist diamond buyer. La Diamanteria has been buying directly from private sellers in Milan since 2009. We assess each stone using gemmological criteria and, if it meets our requirements, make our own offer, with no auctions or intermediaries.",
+    "home-contenuto-099": "Which diamonds do you buy?",
+    "home-contenuto-100": "−",
+    "home-contenuto-101": "We assess natural diamonds of one carat or more per stone, with a GIA, HRD or IGI report, or without a report. We do not buy synthetic diamonds or diamonds with AIG, GRA, GWLAB or ALGT reports. We also assess rubies, sapphires and emeralds under two carats.",
+    "home-contenuto-102": "How long does an initial valuation take?",
+    "home-contenuto-103": "−",
+    "home-contenuto-104": "For an immediate valuation, message us on WhatsApp or call +39 02 466891. Alternatively, complete our online enquiry form. A gemmologist will review your request; the final valuation is made after examining the stone at our showroom.",
+    "home-contenuto-105": "How is a diamond's value determined?",
+    "home-contenuto-106": "−",
+    "home-contenuto-107": "A diamond's price depends on the 4Cs: carat weight, colour, clarity and cut. Fluorescence, proportions and an internationally recognised grading report also matter. We refer to current market prices in Antwerp, Tel Aviv, New York, Dubai and Mumbai.",
+    "home-contenuto-108": "Guides and insights",
+    "home-contenuto-109": {
+      "label": "All guides ↗",
+      "href": "https://diamond-shine-guide.lovable.app/guide"
+    },
+    "home-contenuto-110": "20 September 2026",
+    "home-contenuto-111": "How to sell a diamond ring: a complete guide",
+    "home-contenuto-112": "The documents, valuation criteria and steps involved in selling a diamond ring directly to a buyer.",
+    "home-contenuto-113": "Read more →",
+    "home-contenuto-114": "10 September 2026",
+    "home-contenuto-115": "GIA, HRD and IGI reports: why they matter when you sell",
+    "home-contenuto-116": "Not all grading reports carry the same weight in the market. Find out which are internationally recognised.",
+    "home-contenuto-117": "Read more →",
+    "home-contenuto-118": "28 August 2026",
+    "home-contenuto-119": "How much is a one-carat diamond worth?",
+    "home-contenuto-120": "Colour, clarity and cut can make a substantial difference to the value of a one-carat diamond.",
+    "home-contenuto-121": "Read more →",
+    "home-contenuto-122": "A free valuation. An offer directly from us.",
+    "home-contenuto-123": "Complete the form or message us on WhatsApp, attaching photographs and grading reports if available. A gemmologist will review your enquiry.",
+    "home-contenuto-124": {
+      "label": "Request a free valuation →",
+      "href": "valutazione.html"
+    },
+    "home-contenuto-125": {
+      "label": "Immediate valuation on WhatsApp",
+      "href": "https://wa.me/393929664987?text=Hello%2C%20I%20would%20like%20a%20free%20valuation%20of%20a%20diamond%2C%20a%20piece%20of%20jewellery%20or%20a%20watch."
+    },
+    "home-contenuto-126": "ComproDiamanti.it",
+    "home-contenuto-127": "by La Diamanteria",
+    "home-contenuto-128": "Direct buying and valuation of diamonds and jewellery from private sellers. Via Vincenzo Monti 47, Milan.",
+    "home-contenuto-129": "Contact us",
+    "home-contenuto-130": {
+      "label": "+39 02 466 891",
+      "href": "tel:+3902466891"
+    },
+    "home-contenuto-131": {
+      "label": "WhatsApp +39 392 966 4987",
+      "href": "https://wa.me/393929664987"
+    },
+    "home-contenuto-132": {
+      "label": "sl@ladiamanteria.com",
+      "href": "mailto:sl@ladiamanteria.com"
+    },
+    "home-contenuto-133": "Via Vincenzo Monti 47, 20123 Milan",
+    "home-contenuto-134": "Explore",
+    "home-contenuto-135": {
+      "label": "Sell a diamond",
+      "href": "acquistiamo.html"
+    },
+    "home-contenuto-136": {
+      "label": "How it works",
+      "href": "index.html#come-funziona"
+    },
+    "home-contenuto-137": {
+      "label": "About us",
+      "href": "chisiamo.html"
+    },
+    "home-contenuto-138": {
+      "label": "FAQ",
+      "href": "faq.html"
+    },
+    "home-contenuto-139": {
+      "label": "La Diamanteria ↗",
+      "href": "https://www.ladiamanteria.com"
+    },
+    "home-contenuto-141": "© 2026 ComproDiamanti.it by La Diamanteria · All rights reserved. · Cookies ·",
+    "home-contenuto-142": {
+      "label": "Admin login",
+      "href": "../../admin/"
+    }
+  }
+}

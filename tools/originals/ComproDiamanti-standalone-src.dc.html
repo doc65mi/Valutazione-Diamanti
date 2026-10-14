@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+<meta name="ext-resource-dependency" content="https://diamond-shine-guide.lovable.app/__l5e/assets-v1/d5eae2bd-354c-41cb-ad4c-84c8cab40091/showroom-1.jpg" data-resource-id="img_d5eae2bd">
+<meta name="ext-resource-dependency" content="https://diamond-shine-guide.lovable.app/__l5e/assets-v1/0ad06598-6c3d-430f-b1d8-aaa6800911a7/showroom-2.jpg" data-resource-id="img_0ad06598">
+<meta name="ext-resource-dependency" content="https://diamond-shine-guide.lovable.app/__l5e/assets-v1/9db47547-dde6-44b5-afeb-bfdd16092d85/showroom-4.jpg" data-resource-id="img_9db47547">
+<meta name="ext-resource-dependency" content="https://diamond-shine-guide.lovable.app/__l5e/assets-v1/366db432-1027-4c75-9cc9-2aa23c6b2a08/silvera-trivellato-book.jpeg" data-resource-id="img_366db432">
+<meta name="ext-resource-dependency" content="https://diamond-shine-guide.lovable.app/__l5e/assets-v1/cf222384-9059-4d02-a08b-e7acff648898/silvera-trivellato-study.jpeg" data-resource-id="img_cf222384">
+<meta name="ext-resource-dependency" content="https://diamond-shine-guide.lovable.app/__l5e/assets-v1/aacec743-b359-4ec5-b37e-d7bcff4e24ed/silvera-article.jpeg" data-resource-id="img_aacec743">
+</head>
+<body>
+<template id="__bundler_thumbnail" data-bg-color="#F5F5F5"><svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg"><rect width="1200" height="800" fill="#F5F5F5"/><rect x="530" y="330" width="140" height="140" transform="rotate(45 600 400)" fill="none" stroke="#8A6F42" stroke-width="10"/></svg></template>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+html,body{margin:0;padding:0;background:#F5F5F5;color:#1C1B19;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+a{color:#1C1B19;text-decoration:underline;text-underline-offset:3px}
+a:hover{color:#7A6236}
+button{font-family:inherit}
+input,textarea{font-family:inherit}
+</style>
+</helmet>
+<div style="font-family:Manrope,system-ui,sans-serif;font-size:16px;line-height:1.6;color:#1C1B19;background:#F5F5F5;min-height:100vh">
+
+<header style="position:sticky;top:0;z-index:50;background:rgba(245,245,245,0.96);backdrop-filter:blur(10px);border-bottom:1px solid #E2E2E2">
+  <div style="max-width:1440px;margin:0 auto;padding:12px clamp(16px,2vw,28px);display:flex;align-items:center;gap:20px">
+    <button onClick="{{ goHome }}" style="background:none;border:0;padding:0;cursor:pointer;display:flex;align-items:center;gap:12px;color:#1C1B19;text-align:left;min-width:0">
+      <span style="width:14px;height:14px;transform:rotate(45deg);border:1.5px solid #8A6F42;flex:none"></span>
+      <span style="display:flex;flex-direction:column;line-height:1.05;min-width:0">
+        <span style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;letter-spacing:0.01em;white-space:nowrap">ComproDiamanti.it</span>
+        <span style="font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:#5F5F5F;white-space:nowrap">by La Diamanteria</span>
+      </span>
+    </button>
+    <sc-if value="{{ desktop }}" hint-placeholder-val="{{ true }}">
+      <nav style="display:flex;gap:26px;margin-left:auto;align-items:center">
+        <sc-for list="{{ nav }}" as="n" hint-placeholder-count="5">
+          <button onClick="{{ n.go }}" style="background:none;border:0;padding:6px 0;cursor:pointer;font-size:14px;font-weight:500;color:#1C1B19;white-space:nowrap;border-bottom:1px solid {{ n.line }}">{{ n.label }}</button>
+        </sc-for>
+      </nav>
+      <button onClick="{{ startBlank }}" style="background:#1C1B19;color:#F5F5F5;border:0;padding:12px 20px;font-size:14px;font-weight:600;letter-spacing:0.02em;cursor:pointer;border-radius:2px;white-space:nowrap" style-hover="background:#3A362F">Richiedi la quotazione gratuita</button>
+    </sc-if>
+    <sc-if value="{{ mobile }}" hint-placeholder-val="{{ false }}">
+      <span style="flex:1"></span>
+      <button onClick="{{ startBlank }}" style="min-height:44px;background:#1C1B19;color:#F5F5F5;border:0;padding:0 14px;font-size:14px;font-weight:600;cursor:pointer;border-radius:2px;white-space:nowrap">Valutazione</button>
+      <button onClick="{{ toggleMenu }}" aria-label="Menu" style="min-height:44px;min-width:44px;background:none;border:1px solid #1C1B19;color:#1C1B19;padding:0 12px;font-size:14px;font-weight:600;cursor:pointer;border-radius:2px">{{ menuLabel }}</button>
+    </sc-if>
+  </div>
+  <sc-if value="{{ menuOpen }}" hint-placeholder-val="{{ false }}">
+    <nav style="border-top:1px solid #E2E2E2;background:#F5F5F5;padding:4px clamp(16px,2vw,28px) 16px;display:flex;flex-direction:column">
+      <sc-for list="{{ nav }}" as="n" hint-placeholder-count="5">
+        <button onClick="{{ n.go }}" style="display:flex;align-items:center;justify-content:space-between;min-height:54px;border:0;border-bottom:1px solid #E2E2E2;background:none;padding:0;font-size:17px;font-weight:500;color:#1C1B19;cursor:pointer;text-align:left">{{ n.label }}<span style="color:#8A6F42">›</span></button>
+      </sc-for>
+    </nav>
+  </sc-if>
+</header>
+
+<sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+<main>
+  <section style="max-width:1440px;margin:0 auto;padding:72px 28px 56px;display:flex;flex-direction:column;gap:36px">
+   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,440px),1fr));gap:56px;align-items:stretch">
+    <div style="display:flex;flex-direction:column;gap:26px;justify-content:flex-end">
+      <div style="font-size:12px;letter-spacing:0.2em;text-transform:uppercase;color:#7A6236;font-weight:600">ComproDiamanti.it · by La Diamanteria</div>
+      <h1 style="font-family:'Cormorant Garamond',serif;font-weight:500;font-size:clamp(44px,6vw,78px);line-height:1.02;margin:0;letter-spacing:-0.01em;text-wrap:balance">Vendi il tuo diamante a chi lo conosce <em style="font-style:italic;color:#7A6236">davvero</em></h1>
+      <p style="font-size:18px;line-height:1.6;color:#4A463F;margin:0;max-width:520px;text-wrap:pretty">Acquistiamo direttamente diamanti da privati, gemme di valore e gioielli importanti. Valutazione gratuita, senza aste né intermediari. Milano, dal 2009.</p>
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <button onClick="{{ startBlank }}" style="background:#1C1B19;color:#F5F5F5;border:0;padding:17px 28px;font-size:15px;font-weight:600;letter-spacing:0.02em;cursor:pointer;border-radius:2px" style-hover="background:#3A362F">Richiedi la quotazione gratuita →</button>
+        <a href="https://wa.me/393929664987?text=Buongiorno%2C%20vorrei%20una%20valutazione%20gratuita%20per%20un%20diamante%2C%20un%20gioiello%20o%20un%20orologio." target="_blank" rel="noopener" onClick="{{ openWa }}" style="display:flex;align-items:center;gap:10px;border:1px solid #1C1B19;color:#1C1B19;padding:16px 24px;font-size:15px;font-weight:600;text-decoration:none;border-radius:2px" style-hover="background:#EBEBEB">WhatsApp</a>
+      </div>
+    </div>
+    <div style="position:relative;min-height:380px">
+      <div style="position:absolute;inset:0;overflow:hidden;background:#E2E2E2">
+        
+        <sc-for list="{{ heroSlides }}" as="hs" hint-placeholder-count="1">
+          <img src="{{ hs.src }}" alt="{{ hs.alt }}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;opacity:{{ hs.op }};transform:scale({{ hs.sc }});transition:opacity 900ms ease, transform 6000ms ease">
+        </sc-for>
+        <div style="position:absolute;top:16px;right:16px;display:flex;gap:6px">
+          <button onClick="{{ heroPrev }}" aria-label="Foto precedente" style="width:44px;height:44px;border:0;background:rgba(245,245,245,0.92);color:#1C1B19;font-size:18px;cursor:pointer;border-radius:2px">‹</button>
+          <button onClick="{{ heroNext }}" aria-label="Foto successiva" style="width:44px;height:44px;border:0;background:rgba(245,245,245,0.92);color:#1C1B19;font-size:18px;cursor:pointer;border-radius:2px">›</button>
+        </div>
+        <div style="position:absolute;right:16px;bottom:16px;display:flex;gap:8px">
+          <sc-for list="{{ heroSlides }}" as="hs" hint-placeholder-count="3">
+            <button onClick="{{ hs.go }}" aria-label="Vai alla foto" style="width:{{ hs.w }};height:3px;border:0;padding:0;background:{{ hs.dot }};cursor:pointer;transition:width 300ms ease"></button>
+          </sc-for>
+        </div>
+      </div>
+      <div style="position:absolute;left:-1px;bottom:-1px;background:#F5F5F5;padding:18px 22px 0 0;max-width:78%">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:22px;line-height:1.25;font-style:italic">“Un solo interlocutore, un processo più lineare.”</div>
+      </div>
+    </div>
+   </div>
+    <div style="display:flex;flex-wrap:wrap;gap:10px 28px;padding-top:22px;border-top:1px solid #E2E2E2;font-size:14px;color:#4A463F">
+        <span style="display:flex;align-items:center;gap:9px"><span style="width:6px;height:6px;transform:rotate(45deg);background:#8A6F42"></span>Via Vincenzo Monti 47, Milano</span>
+        <span style="display:flex;align-items:center;gap:9px"><span style="width:6px;height:6px;transform:rotate(45deg);background:#8A6F42"></span>Dal 2009 · compratore diretto</span>
+        <span style="display:flex;align-items:center;gap:9px"><span style="width:6px;height:6px;transform:rotate(45deg);background:#8A6F42"></span>Bonifico tracciabile</span>
+    </div>
+  </section>
+
+  <section style="background:#1E2A2B;color:#F2EEE6">
+    <div style="max-width:1440px;margin:0 auto;padding:22px 28px;display:flex;flex-wrap:wrap;gap:12px 48px;justify-content:center;font-size:14px;letter-spacing:0.06em;text-transform:uppercase">
+      <span>Cinque generazioni di Diamantaires</span><span style="color:#C9B48A">◆</span><span>Valutazione gemmologica</span><span style="color:#C9B48A">◆</span><span>Certificati riconosciuti: GIA / HRD / IGI</span>
+    </div>
+  </section>
+
+  <section style="max-width:1440px;margin:0 auto;padding:96px 28px 40px">
+    <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:24px;margin-bottom:40px">
+      <div style="display:flex;flex-direction:column;gap:12px;max-width:620px">
+        <div style="font-size:12px;letter-spacing:0.2em;text-transform:uppercase;color:#7A6236;font-weight:600">Inizia da qui</div>
+        <h2 style="font-family:'Cormorant Garamond',serif;font-weight:500;font-size:clamp(34px,4vw,52px);line-height:1.05;margin:0">Cosa acquistiamo</h2>
+        <p style="margin:0;color:#4A463F;font-size:17px">Scegli cosa vuoi vendere: ti portiamo direttamente al modulo di quotazione, gratuito e senza impegno.</p>
+      </div>
+      <button onClick="{{ goAcq }}" style="background:none;border:0;border-bottom:1px solid #1C1B19;padding:4px 0;font-size:14px;font-weight:600;cursor:pointer;color:#1C1B19">Criteri di acquisto →</button>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));border-top:1px solid #DADADA;border-left:1px solid #DADADA">
+      <sc-for list="{{ buyItems }}" as="b" hint-placeholder-count="5">
+        <button onClick="{{ b.start }}" style="text-align:left;background:#FFFFFF;border:0;border-right:1px solid #DADADA;border-bottom:1px solid #DADADA;padding:30px 26px 26px;cursor:pointer;display:flex;flex-direction:column;gap:14px;min-height:280px;color:#1C1B19" style-hover="background:#EEEEEE">
+          <span style="font-family:'Cormorant Garamond',serif;font-size:18px;color:#7A6236">{{ b.n }}</span>
+          <span style="font-family:'Cormorant Garamond',serif;font-size:28px;line-height:1.1;font-weight:500">{{ b.title }}</span>
+          <span style="font-size:14.5px;line-height:1.55;color:#4A463F;flex:1">{{ b.text }}</span>
+          <span style="font-size:13.5px;font-weight:600;letter-spacing:0.02em">Richiedi una quotazione →</span>
+        </button>
+      </sc-for>
+    </div>
+  </section>
+
+  <section id="come-funziona" style="max-width:1440px;margin:0 auto;padding:80px 28px">
+    <div style="background:#1E2A2B;color:#F2EEE6;padding:clamp(36px,6vw,72px)">
+      <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:48px">
+        <div style="font-size:12px;letter-spacing:0.2em;text-transform:uppercase;color:#C9B48A;font-weight:600">Quattro passaggi</div>
+        <h2 style="font-family:'Cormorant Garamond',serif;font-weight:500;font-size:clamp(34px,4vw,52px);line-height:1.05;margin:0">Come funziona</h2>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:36px">
+        <sc-for list="{{ howSteps }}" as="s" hint-placeholder-count="4">
+          <div style="display:flex;flex-direction:column;gap:12px;border-top:1px solid #4A5856;padding-top:22px">
+            <span style="font-family:'Cormorant Garamond',serif;font-size:44px;line-height:1;color:#C9B48A">{{ s.n }}</span>
+            <h3 style="margin:0;font-size:18px;font-weight:600">{{ s.title }}</h3>
+            <p style="margin:0;color:#C8CEC9;font-size:15px;line-height:1.6">{{ s.text }}</p>
+          </div>
+        </sc-for>
+      </div>
+      <div style="margin-top:48px;display:flex;flex-wrap:wrap;gap:16px;align-items:center">
+        <button onClick="{{ startBlank }}" style="background:#F2EEE6;color:#1E2A2B;border:0;padding:17px 28px;font-size:15px;font-weight:600;cursor:pointer;border-radius:2px" style-hover="background:#FFFFFF">Richiedi la quotazione gratuita →</button>
+        <span style="font-size:14px;color:#C8CEC9">Servizio 100% gratuito e senza impegno</span>
+      </div>
+    </div>
+  </section>
+
+  <section style="max-width:1440px;margin:0 auto;padding:40px 28px 96px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:64px">
+    <div style="display:flex;flex-direction:column;gap:20px">
+      <div style="font-size:12px;letter-spacing:0.2em;text-transform:uppercase;color:#7A6236;font-weight:600">Perché venderlo a noi</div>
+      <h2 style="font-family:'Cormorant Garamond',serif;font-weight:500;font-size:clamp(34px,4vw,52px);line-height:1.05;margin:0">Compriamo direttamente</h2>
+      <p style="margin:0;font-size:17px;color:#4A463F;text-wrap:pretty">ComproDiamanti.it è il servizio di acquisto diretto di La Diamanteria. Non mettiamo il tuo diamante in asta e non lo proponiamo a una rete di acquirenti. Se rientra nei nostri criteri, siamo noi a formulare direttamente l'offerta.</p>
+      <p style="margin:0;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:26px;line-height:1.3">Un solo interlocutore, un processo più lineare.</p>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:0;border-top:1px solid #DADADA">
+      <sc-for list="{{ whyItems }}" as="w" hint-placeholder-count="4">
+        <div style="padding:24px 24px 24px 0;border-bottom:1px solid #DADADA;display:flex;flex-direction:column;gap:8px">
+          <h3 style="margin:0;font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:600;line-height:1.15">{{ w.title }}</h3>
+          <p style="margin:0;font-size:15px;color:#4A463F">{{ w.text }}</p>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <section style="background:#EBEBEB">
+    <div style="max-width:1440px;margin:0 auto;padding:88px 28px;display:flex;flex-direction:column;gap:36px">
+      <div style="display:flex;flex-wrap:wrap;gap:24px 64px;justify-content:space-between;align-items:flex-end">
+        <div style="display:flex;flex-direction:column;gap:12px;max-width:640px">
+          <div style="font-size:12px;letter-spacing:0.2em;text-transform:uppercase;color:#7A6236;font-weight:600">Su appuntamento</div>
+          <h2 style="font-family:'Cormorant Garamond',serif;font-weight:500;font-size:clamp(32px,3.6vw,48px);line-height:1.08;margin:0">La nostra sede in Via Vincenzo Monti 47, Milano</h2>
+          <p style="margin:0;color:#4A463F">Il servizio ComproDiamanti.it è gestito da La Diamanteria nella sede di Via Vincenzo Monti 47, Milano. Una sede fisica, un interlocutore diretto, una valutazione professionale.</p>
+        </div>
+        <a href="tel:+3902466891" style="font-family:'Cormorant Garamond',serif;font-size:30px;text-decoration:none;border-bottom:1px solid #1C1B19">+39 02 466 891</a>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:16px">
+        <sc-for list="{{ showroom }}" as="img" hint-placeholder-count="3">
+          <img src="{{ img.src }}" alt="{{ img.alt }}" style="width:100%;aspect-ratio:4/3;object-fit:cover;display:block;background:#E2E2E2">
+        </sc-for>
+      </div>
+    </div>
+  </section>
+
+  <section style="max-width:1440px;margin:0 auto;padding:96px 28px 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:24px">
+    <div style="border:1px solid #DADADA;background:#FFFFFF;padding:40px;display:flex;flex-direction:column;gap:16px">
+      <h2 style="font-family:'Cormorant Garamond',serif;font-weight:500;font-size:36px;line-height:1.1;margin:0">Requisiti principali</h2>
+      <p style="margin:0;color:#4A463F;font-size:15.5px">Diamanti naturali da 1 ct per singola pietra, con GIA/HRD/IGI o senza certificato. Non acquistiamo lab-grown o diamanti con certificati AIG, GRA, GWLAB e ALGT. Per gli orologi trattiamo solo marchi selezionati; rubini, zaffiri e smeraldi anche sotto 2 ct.</p>
+      <button onClick="{{ goAcq }}" style="align-self:flex-start;background:none;border:0;border-bottom:1px solid #1C1B19;padding:4px 0;font-size:14px;font-weight:600;cursor:pointer;color:#1C1B19">Tutti i criteri →</button>
+    </div>
+    <div style="border:1px solid #DADADA;padding:40px;display:flex;flex-direction:column;gap:16px">
+      <div style="font-size:12px;letter-spacing:0.2em;text-transform:uppercase;color:#7A6236;font-weight:600">Recensioni Google</div>
+      <h2 style="font-family:'Cormorant Garamond',serif;font-weight:500;font-size:36px;line-height:1.1;margin:0">Leggi le esperienze dei nostri clienti</h2>
+      <p style="margin:0;color:#4A463F;font-size:15.5px">Le recensioni sono pubblicate direttamente sul nostro profilo Google. Se ti sei rivolto a noi, la tua opinione aiuta chi deve scegliere a chi affidare un diamante.</p>
+      <div style="display:flex;gap:20px;flex-wrap:wrap;font-size:14px;font-weight:600">
+        <a href="https://www.google.com/maps/place/?q=place_id:ChIJFR80gkTBhkcRJGjlclhYteg" target="_blank">Leggi le recensioni su Google ↗</a>
+        <a href="https://search.google.com/local/writereview?placeid=ChIJFR80gkTBhkcRJGjlclhYteg" target="_blank">Lascia una recensione ↗</a>
+      </div>
+    </div>
+  </section>
+
+  <section style="max-width:1440px;margin:0 auto;padding:96px 28px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,360px),1fr));gap:56px">
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <h2 style="font-family:'Cormorant Garamond',serif;font-weight:500;font-size:clamp(34px,4vw,52px);line-height:1.05;margin:0">Domande frequenti</h2>
+      <p style="margin:0;color:#4A463F">Per una valutazione immediata contattaci su WhatsApp o chiamaci al 02 466891.</p>
+      <div style="display:flex;gap:20px;flex-wrap:wrap;font-size:14px;font-weight:600">
+        <button onClick="{{ goFaq }}" style="background:none;border:0;border-bottom:1px solid #1C1B19;padding:4px 0;font-size:14px;font-weight:600;cursor:pointer;color:#1C1B19">Tutte le domande →</button>
+      </div>
+    </div>
+    <div style="border-top:1px solid #DADADA">
+      <sc-for list="{{ faqs }}" as="q" hint-placeholder-count="4">
+        <div style="border-bottom:1px solid #DADADA">
+          <button onClick="{{ q.toggle }}" style="width:100%;background:none;border:0;padding:22px 0;display:flex;justify-content:space-between;gap:20px;text-align:left;cursor:pointer;font-size:17px;font-weight:600;color:#1C1B19;line-height:1.4">
+            <span>{{ q.q }}</span><span style="font-family:'Cormorant Garamond',serif;font-size:26px;line-height:0.9;color:#7A6236;flex:none">{{ q.sign }}</span>
+          </button>
+          <sc-if value="{{ q.open }}" hint-placeholder-val="{{ false }}">
+            <p style="margin:0 0 22px;color:#4A463F;font-size:15.5px;max-width:640px">{{ q.a }}</p>
+          </sc-if>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <section style="max-width:1440px;margin:0 auto;padding:0 28px 96px">
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;margin-bottom:28px">
+      <h2 style="font-family:'Cormorant Garamond',serif;font-weight:500;font-size:clamp(30px,3.4vw,44px);line-height:1.05;margin:0">Guide e approfondimenti</h2>
+      <a href="https://diamond-shine-guide.lovable.app/guide" target="_blank" style="font-size:14px;font-weight:600">Tutte le guide ↗</a>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:20px">
+      <sc-for list="{{ guides }}" as="g" hint-placeholder-count="3">
+        <a href="{{ g.href }}" target="_blank" style="display:flex;flex-direction:column;gap:12px;padding:28px;border:1px solid #DADADA;text-decoration:none;color:#1C1B19;background:#FFFFFF" style-hover="background:#EEEEEE">
+          <span style="font-size:12.5px;letter-spacing:0.08em;text-transform:uppercase;color:#6B655B">{{ g.date }}</span>
+          <span style="font-family:'Cormorant Garamond',serif;font-size:25px;line-height:1.15;font-weight:500">{{ g.title }}</span>
+          <span style="font-size:14.5px;color:#4A463F;flex:1">{{ g.text }}</span>
+          <span style="font-size:13.5px;font-weight:600">Leggi →</span>
+        </a>
+      </sc-for>
+    </div>
+  </section>
+
+  <section style="background:#1E2A2B;color:#F2EEE6">
+    <div style="max-width:1440px;margin:0 auto;padding:96px 28px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:22px">
+      <span style="width:16px;height:16px;transform:rotate(45deg);border:1.5px solid #C9B48A"></span>
+      <h2 style="font-family:'Cormorant Garamond',serif;font-weight:500;font-size:clamp(36px,4.6vw,60px);line-height:1.05;margin:0;text-wrap:balance">Una valutazione gratuita, un'offerta diretta.</h2>
+      <p style="margin:0;color:#C8CEC9;font-size:17px;max-width:560px">Invia il modulo o scrivici su WhatsApp, allegando foto e certificati se li hai. Un gemmologo esamina la richiesta.</p>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center">
+        <button onClick="{{ startBlank }}" style="background:#F2EEE6;color:#1E2A2B;border:0;padding:17px 28px;font-size:15px;font-weight:600;cursor:pointer;border-radius:2px" style-hover="background:#FFFFFF">Richiedi la quotazione gratuita →</button>
+        <a href="https://wa.me/393929664987?text=Buongiorno%2C%20vorrei%20una%20valutazione%20gratuita%20per%20un%20diamante%2C%20un%20gioiello%20o%20un%20orologio." target="_blank" rel="noopener" onClick="{{ openWa }}" style="border:1px solid #F2EEE6;color:#F2EEE6;padding:16px 24px;font-size:15px;font-weight:600;text-decoration:none;border-radius:2px">Valutazione immediata su WhatsApp</a>
+      </div>
+    </div>
+  </section>
+</main>
+</sc-if>
+
+<sc-if value="{{ isAcq }}" hint-placeholder-val="{{ false }}">
+<main style="max-width:1440px;margin:0 auto;padding:72px 28px 96px;display:flex;flex-direction:column;gap:72px">
+  <div style="display:flex;flex-direction:column;gap:20px;max-width:780px">
+    <div style="font-size:12px;letter-spacing:0.2em;text-transform:uppercase;color:#7A6236;font-weight:600">Acquisto diretto da privati</div>
+    <h1 style="font-family:'Cormorant Garamond',serif;font-weight:500;font-size:clamp(42px,5.4vw,68px);line-height:1.03;margin:0">Cosa acquistiamo e come vendere a Milano</h1>
+    <p style="margin:0;font-size:18px;color:#4A463F">Diamanti naturali, gemme di valore, gioielli vintage rari e orologi selezionati. Valutazione gratuita e senza impegno: l'offerta è formulata direttamente da La Diamanteria.</p>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));border-top:1px solid #DADADA;border-left:1px solid #DADADA">
+    <sc-for list="{{ buyItems }}" as="b" hint-placeholder-count="5">
+      <button onClick="{{ b.start }}" style="text-align:left;background:#FFFFFF;border:0;border-right:1px solid #DADADA;border-bottom:1px solid #DADADA;padding:28px 24px;cursor:pointer;display:flex;flex-direction:column;gap:12px;color:#1C1B19" style-hover="background:#EEEEEE">
+        <span style="font-family:'Cormorant Garamond',serif;font-size:26px;line-height:1.1;font-weight:500">{{ b.title }}</span>
+        <span style="font-size:14.5px;color:#4A463F;flex:1">{{ b.text }}</span>
+        <span style="font-size:13.5px;font-weight:600">Quotazione gratuita →</span>
+      </button>
+    </sc-for>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:40px 48px">
+    <sc-for list="{{ acqBlocks }}" as="k" hint-placeholder-count="6">
+      <div style="display:flex;flex-direction:column;gap:10px;border-top:1px solid #1C1B19;padding-top:20px">
+        <h2 style="margin:0;font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:500;line-height:1.1">{{ k.title }}</h2>
+        <p style="margin:0;color:#4A463F;font-size:15.5px">{{ k.text }}</p>
+      </div>
+    </sc-for>
+  </div>
+  <div style="background:#EBEBEB;padding:clamp(28px,5vw,56px);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,360px),1fr));gap:40px">
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <h2 style="margin:0;font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:500;line-height:1.1">Cosa non acquistiamo</h2>
+      <p style="margin:0;color:#4A463F;font-size:15.5px">Valutiamo anche rubini, zaffiri e smeraldi sotto i 2 carati. I gioielli con più pietre seguono un percorso dedicato nel modulo.</p>
+    </div>
+    <div style="display:flex;flex-direction:column">
+      <sc-for list="{{ notBuy }}" as="x" hint-placeholder-count="4">
+        <div style="display:flex;gap:14px;padding:14px 0;border-bottom:1px solid #D0D0D0;font-size:15.5px"><span style="color:#7A6236;flex:none">—</span><span>{{ x }}</span></div>
+      </sc-for>
+    </div>
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between;border:1px solid #DADADA;padding:32px 36px;background:#FFFFFF">
+    <div style="font-family:'Cormorant Garamond',serif;font-size:30px;line-height:1.15">Il tuo oggetto rientra nei criteri?</div>
+    <button onClick="{{ startBlank }}" style="background:#1C1B19;color:#F5F5F5;border:0;padding:17px 28px;font-size:15px;font-weight:600;cursor:pointer;border-radius:2px" style-hover="background:#3A362F">Richiedi la quotazione gratuita →</button>
+  </div>
+</main>
+</sc-if>
+
+<sc-if value="{{ isChi }}" hint-placeholder-val="{{ false }}">
+<main style="max-width:1440px;margin:0 auto;padding:72px 28px 96px;display:flex;flex-direction:column;gap:72px">
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:56px;align-items:end">
+    <div style="display:flex;flex-direction:column;gap:20px">
+      <div style="font-size:12px;letter-spacing:0.2em;text-transform:uppercase;color:#7A6236;font-weight:600">Chi siamo</div>
+      <h1 style="font-family:'Cormorant Garamond',serif;font-weight:500;font-size:clamp(40px,5vw,64px);line-height:1.04;margin:0">Il servizio di acquisto diretto di La Diamanteria</h1>
+    </div>
+    <p style="margin:0;font-size:17px;color:#4A463F">ComproDiamanti.it è il servizio dedicato a chi vuole vendere o valutare diamanti e gioielli. È gestito da La Diamanteria, a Milano dal 2009. La famiglia Silvera conta cinque generazioni di <strong>Diamantaires</strong>. Le sue radici nel commercio dei diamanti risalgono a oltre 300 anni fa, come raccontano studi storici e articoli dedicati alla famiglia.</p>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));border-top:1px solid #1C1B19;border-bottom:1px solid #DADADA">
+    <div style="padding:28px 24px 28px 0;display:flex;flex-direction:column;gap:6px"><span style="font-family:'Cormorant Garamond',serif;font-size:52px;line-height:1">2009</span><span style="font-size:14px;color:#4A463F">a Milano, Via Vincenzo Monti 47</span></div>
+    <div style="padding:28px 24px 28px 0;display:flex;flex-direction:column;gap:6px"><span style="font-family:'Cormorant Garamond',serif;font-size:52px;line-height:1">5</span><span style="font-size:14px;color:#4A463F">generazioni di Diamantaires</span></div>
+    <div style="padding:28px 24px 28px 0;display:flex;flex-direction:column;gap:6px"><span style="font-family:'Cormorant Garamond',serif;font-size:52px;line-height:1">€200 mln</span><span style="font-size:14px;color:#4A463F">di diamanti valutati ogni anno</span></div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:40px 48px">
+    <sc-for list="{{ chiBlocks }}" as="k" hint-placeholder-count="4">
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <h2 style="margin:0;font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:500;line-height:1.1">{{ k.title }}</h2>
+        <p style="margin:0;color:#4A463F;font-size:15.5px">{{ k.text }}</p>
+      </div>
+    </sc-for>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:24px">
+    <sc-for list="{{ docs }}" as="d" hint-placeholder-count="3">
+      <figure style="margin:0;display:flex;flex-direction:column;gap:12px">
+        <img src="{{ d.src }}" alt="{{ d.alt }}" style="width:100%;aspect-ratio:3/4;object-fit:cover;display:block;background:#E2E2E2;border:1px solid #DADADA">
+        <figcaption style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:19px;color:#4A463F">{{ d.cap }}</figcaption>
+      </figure>
+    </sc-for>
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between;background:#1E2A2B;color:#F2EEE6;padding:36px 40px">
+    <div style="font-family:'Cormorant Garamond',serif;font-size:30px;line-height:1.15">Un gemmologo esamina ogni richiesta.</div>
+    <button onClick="{{ startBlank }}" style="background:#F2EEE6;color:#1E2A2B;border:0;padding:17px 28px;font-size:15px;font-weight:600;cursor:pointer;border-radius:2px">Richiedi la quotazione gratuita →</button>
+  </div>
+  <p style="margin:0;font-size:14.5px;color:#4A463F">La Diamanteria svolge anche attività di gioielleria e creazioni su misura sul proprio sito ufficiale. <a href="https://www.ladiamanteria.com" target="_blank">Scopri La Diamanteria ↗</a></p>
+</main>
+</sc-if>
+
+<sc-if value="{{ isFaq }}" hint-placeholder-val="{{ false }}">
+<main style="max-width:1440px;margin:0 auto;padding:72px 28px 96px;display:flex;flex-direction:column;gap:40px">
+  <div style="display:flex;flex-direction:column;gap:16px">
+    <div style="font-size:12px;letter-spacing:0.2em;text-transform:uppercase;color:#7A6236;font-weight:600">FAQ</div>
+    <h1 style="font-family:'Cormorant Garamond',serif;font-weight:500;font-size:clamp(42px,5vw,64px);line-height:1.04;margin:0">Domande frequenti</h1>
+  </div>
+  <div style="border-top:1px solid #1C1B19">
+    <sc-for list="{{ faqsAll }}" as="q" hint-placeholder-count="6">
+      <div style="border-bottom:1px solid #DADADA">
+        <button onClick="{{ q.toggle }}" style="width:100%;background:none;border:0;padding:24px 0;display:flex;justify-content:space-between;gap:20px;text-align:left;cursor:pointer;font-size:18px;font-weight:600;color:#1C1B19;line-height:1.4">
+          <span>{{ q.q }}</span><span style="font-family:'Cormorant Garamond',serif;font-size:28px;line-height:0.9;color:#7A6236;flex:none">{{ q.sign }}</span>
+        </button>
+        <sc-if value="{{ q.open }}" hint-placeholder-val="{{ false }}">
+          <p style="margin:0 0 24px;color:#4A463F;font-size:16px">{{ q.a }}</p>
+        </sc-if>
+      </div>
+    </sc-for>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:16px">
+    <button onClick="{{ startBlank }}" style="background:#1C1B19;color:#F5F5F5;border:0;padding:22px;font-size:15px;font-weight:600;cursor:pointer;text-align:left;display:flex;flex-direction:column;gap:4px;border-radius:2px"><span style="font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:#C9B48A">Modulo online</span>Richiedi la quotazione gratuita →</button>
+    <a href="https://wa.me/393929664987?text=Buongiorno%2C%20vorrei%20una%20valutazione%20gratuita%20per%20un%20diamante%2C%20un%20gioiello%20o%20un%20orologio." target="_blank" rel="noopener" onClick="{{ openWa }}" style="border:1px solid #1C1B19;padding:22px;font-size:15px;font-weight:600;text-decoration:none;display:flex;flex-direction:column;gap:4px"><span style="font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:#7A6236">Immediata</span>WhatsApp +39 392 966 4987</a>
+    <a href="tel:+3902466891" style="border:1px solid #1C1B19;padding:22px;font-size:15px;font-weight:600;text-decoration:none;display:flex;flex-direction:column;gap:4px"><span style="font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:#7A6236">Telefono</span>+39 02 466 891</a>
+  </div>
+</main>
+</sc-if>
+
+<footer style="background:#161D1E;color:#D9DDD9">
+  <div style="max-width:1440px;margin:0 auto;padding:64px 28px 32px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:40px">
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <span style="font-family:'Cormorant Garamond',serif;font-size:26px;color:#F2EEE6">ComproDiamanti.it</span>
+      <span style="font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:#C9B48A">by La Diamanteria</span>
+      <p style="margin:6px 0 0;font-size:14px;color:#AEB6B2">Servizio di acquisto diretto e valutazione di diamanti e gioielli da privati. Milano, Via Vincenzo Monti 47.</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px;font-size:14px">
+      <span style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:#C9B48A;margin-bottom:4px">Contatti</span>
+      <a href="tel:+3902466891" style="color:#F2EEE6;text-decoration:none">+39 02 466 891</a>
+      <a href="https://wa.me/393929664987" target="_blank" rel="noopener" onClick="{{ openWa }}" style="color:#F2EEE6;text-decoration:none">WhatsApp +39 392 966 4987</a>
+      <a href="mailto:sl@ladiamanteria.com" style="color:#F2EEE6;text-decoration:none">sl@ladiamanteria.com</a>
+      <span style="color:#AEB6B2">Via Vincenzo Monti 47, 20123 Milano</span>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px;font-size:14px;align-items:flex-start">
+      <span style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:#C9B48A;margin-bottom:4px">Sito</span>
+      <sc-for list="{{ nav }}" as="n" hint-placeholder-count="5">
+        <button onClick="{{ n.go }}" style="background:none;border:0;padding:0;cursor:pointer;color:#F2EEE6;font-size:14px">{{ n.label }}</button>
+      </sc-for>
+      <a href="https://www.ladiamanteria.com" target="_blank" style="color:#F2EEE6;text-decoration:none">La Diamanteria ↗</a>
+      <a href="https://www.instagram.com/ladiamanteria/" target="_blank" style="color:#F2EEE6;text-decoration:none">Instagram ↗</a>
+    </div>
+  </div>
+  <div style="max-width:1440px;margin:0 auto;padding:20px 28px 32px;border-top:1px solid #2C3637;font-size:12.5px;color:#9AA39F">© 2026 ComproDiamanti.it by La Diamanteria · Tutti i diritti riservati. · Cookie</div>
+</footer>
+<sc-if value="{{ desktop }}" hint-placeholder-val="{{ true }}">
+<a href="https://wa.me/393929664987?text=Buongiorno%2C%20vorrei%20una%20valutazione%20gratuita%20per%20un%20diamante%2C%20un%20gioiello%20o%20un%20orologio." target="_blank" rel="noopener" onClick="{{ openWa }}" aria-label="Scrivici su WhatsApp" style="position:fixed;left:20px;bottom:96px;z-index:70;width:56px;height:56px;border-radius:50%;background:#25D366;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px rgba(20,18,15,0.22);text-decoration:none" style-hover="background:#1EBE5A">
+  <svg width="30" height="30" viewBox="0 0 24 24" fill="#FFFFFF" aria-hidden="true"><path d="M17.47 14.38c-.3-.15-1.75-.86-2.02-.96-.27-.1-.47-.15-.67.15-.2.3-.77.96-.94 1.16-.17.2-.35.22-.64.07-.3-.15-1.25-.46-2.38-1.47-.88-.79-1.47-1.76-1.65-2.06-.17-.3-.02-.46.13-.6.13-.14.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.03-.52-.07-.15-.67-1.61-.92-2.2-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48s1.07 2.88 1.21 3.08c.15.2 2.1 3.2 5.08 4.49.71.31 1.26.49 1.69.63.71.23 1.36.2 1.87.12.57-.08 1.75-.72 2-1.41.25-.69.25-1.29.17-1.41-.07-.12-.27-.2-.57-.35zM12.05 21.5h-.01a9.4 9.4 0 0 1-4.8-1.32l-.34-.2-3.57.94.95-3.48-.22-.36a9.43 9.43 0 0 1-1.44-5.02c0-5.2 4.23-9.43 9.44-9.43 2.52 0 4.89.98 6.67 2.77a9.37 9.37 0 0 1 2.76 6.67c0 5.2-4.24 9.43-9.44 9.43zm8.03-17.46A11.27 11.27 0 0 0 12.05.72C5.8.72.7 5.8.7 12.06c0 2 .52 3.95 1.52 5.67L.6 23.6l6.02-1.58a11.33 11.33 0 0 0 5.42 1.38h.01c6.25 0 11.34-5.09 11.35-11.34 0-3.03-1.18-5.88-3.32-8.02z"/></svg>
+</a>
+</sc-if>
+<sc-if value="{{ mobile }}" hint-placeholder-val="{{ false }}">
+  <div style="height:calc(64px + env(safe-area-inset-bottom))"></div>
+  <nav aria-label="Contatti rapidi" style="position:fixed;left:0;right:0;bottom:0;z-index:80;background:#1C1B19;display:grid;grid-template-columns:repeat(3,1fr);padding-bottom:env(safe-area-inset-bottom);border-top:1px solid #2E2C29">
+    <a href="https://wa.me/393929664987?text=Buongiorno%2C%20vorrei%20una%20valutazione%20gratuita%20per%20un%20diamante%2C%20un%20gioiello%20o%20un%20orologio." target="_blank" rel="noopener" onClick="{{ openWa }}" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;height:64px;color:#F5F5F5;text-decoration:none;font-size:12px;font-weight:600;letter-spacing:0.02em">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="#25D366" aria-hidden="true"><path d="M17.47 14.38c-.3-.15-1.75-.86-2.02-.96-.27-.1-.47-.15-.67.15-.2.3-.77.96-.94 1.16-.17.2-.35.22-.64.07-.3-.15-1.250-.46-2.38-1.47-.88-.79-1.47-1.76-1.65-2.06-.17-.3-.02-.46.13-.6.13-.14.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.03-.52-.07-.15-.67-1.61-.92-2.2-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.020-1.04 2.48s1.07 2.88 1.21 3.08c.15.2 2.1 3.2 5.08 4.49.71.31 1.26.49 1.69.63.71.23 1.36.2 1.87.12.57-.08 1.75-.72 2-1.41.25-.69.25-1.29.17-1.41-.07-.12-.27-.2-.57-.35zM12.05 21.5h-.01a9.4 9.4 0 0 1-4.8-1.32l-.34-.2-3.57.94.95-3.48-.22-.36a9.43 9.43 0 0 1-1.44-5.02c0-5.2 4.23-9.43 9.44-9.43 2.52 0 4.89.98 6.670 2.77a9.37 9.37 0 0 1 2.76 6.67c0 5.2-4.24 9.43-9.44 9.43zm8.03-17.46A11.27 11.27 0 0 0 12.05.72C5.8.72.7 5.8.7 12.060c0 2 .52 3.95 1.52 5.67L.6 23.6l6.02-1.58a11.33 11.33 0 0 0 5.42 1.38h.01c6.25 0 11.34-5.09 11.35-11.34 0-3.03-1.18-5.88-3.32-8.02z"></path></svg>WhatsApp</a>
+    <a href="mailto:sl@ladiamanteria.com" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;height:64px;color:#F5F5F5;text-decoration:none;font-size:12px;font-weight:600;letter-spacing:0.02em;border-left:1px solid #2E2C29;border-right:1px solid #2E2C29">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C9B48A" stroke-width="1.6" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"></rect><path d="M3.5 6l8.5 7 8.5-7"></path></svg>Email</a>
+    <a href="tel:+3902466891" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;height:64px;color:#F5F5F5;text-decoration:none;font-size:12px;font-weight:600;letter-spacing:0.02em">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C9B48A" stroke-width="1.6" aria-hidden="true"><path d="M5 3.5h3.2l1.6 4.2-2.1 1.4a11 11 0 0 0 5.2 5.2l1.4-2.1 4.2 1.6V17a2 2 0 0 1-2.2 2A15.5 15.5 0 0 1 3 5.7 2 2 0 0 1 5 3.5z"></path></svg>Chiama</a>
+  </nav>
+</sc-if>
+
+<sc-if value="{{ showSticky }}" hint-placeholder-val="{{ false }}">
+  <div style="position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:60;background:#1C1B19;color:#F5F5F5;display:flex;align-items:center;gap:6px;padding:6px;box-shadow:0 12px 32px rgba(20,18,15,0.25);max-width:calc(100% - 24px);flex-wrap:wrap;justify-content:center;border-radius:2px">
+    <span style="font-size:13.5px;padding:0 12px;color:#D8D2C6">Valutazione gratuita e senza impegno</span>
+    <button onClick="{{ startBlank }}" style="background:#F5F5F5;color:#1C1B19;border:0;padding:11px 18px;font-size:14px;font-weight:600;cursor:pointer;border-radius:2px">Richiedi la quotazione</button>
+    <a href="https://wa.me/393929664987?text=Buongiorno%2C%20vorrei%20una%20valutazione%20gratuita%20per%20un%20diamante%2C%20un%20gioiello%20o%20un%20orologio." target="_blank" rel="noopener" onClick="{{ openWa }}" style="color:#F5F5F5;padding:11px 14px;font-size:14px;font-weight:600;text-decoration:none">WhatsApp</a>
+  </div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;stickyCta&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Funnel&quot;},&quot;blockIneligible&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Funnel&quot;}}">
+const WA = 'https://wa.me/393929664987';
+const CATS = ['Anello solitario','Anello con più pietre','Orecchini','Collana / pendente','Bracciale','Spilla','Pietra sciolta','Pietra preziosa (rubino, zaffiro, smeraldo…)','Orologio','Altro'];
+const BRANDS = ['Rolex','Patek Philippe','Audemars Piguet','Cartier','Vacheron Constantin','Richard Mille','Piaget','Jacob & Co','Altro marchio'];
+const FAQS = [
+  ['Devo vendere il mio anello con diamante: a chi posso rivolgermi?','A un acquirente specializzato in diamanti. La Diamanteria acquista direttamente da privati dal 2009 a Milano: esaminiamo la pietra con criteri gemmologici e, se rientra nei nostri criteri, formuliamo la nostra offerta senza aste né intermediari.'],
+  ['Quali diamanti acquistate?','Valutiamo diamanti naturali a partire da 1 carato per singola pietra, con certificato GIA, HRD o IGI oppure senza certificato. Non acquistiamo diamanti sintetici né diamanti certificati AIG, GRA, GWLAB o ALGT. Valutiamo anche rubini, zaffiri e smeraldi sotto i 2 carati.'],
+  ['Quanto tempo serve per avere una prima valutazione?','Per una valutazione immediata contattaci su WhatsApp o chiamaci al 02 466891. In alternativa compila il modulo di quotazione online: un nostro gemmologo esamina la richiesta e la valutazione definitiva avviene dopo l\'esame della pietra in sede.'],
+  ['Come viene calcolato il valore di un diamante?','Il prezzo dipende dalle 4C: peso in carati, colore, purezza e taglio. Contano anche fluorescenza, proporzioni e la presenza di un certificato internazionale. Il riferimento sono le quotazioni aggiornate delle borse di Anversa, Tel Aviv, New York, Dubai e Mumbai.'],
+  ['Cosa devo preparare?','Invia foto nitide e, se disponibile, un certificato GIA, HRD o IGI. Puoi proporci anche un diamante senza certificato. Il documento d\'identità è necessario se concludiamo la vendita.'],
+  ['Come avviene il pagamento?','Se necessario fissiamo un appuntamento in Via Vincenzo Monti 47, Milano, per esaminare l\'oggetto. Se accetti la nostra offerta, paghiamo con bonifico tracciabile.']
+];
+const STEP_NAMES = ['Oggetto','Dettagli','Documenti','Foto','Contatti'];
+
+class Component extends DCLogic {
+  state = { page: 'home', step: 1, openFaq: 0, scrolled: false, hero: 0, w: 1440, menu: false,
+    f: { cat:'', stone:'', brand:'', ct:'', origin:'', cert:'', kit:'', files:[], note:'', name:'', phone:'', email:'', pref:'WhatsApp', consent:false } };
+
+  componentDidMount() {
+    this._onScroll = () => { const s = window.scrollY > 560; if (s !== this.state.scrolled) this.setState({ scrolled: s }); };
+    window.addEventListener('scroll', this._onScroll, { passive: true });
+    this._rs = () => this.setState({ w: window.innerWidth }); this._rs(); window.addEventListener('resize', this._rs);
+    try { const p = new URLSearchParams(window.location.search).get('p'); if (p === 'come-funziona') this.go('home', 'come-funziona'); else if (['acquistiamo','chisiamo','faq'].includes(p)) this.go(p); } catch (e) {}
+    this._t = setInterval(() => this.setState(s => ({ hero: (s.hero + 1) % 3 })), 5500);
+  }
+  componentWillUnmount() { window.removeEventListener('scroll', this._onScroll); clearInterval(this._t); window.removeEventListener('resize', this._rs); }
+  heroTo(i) { clearInterval(this._t); this.setState({ hero: (i + 3) % 3 }); this._t = setInterval(() => this.setState(s => ({ hero: (s.hero + 1) % 3 })), 5500); }
+
+  top() { window.scrollTo({ top: 0 }); }
+  go(page, anchor) {
+    this.setState({ page, menu: false });
+    if (anchor) setTimeout(() => { const el = document.getElementById(anchor); if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 80, behavior: 'smooth' }); }, 60);
+    else this.top();
+  }
+  set(k, v) { this.setState(s => ({ f: { ...s.f, [k]: v } })); }
+  start(cat) { window.location.href = 'Quotazione.dc.html' + (cat ? '?cat=' + encodeURIComponent(cat) : ''); }
+  kind(cat) { return cat === 'Orologio' ? 'watch' : cat.startsWith('Pietra preziosa') ? 'gem' : 'diamond'; }
+
+  issue() {
+    const { f, step } = this.state, k = this.kind(f.cat);
+    if (step === 2 && k === 'watch' && f.brand === 'Altro marchio') return ['Questo marchio non rientra tra quelli trattati', 'Per gli orologi trattiamo solo Rolex, Patek Philippe, Audemars Piguet, Cartier, Vacheron Constantin, Richard Mille, Piaget e Jacob & Co.'];
+    if (step === 2 && k === 'diamond' && f.ct === 'Meno di 1 ct') return ['Valutiamo diamanti da 1 carato in su', 'Non acquistiamo diamanti inferiori a 1 carato per singola pietra. Le pietre preziose vengono valutate anche sotto i 2 carati.'];
+    if (step === 2 && k === 'diamond' && f.origin === 'Creato in laboratorio') return ['Non acquistiamo diamanti creati in laboratorio', 'Valutiamo esclusivamente diamanti naturali, certificati GIA, HRD, IGI o senza certificato.'];
+    if (step === 3 && k !== 'watch' && f.cert.startsWith('Altro')) return ['Certificato non riconosciuto', 'Non acquistiamo diamanti con certificati AIG, GRA, GWLAB o ALGT.'];
+    return null;
+  }
+  valid() {
+    const { f, step } = this.state, k = this.kind(f.cat);
+    const blocking = this.props.blockIneligible ?? true;
+    if (blocking && this.issue()) return false;
+    if (step === 1) return !!f.cat;
+    if (step === 2) return k === 'watch' ? !!f.brand : k === 'gem' ? !!(f.stone && f.ct) : !!(f.ct && f.origin);
+    if (step === 3) return k === 'watch' ? !!f.kit : !!f.cert;
+    if (step === 5) return !!(f.name.trim() && (f.phone.trim() || f.email.trim()) && f.consent);
+    return true;
+  }
+
+  opts(list, key, autoNext) {
+    const cur = this.state.f[key];
+    return list.map(label => {
+      const on = cur === label;
+      return { label, bd: on ? '#1C1B19' : '#DADADA', bg: on ? '#EEEEEE' : '#FFFFFF', dot: on ? '#8A6F42' : 'transparent',
+        pick: () => { this.set(key, label); if (autoNext) setTimeout(() => this.setState(s => ({ step: s.step + 1, f: { ...s.f, [key]: label } })), 180); } };
+    });
+  }
+
+  openWa(e) {
+    const url = e.currentTarget.getAttribute('href');
+    e.preventDefault();
+    let w = null;
+    try { w = window.open(url, '_blank'); if (w) w.opener = null; } catch (err) {}
+    if (!w) { try { window.top.location.href = url; } catch (err) { window.location.href = url; } }
+  }
+  renderVals() {
+    const { page, step, f, openFaq, scrolled, hero, w, menu } = this.state;
+    const isMob = w < 1100;
+    const k = this.kind(f.cat || 'x');
+    const iss = this.issue();
+    const ok = this.valid();
+    const navDef = [['Vendere un diamante','acquistiamo'],['Come funziona','home','come-funziona'],['Chi siamo','chisiamo'],['FAQ','faq']];
+    const faqMap = (arr) => arr.map((q, i) => ({ q: q[0], a: q[1], open: openFaq === i, sign: openFaq === i ? '−' : '+', toggle: () => this.setState({ openFaq: openFaq === i ? -1 : i }) }));
+    const ctList = k === 'gem' ? ['Meno di 1 ct','1–2 ct','2–5 ct','Oltre 5 ct','Non lo so'] : ['Meno di 1 ct','1–2 ct','2–3 ct','3–5 ct','Oltre 5 ct','Non lo so'];
+    const recap = [];
+    if (f.cat) recap.push({ k: 'Oggetto', v: f.cat.replace(' (rubino, zaffiro, smeraldo…)', '') });
+    if (k === 'watch' && f.brand) recap.push({ k: 'Marca', v: f.brand });
+    if (k === 'gem' && f.stone) recap.push({ k: 'Pietra', v: f.stone });
+    if (k !== 'watch' && f.ct) recap.push({ k: 'Peso', v: f.ct });
+    if (k === 'diamond' && f.origin) recap.push({ k: 'Origine', v: f.origin });
+    if (k !== 'watch' && f.cert) recap.push({ k: 'Certificato', v: f.cert.startsWith('Altro') ? 'Altro' : f.cert });
+    if (k === 'watch' && f.kit) recap.push({ k: 'Corredo', v: f.kit });
+    if (f.files.length) recap.push({ k: 'Allegati', v: f.files.length + ' file' });
+
+    return {
+      openWa: e => this.openWa(e),
+      desktop: !isMob, mobile: isMob, menuOpen: isMob && menu, menuLabel: menu ? 'Chiudi' : 'Menu',
+      toggleMenu: () => this.setState({ menu: !menu }),
+      isHome: page === 'home', isAcq: page === 'acquistiamo', isChi: page === 'chisiamo', isFaq: page === 'faq', isQuote: page === 'quotazione', isThanks: page === 'grazie',
+      nav: navDef.map(([label, p, a]) => ({ label, line: (page === p && !a) ? '#1C1B19' : 'transparent', go: () => p === 'quotazione' ? this.start() : this.go(p, a) })),
+      goHome: () => this.go('home'), goAcq: () => this.go('acquistiamo'), goFaq: () => this.go('faq'),
+      startBlank: () => this.start(),
+      showSticky: (this.props.stickyCta ?? true) && !isMob && scrolled && (page === 'home' || page === 'acquistiamo' || page === 'chisiamo'),
+      buyItems: [
+        ['01','Diamanti','Diamanti naturali da 1 ct per singola pietra, certificati GIA, HRD, IGI o senza certificato.','Pietra sciolta'],
+        ['02','Gioielli con diamanti','Solitari e gioielli con più pietre, valutati con domande dedicate.',null],
+        ['03','Pietre preziose','Rubini, zaffiri e smeraldi, anche sotto 2 ct.','Pietra preziosa (rubino, zaffiro, smeraldo…)'],
+        ['04','Gioielli vintage e firmati','Pezzi rari, con particolare attenzione alla qualità delle gemme.',null],
+        ['05','Orologi di alta gamma','Solo i marchi trattati: verifica i criteri prima di inviarci la richiesta.','Orologio']
+      ].map(([n, title, text, cat]) => ({ n, title, text, start: () => this.start(cat) })),
+      howSteps: [
+        ['01','Richiedi la valutazione','Invia il modulo o scrivici su WhatsApp, allegando foto e certificati se li hai.'],
+        ['02','Valutazione professionale','Un gemmologo esamina la richiesta e, se necessario, fissa un appuntamento.'],
+        ['03','Offerta diretta','La Diamanteria formula la propria offerta, senza aste né intermediari.'],
+        ['04','Pagamento','Se accetti, il pagamento avviene con bonifico tracciabile.']
+      ].map(([n, title, text]) => ({ n, title, text })),
+      whyItems: [
+        ['Compratore diretto',"L'offerta arriva da noi, non da un intermediario."],
+        ['Cinque generazioni di Diamantaires','Una storia familiare documentata nel commercio dei diamanti.'],
+        ['Valutazione gemmologica','Esaminiamo le caratteristiche della pietra e i documenti disponibili.'],
+        ['Sede a Milano','Appuntamento in Via Vincenzo Monti 47 e pagamento con bonifico tracciabile.']
+      ].map(([title, text]) => ({ title, text })),
+      heroSlides: [
+        ['d5eae2bd-354c-41cb-ad4c-84c8cab40091/showroom-1.jpg','Vetrine e lampadario della sede La Diamanteria'],
+        ['0ad06598-6c3d-430f-b1d8-aaa6800911a7/showroom-2.jpg','Ingresso e vetrina della sede La Diamanteria'],
+        ['9db47547-dde6-44b5-afeb-bfdd16092d85/showroom-4.jpg','Ambiente interno e vetrine dello showroom La Diamanteria']
+      ].map(([p, alt], i) => ({ src: ((window.__resources || {})['img_' + p.slice(0, 8)] || 'https://diamond-shine-guide.lovable.app/__l5e/assets-v1/' + p), alt, op: hero === i ? 1 : 0, sc: hero === i ? 1.04 : 1, w: hero === i ? '28px' : '12px', dot: hero === i ? '#F5F5F5' : 'rgba(245,245,245,0.55)', go: () => this.heroTo(i) })),
+      heroPrev: () => this.heroTo(hero - 1), heroNext: () => this.heroTo(hero + 1),
+      showroom: [
+        ['d5eae2bd-354c-41cb-ad4c-84c8cab40091/showroom-1.jpg','Vetrine e lampadario della sede La Diamanteria'],
+        ['0ad06598-6c3d-430f-b1d8-aaa6800911a7/showroom-2.jpg','Ingresso e vetrina della sede La Diamanteria'],
+        ['9db47547-dde6-44b5-afeb-bfdd16092d85/showroom-4.jpg','Ambiente interno e vetrine dello showroom La Diamanteria']
+      ].map(([p, alt]) => ({ src: ((window.__resources || {})['img_' + p.slice(0, 8)] || 'https://diamond-shine-guide.lovable.app/__l5e/assets-v1/' + p), alt })),
+      docs: [
+        ['366db432-1027-4c75-9cc9-2aa23c6b2a08/silvera-trivellato-book.jpeg','Copertina del libro Il commercio interculturale','Francesca Trivellato, Il commercio interculturale'],
+        ['cf222384-9059-4d02-a08b-e7acff648898/silvera-trivellato-study.jpeg','Studio pubblicato su Quaderni storici','Studio su Quaderni storici, 2010'],
+        ['aacec743-b359-4ec5-b37e-d7bcff4e24ed/silvera-article.jpeg','Articolo di giornale Mercanti rovinati da un diamante','Articolo sulla storia della famiglia Silvera']
+      ].map(([p, alt, cap]) => ({ src: ((window.__resources || {})['img_' + p.slice(0, 8)] || 'https://diamond-shine-guide.lovable.app/__l5e/assets-v1/' + p), alt, cap })),
+      faqs: faqMap(FAQS.slice(0, 4)), faqsAll: faqMap(FAQS),
+      guides: [
+        ['20 settembre 2026','Come vendere un anello con diamante: guida completa','Documenti utili, criteri di valutazione e passaggi per vendere un anello con diamante direttamente a un acquirente.','come-vendere-anello-diamante'],
+        ['10 settembre 2026','Certificati GIA, HRD e IGI: perché contano quando vendi','Non tutti i certificati hanno lo stesso valore sul mercato. Ecco quali sono riconosciuti a livello internazionale.','certificati-diamanti-gia-hrd-igi'],
+        ['28 agosto 2026','Quanto vale un diamante da 1 carato?','Colore, purezza e taglio possono far variare il prezzo di un diamante da 1 carato di molte volte.','quanto-vale-diamante-1-carato']
+      ].map(([date, title, text, slug]) => ({ date, title, text, href: 'https://diamond-shine-guide.lovable.app/guide/' + slug })),
+      acqBlocks: [
+        ['Chi può vendere','Acquistiamo direttamente da privati. Se hai ereditato un gioiello, vuoi vendere una pietra sciolta o stai valutando la vendita di un pezzo vintage, puoi iniziare con una richiesta gratuita e senza impegno.'],
+        ['Cosa preparare',"Invia foto nitide e, se disponibile, un certificato GIA, HRD o IGI. Puoi proporci anche un diamante senza certificato. Il documento d'identità è necessario se concludiamo la vendita."],
+        ['Come valutiamo','Esaminiamo peso, colore, purezza e taglio, insieme a fluorescenza, proporzioni, certificazione e stato del gioiello. Per più pietre raccogliamo dettagli dedicati; la prima richiesta non sostituisce l\'esame in sede.'],
+        ["Cosa influenza l'offerta","Due pietre dello stesso peso possono avere valori diversi. Contano qualità gemmologica, eventuali trattamenti, documentazione e caratteristiche dell'oggetto. La nostra offerta viene formulata dopo la verifica."],
+        ['In sede e pagamento',"Se necessario fissiamo un appuntamento in Via Vincenzo Monti 47, Milano, per esaminare l'oggetto. Se accetti la nostra offerta, paghiamo con bonifico tracciabile."],
+        ['Compriamo direttamente',"Non mettiamo il tuo diamante in asta e non lo proponiamo a una rete di acquirenti. Se rientra nei nostri criteri, siamo noi a formulare direttamente l'offerta. Un solo interlocutore, un processo più lineare."]
+      ].map(([title, text]) => ({ title, text })),
+      notBuy: ['Diamanti inferiori a 1 carato per singola pietra','Diamanti sintetici o creati in laboratorio','Diamanti con certificati AIG, GRA, GWLAB o ALGT','Orologi di marchi diversi da quelli trattati: Rolex, Patek Philippe, Audemars Piguet, Cartier, Vacheron Constantin, Richard Mille, Piaget e Jacob & Co'],
+      chiBlocks: [
+        ['La nostra esperienza oggi',"Oggi i fratelli Silvera acquistano direttamente diamanti da privati. Un gemmologo esamina ogni richiesta e le caratteristiche della pietra: non affidiamo gli oggetti a un'asta né cerchiamo acquirenti per conto tuo."],
+        ['La storia nei documenti','Il volume Il commercio interculturale di Francesca Trivellato, uno studio pubblicato su Quaderni storici e un articolo di giornale ripercorrono episodi della storia commerciale della famiglia.'],
+        ['La boutique di Milano',"Dal 2009 riceviamo su appuntamento in Via Vincenzo Monti 47, Milano. Qui possiamo esaminare il bene di persona e formulare la nostra offerta diretta. Se la accetti, paghiamo con bonifico tracciabile."],
+        ['Stime e perizie','Ogni anno valutiamo oltre 200 milioni di euro di diamanti. Dal 2015 i nostri gemmologi accreditati presso la Camera di Commercio redigono anche perizie giurate per eredità, divisioni patrimoniali, cause legali e fini assicurativi.']
+      ].map(([title, text]) => ({ title, text })),
+
+      step, stepName: STEP_NAMES[step - 1],
+      stepBars: [1,2,3,4,5].map(i => ({ c: i <= step ? '#1C1B19' : '#E2E2E2' })),
+      s1: step === 1, s2watch: step === 2 && k === 'watch', s2gem: step === 2 && k === 'gem', s2stone: step === 2 && k !== 'watch', s2diamond: step === 2 && k === 'diamond',
+      s3watch: step === 3 && k === 'watch', s3cert: step === 3 && k !== 'watch', s4: step === 4, s5: step === 5,
+      ctTitle: k === 'gem' ? 'Peso della pietra' : 'Peso della pietra principale', ctTitleSize: k === 'gem' ? '26px' : '34px',
+      catOpts: this.opts(CATS, 'cat', true),
+      brandOpts: this.opts(BRANDS, 'brand', false),
+      stoneOpts: this.opts(['Rubino','Zaffiro','Smeraldo','Altra pietra'], 'stone', false),
+      ctOpts: this.opts(ctList, 'ct', false),
+      originOpts: this.opts(['Naturale','Creato in laboratorio','Non lo so'], 'origin', false),
+      certOpts: this.opts(['GIA','HRD','IGI','Nessun certificato','Altro (AIG, GRA, GWLAB, ALGT)'], 'cert', false),
+      kitOpts: this.opts(['Scatola e garanzia','Solo garanzia','Nessun documento'], 'kit', false),
+      prefOpts: this.opts(['WhatsApp','Telefono','Email'], 'pref', false),
+      f, hasFiles: f.files.length > 0,
+      onFiles: e => this.set('files', Array.from(e.target.files || []).map(x => x.name)),
+      onNote: e => this.set('note', e.target.value), onName: e => this.set('name', e.target.value),
+      onPhone: e => this.set('phone', e.target.value), onEmail: e => this.set('email', e.target.value),
+      onConsent: e => this.set('consent', e.target.checked),
+      hasIssue: !!iss, issueTitle: iss ? iss[0] : '', issueText: iss ? iss[1] : '',
+      canBack: step > 1,
+      back: () => this.setState({ step: step - 1 }),
+      next: () => { if (!ok) return; if (step < 5) { this.setState({ step: step + 1 }); this.top(); } else { this.setState({ page: 'grazie' }); this.top(); } },
+      nextDisabled: !ok, nextOpacity: ok ? 1 : 0.35,
+      nextLabel: step === 5 ? 'Invia la richiesta gratuita' : step === 4 ? (f.files.length ? 'Continua' : 'Salta e continua') : 'Continua',
+      hasRecap: recap.length > 0, recap,
+      asideTrust: ['Compratore diretto, senza aste né intermediari','Cinque generazioni di Diamantaires','Sede a Milano, Via Vincenzo Monti 47','Pagamento con bonifico tracciabile'],
+      notEval: ['Diamanti inferiori a 1 carato per singola pietra o creati in laboratorio','Diamanti con certificati AIG, GRA, GWLAB o ALGT','Orologi di marchi non trattati'],
+      thanksName: f.name.trim() ? ', ' + f.name.trim().split(' ')[0] : '',
+      prefLower: f.pref.toLowerCase(),
+      nextSteps: [
+        ['02','Valutazione professionale','Un gemmologo esamina la richiesta e, se necessario, fissa un appuntamento in Via Vincenzo Monti 47.'],
+        ['03','Offerta diretta','La Diamanteria formula la propria offerta, senza aste né intermediari.'],
+        ['04','Pagamento','Se accetti, il pagamento avviene con bonifico tracciabile. Il documento d\'identità è necessario se concludiamo la vendita.']
+      ].map(([n, title, text]) => ({ n, title, text }))
+    };
+  }
+}
+</script>
+</body>
+</html>

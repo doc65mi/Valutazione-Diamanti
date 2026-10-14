@@ -1,0 +1,27 @@
+{
+  "spec": "1.00",
+  "slug": "grazie",
+  "language": "en",
+  "version": 1,
+  "meta": {
+    "title": "Thank you for your enquiry | ComproDiamanti",
+    "description": "Free valuations and direct buying of diamonds, jewellery and luxury watches in Milan. La Diamanteria, established in 2009."
+  },
+  "slots": {
+    "grazie-contenuto-001": {
+      "label": "◇ ComproDiamanti.it",
+      "href": "index.html"
+    },
+    "grazie-contenuto-002": "Free valuation",
+    "grazie-contenuto-003": "Thank you for your enquiry",
+    "grazie-contenuto-004": "One of our gemmologists will review the information and attachments you have submitted and contact you using your preferred method. A final valuation requires an examination of the item.",
+    "grazie-contenuto-005": "What happens next",
+    "grazie-contenuto-006": "A gemmologist reviews your enquiry.",
+    "grazie-contenuto-007": "An appointment at our Milan showroom, if needed.",
+    "grazie-contenuto-008": "An offer directly from us, with payment by bank transfer if you decide to sell.",
+    "grazie-contenuto-009": {
+      "label": "Back to the website",
+      "href": "index.html"
+    }
+  }
+}

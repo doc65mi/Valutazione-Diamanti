@@ -1,0 +1,121 @@
+{
+  "spec": "1.00",
+  "slug": "chisiamo",
+  "language": "en",
+  "version": 1,
+  "meta": {
+    "title": "About us | La Diamanteria",
+    "description": "Free valuations and direct buying of diamonds, jewellery and luxury watches in Milan. La Diamanteria, established in 2009."
+  },
+  "slots": {
+    "chisiamo-contenuto-001": "ComproDiamanti.it",
+    "chisiamo-contenuto-002": "by La Diamanteria",
+    "chisiamo-contenuto-003": {
+      "label": "Sell a diamond",
+      "href": "acquistiamo.html"
+    },
+    "chisiamo-contenuto-004": {
+      "label": "How it works",
+      "href": "index.html#come-funziona"
+    },
+    "chisiamo-contenuto-005": {
+      "label": "About us",
+      "href": "chisiamo.html"
+    },
+    "chisiamo-contenuto-006": {
+      "label": "FAQ",
+      "href": "faq.html"
+    },
+    "chisiamo-contenuto-007": {
+      "label": "Request a free valuation",
+      "href": "valutazione.html"
+    },
+    "chisiamo-contenuto-008": "About us",
+    "chisiamo-contenuto-009": "La Diamanteria's direct buying service",
+    "chisiamo-contenuto-010": "ComproDiamanti.it helps private sellers have their diamonds and jewellery valued and sold. The service is run by La Diamanteria, established in Milan in 2009. The Silvera family spans five generations of",
+    "chisiamo-contenuto-011": "Diamantaires",
+    "chisiamo-contenuto-012": ". The family's roots in the diamond trade go back more than 300 years, as documented in historical studies and articles.",
+    "chisiamo-contenuto-013": "2009",
+    "chisiamo-contenuto-014": "in Milan, at Via Vincenzo Monti 47",
+    "chisiamo-contenuto-015": "5",
+    "chisiamo-contenuto-016": "generations of diamantaires",
+    "chisiamo-contenuto-017": "€200 million",
+    "chisiamo-contenuto-018": "worth of diamonds valued each year",
+    "chisiamo-contenuto-019": "Our expertise today",
+    "chisiamo-contenuto-020": "Today, the Silvera brothers buy diamonds directly from private sellers. A gemmologist reviews each enquiry and the stone's characteristics. We do not send items to auction or seek buyers on your behalf.",
+    "chisiamo-contenuto-021": "Our documented history",
+    "chisiamo-contenuto-022": "Francesca Trivellato's book Il commercio interculturale, a study published in Quaderni storici and a newspaper article recount episodes from the family's trading history.",
+    "chisiamo-contenuto-023": "Our Milan boutique",
+    "chisiamo-contenuto-024": "Since 2009, we have welcomed clients by appointment at Via Vincenzo Monti 47 in Milan. Here we can examine your item in person and make you an offer directly. If you accept, we pay by bank transfer.",
+    "chisiamo-contenuto-025": "Valuations and expert reports",
+    "chisiamo-contenuto-026": "We value more than €200 million worth of diamonds each year. Since 2015, our gemmologists, accredited by the Chamber of Commerce, have also prepared sworn valuations for estates, asset division, legal proceedings and insurance purposes.",
+    "chisiamo-contenuto-027": {
+      "src": "https://diamond-shine-guide.lovable.app/__l5e/assets-v1/366db432-1027-4c75-9cc9-2aa23c6b2a08/silvera-trivellato-book.jpeg",
+      "alt": "Cover of the book Il commercio interculturale"
+    },
+    "chisiamo-contenuto-028": "Francesca Trivellato, Il commercio interculturale",
+    "chisiamo-contenuto-029": {
+      "src": "https://diamond-shine-guide.lovable.app/__l5e/assets-v1/cf222384-9059-4d02-a08b-e7acff648898/silvera-trivellato-study.jpeg",
+      "alt": "Study published in Quaderni storici"
+    },
+    "chisiamo-contenuto-030": "Study in Quaderni storici, 2010",
+    "chisiamo-contenuto-031": {
+      "src": "https://diamond-shine-guide.lovable.app/__l5e/assets-v1/aacec743-b359-4ec5-b37e-d7bcff4e24ed/silvera-article.jpeg",
+      "alt": "Newspaper article entitled Mercanti rovinati da un diamante"
+    },
+    "chisiamo-contenuto-032": "Article on the history of the Silvera family",
+    "chisiamo-contenuto-033": "Every enquiry is reviewed by a gemmologist.",
+    "chisiamo-contenuto-034": {
+      "label": "Request a free valuation →",
+      "href": "valutazione.html"
+    },
+    "chisiamo-contenuto-035": "La Diamanteria also offers fine jewellery and bespoke creations through its official website.",
+    "chisiamo-contenuto-036": {
+      "label": "Discover La Diamanteria ↗",
+      "href": "https://www.ladiamanteria.com"
+    },
+    "chisiamo-contenuto-037": "ComproDiamanti.it",
+    "chisiamo-contenuto-038": "by La Diamanteria",
+    "chisiamo-contenuto-039": "Direct buying and valuation of diamonds and jewellery from private sellers. Via Vincenzo Monti 47, Milan.",
+    "chisiamo-contenuto-040": "Contact us",
+    "chisiamo-contenuto-041": {
+      "label": "+39 02 466 891",
+      "href": "tel:+3902466891"
+    },
+    "chisiamo-contenuto-042": {
+      "label": "WhatsApp +39 392 966 4987",
+      "href": "https://wa.me/393929664987"
+    },
+    "chisiamo-contenuto-043": {
+      "label": "sl@ladiamanteria.com",
+      "href": "mailto:sl@ladiamanteria.com"
+    },
+    "chisiamo-contenuto-044": "Via Vincenzo Monti 47, 20123 Milan",
+    "chisiamo-contenuto-045": "Explore",
+    "chisiamo-contenuto-046": {
+      "label": "Sell a diamond",
+      "href": "acquistiamo.html"
+    },
+    "chisiamo-contenuto-047": {
+      "label": "How it works",
+      "href": "index.html#come-funziona"
+    },
+    "chisiamo-contenuto-048": {
+      "label": "About us",
+      "href": "chisiamo.html"
+    },
+    "chisiamo-contenuto-049": {
+      "label": "FAQ",
+      "href": "faq.html"
+    },
+    "chisiamo-contenuto-050": {
+      "label": "La Diamanteria ↗",
+      "href": "https://www.ladiamanteria.com"
+    },
+    "chisiamo-contenuto-052": "© 2026 ComproDiamanti.it by La Diamanteria · All rights reserved. · Cookies ·",
+    "chisiamo-contenuto-053": {
+      "label": "Admin login",
+      "href": "../../admin/"
+    }
+  }
+}

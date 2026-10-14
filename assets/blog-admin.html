@@ -1,0 +1,20 @@
+<section id="blog" hidden>
+<h1>Blog e articoli</h1><p>Gestisci il blog integrato nel sito. L’accesso usa questo account amministratore.</p>
+<div class="actions"><button id="blog-new" type="button">Nuovo articolo</button><button id="blog-refresh" type="button">Aggiorna elenco</button><a href="../blog/" target="_blank" rel="noopener">Apri blog ↗</a></div>
+<div id="blog-list" class="panel"></div>
+<form id="blog-editor" class="panel" hidden>
+<h2 id="blog-editor-title">Articolo</h2><input name="id" type="hidden"><input name="base_version" type="hidden">
+<label>Titolo<input name="title" maxlength="240" required></label>
+<label>Slug URL · lascia vuoto per generarlo<input name="slug" maxlength="180"></label>
+<div class="form-grid"><label>Lingua<select name="language"><option value="it">Italiano</option><option value="en">English</option></select></label><label>Categoria<input name="category" maxlength="80" value="Approfondimenti"></label></div>
+<label>Descrizione breve<textarea name="excerpt" maxlength="400" rows="3"></textarea></label>
+<label>Contenuto HTML<textarea name="content" rows="16" required></textarea></label><p class="hint">Paragrafi, titoli, elenchi, immagini e link. Script, iframe e attributi pericolosi vengono rimossi.</p>
+<div class="form-grid"><label>URL copertina HTTPS<input name="image_url" type="url"></label><label>Descrizione immagine<input name="image_alt" maxlength="240"></label></div>
+<div class="form-grid"><label>Stato<select name="status"><option value="draft">Bozza</option><option value="published">Pubblicato</option></select></label><label>Data<input name="published_at" type="date" required></label></div>
+<label><input name="featured" type="checkbox">In primo piano (la homepage mostra fino a tre articoli)</label><div class="actions"><button>Salva articolo</button><button id="blog-cancel" type="button">Chiudi editor</button></div>
+</form>
+<details class="panel"><summary><strong>Collegamento Soro e pubblicazione automatica</strong></summary><p>Endpoint: <code id="blog-webhook-url"></code></p><p id="blog-token-state"></p><p class="hint">Il contratto JSON è descritto nella guida della release. Il formato effettivo di Soro deve essere verificato prima di attivare il collegamento.</p>
+<form id="blog-integration"><label><input type="checkbox" name="auto_publish">Pubblica subito i nuovi articoli ricevuti (altrimenti crea bozze)</label><label>Password amministratore attuale<input type="password" name="current_password" autocomplete="current-password" required></label><button>Salva preferenza</button><button id="blog-token" type="button">Genera / sostituisci token</button></form><p id="blog-token-once" class="hint" role="status"></p></details>
+<details class="panel"><summary><strong>Database del blog · SQLite / MariaDB</strong></summary><p id="blog-db-state"></p><p>Il database del sito, gli account e le richieste rimangono nella struttura esistente. Questa opzione trasferisce soltanto gli articoli del blog a una destinazione vuota. Esegui prima un backup.</p>
+<form id="blog-database"><label>Destinazione<select name="driver"><option value="mysql">MariaDB / MySQL</option><option value="sqlite">SQLite locale</option></select></label><div class="form-grid"><label>Host<input name="host" placeholder="127.0.0.1"></label><label>Porta<input name="port" type="number" min="1" max="65535" value="3306"></label><label>Database<input name="database"></label><label>Utente<input name="username"></label></div><label>Password database<input type="password" name="password" autocomplete="new-password"></label><label>Password amministratore attuale<input type="password" name="current_password" autocomplete="current-password" required></label><label>Conferma: scrivi TRASFERISCI<input name="confirm" required></label><button>Verifica, trasferisci e attiva</button></form></details>
+</section>
