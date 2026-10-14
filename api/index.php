@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-require __DIR__.'/../PHP di sistema/core.php';
+require_once __DIR__.'/../PHP di sistema/core.php';
 security_headers(true); session_start_secure();
 $action=$_GET['action']??'me'; $method=$_SERVER['REQUEST_METHOD'];
 try {
