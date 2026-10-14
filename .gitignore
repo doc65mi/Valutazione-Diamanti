@@ -15,3 +15,5 @@
 *.zip
 __pycache__/
 .thumbnail
+/data/content/
+/data/published.stamp

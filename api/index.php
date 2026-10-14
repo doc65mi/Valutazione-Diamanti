@@ -4,6 +4,7 @@ require_once __DIR__.'/../PHP di sistema/core.php';
 security_headers(true); session_start_secure();
 $action=$_GET['action']??'me'; $method=$_SERVER['REQUEST_METHOD'];
 try {
+    ensure_published();
     if($method!=='GET') csrf();
     $input=[];
     if(str_contains($_SERVER['CONTENT_TYPE']??'','application/json')) {
