@@ -24,6 +24,6 @@ Nota: da ora in poi un testo di pagina già modificato dal sito non cambia più 
 ## Recuperare quello che è andato perso
 
 - Le immagini caricate sono ancora in `httpdocs/uploads/site` (ordinate per data in File Manager). Per rimetterle: editor → clic sulla foto → nel campo **src** scrivere `/uploads/site/NOMEFILE` → Applica → Salva.
-- Le versioni precedenti di ogni pagina sono nel database: Admin → pagina → **Revisioni** → ripristina quella giusta.
+- Le versioni precedenti di ogni pagina sono nel database: Admin → scegliere la pagina → sezione **Revisioni precedenti** → "Ripristina versione" su quella giusta.
 
 Nessuna modifica al database.
