@@ -17,6 +17,4 @@ __pycache__/
 .thumbnail
 /data/content/
 /data/published.stamp
-/data/wp-media.json
-/data/wp-terms.json
 /data/*.tmp

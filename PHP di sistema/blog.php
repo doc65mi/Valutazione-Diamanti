@@ -19,7 +19,7 @@ function blog_site_url(): string {
 function blog_config(): array {
     $file = PRIVATE_DIR . '/blog-config.json';
     $stored = is_file($file) ? json_decode(file_get_contents($file), true, 32, JSON_THROW_ON_ERROR) : [];
-    return array_replace(['version'=>BLOG_VERSION,'db'=>['driver'=>'sqlite'],'webhook_hash'=>'','wp_password_hash'=>'','auto_publish'=>false],$stored,
+    return array_replace(['version'=>BLOG_VERSION,'db'=>['driver'=>'sqlite'],'webhook_hash'=>'','auto_publish'=>false],$stored,
         ['base_url'=>blog_site_url().'/blog','site_url'=>blog_site_url(),'brand'=>'Valutazione Diamanti','subtitle'=>'Guide e approfondimenti su diamanti, gioielli e valutazione.']);
 }
 function blog_save_config(array $c): void {

@@ -2,38 +2,40 @@
 
 Version: 2.1.30
 
-Frase (next.frase.io) genera gli articoli e li pubblica solo su CMS noti (WordPress, Webflow, Sanity, Wix).
-Il sito ora risponde come un WordPress minimale, così il pulsante **Pubblica** e il **Content Calendar** di Frase
-mandano gli articoli direttamente nel blog.
+Gli articoli scritti con Frase (next.frase.io) arrivano nel blog del sito tramite l'API ufficiale di Frase.
 
 ## Come collegarlo
 
-1. Admin → Blog → **Collegamento Frase · generazione articoli**: inserisci la password amministratore e premi
-   **Genera / sostituisci password Frase**. Copia la password (24 caratteri a gruppi di 4): non viene mostrata di nuovo.
-2. In Frase: Integrations → WordPress.
-   - URL: `https://www.valutazionediamanti.it/wp-admin`
-   - Utente: un indirizzo email a scelta
-   - Password: quella generata al punto 1
-3. Pubblica un articolo di prova come bozza e controllalo in Admin → Blog.
+1. In Frase: **Settings → API**, crea una chiave API e copiala.
+2. Admin del sito → Blog → **Collegamento Frase · generazione articoli**: incolla la chiave, inserisci la password
+   amministratore e premi **Collega Frase**. Il sito verifica la chiave e registra da solo il webhook su Frase
+   (`https://www.valutazionediamanti.it/blog/frase.php`, eventi `content.approved` e `content.published`).
+3. In Frase approva (o pubblica) un articolo: arriva nel blog. In alternativa premi **Importa da Frase**
+   nell'admin e scegli l'articolo da importare o aggiornare.
 
 ## Cosa arriva nel blog
 
-- Titolo, testo HTML (ripulito: niente script, iframe o attributi pericolosi), riassunto e slug.
-- Stato: «Pubblica» in Frase = online; bozza o programmato = bozza.
-- Copertina: l'immagine in evidenza viene ricodificata in WebP (max 1200 px) in `uploads/site/`; senza copertina si usa la prima immagine del testo.
-- Categoria (Approfondimenti, Guide o nuove categorie create da Frase), tag e parola chiave principale nel campo parole chiave.
-- Meta SEO Rank Math o Yoast → titolo e descrizione per Google.
-- Un articolo già pubblicato mantiene il suo indirizzo anche se Frase cambia lo slug.
-- Frase può eliminare solo gli articoli che ha creato; gli altri vengono solo rimessi in bozza.
+- Titolo, slug, testo HTML (ripulito: niente script, iframe o attributi pericolosi; il primo H1 viene tolto perché il titolo è già mostrato).
+- Meta title e meta description di Frase, parole chiave target.
+- Copertina (`featured_image`): scaricata e ricodificata in WebP (max 1200 px) in `uploads/site/`; se il download non riesce si usa l'indirizzo di Frase.
+- Nuovi articoli: bozza, oppure online se è attivo «Pubblica subito i nuovi articoli ricevuti».
+- Un articolo già importato viene aggiornato nel testo ma mantiene slug, stato, data, categoria e «in primo piano» decisi sul sito.
 
-## Diagnostica
+## Sicurezza
 
-Il pulsante **Mostra ultime richieste di Frase** elenca le ultime 40 chiamate (metodo, percorso, esito, nomi dei campi;
-mai testi o password), salvate in `data/wp-bridge.log`. Se Frase usa un percorso non ancora gestito, compare lì con esito 404.
+- La chiave API e il segreto del webhook restano in `data/blog-config.json` (non tracciato da git, permessi 0600) e non vengono mai mostrati dall'admin.
+- Il webhook è accettato solo con firma HMAC-SHA256 valida (`X-Webhook-Signature`); il corpo serve solo a sapere quale articolo leggere: il testo viene sempre riletto dall'API di Frase con la chiave.
+- **Ultimi eventi** mostra il registro `data/frase.log` (eventi, id, esito; mai chiavi, firme o testi).
 
-## Note tecniche
+## API Frase usate
 
-- Nuovo file `blog/wp-bridge.php`; `.htaccess` instrada `/wp-json/`, `/wp-admin`, `/wp-login.php` e `/xmlrpc.php` verso il ponte.
-- Dati di runtime non tracciati da git: `data/wp-media.json`, `data/wp-terms.json`, `data/wp-bridge.log`, hash della password in `data/blog-config.json`.
-- Il blog resta spento dal pannello Menu finché non lo riaccendi: gli articoli ricevuti sono visibili solo all'amministratore collegato.
-- Se il firewall di Plesk (ModSecurity / fail2ban) blocca le chiamate verso `/wp-json/` o `/wp-login.php`, va consentito l'accesso a Frase.
+Base `https://next.frase.io/api/v1`, intestazione `X-API-KEY`: `GET /content`, `GET /content/{id}`,
+`GET /content/{id}/export?format=html`, `POST /webhooks`, `DELETE /webhooks/{id}`.
+I percorsi vengono dal pacchetto ufficiale `@frase/mcp-server` (la documentazione pubblica dell'API non elenca i campi):
+al primo invio reale controllare **Ultimi eventi**; se la firma o l'id dell'articolo hanno un formato diverso, il registro lo indica.
+
+## Note
+
+- Richiede l'estensione PHP cURL (presente di norma su Plesk).
+- Il blog resta spento dal pannello Menu finché non lo riaccendi: gli articoli importati sono visibili solo all'amministratore collegato.
+- Scollega rimuove il webhook da Frase e cancella la chiave; gli articoli già importati restano.
