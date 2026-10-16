@@ -6,7 +6,34 @@ function blog_reauthenticate(array $input): void {
     $p=$input['current_password']??null;
     if(!is_string($p)||!password_verify($p,(string)$q->fetchColumn()))fail('Password amministratore attuale non valida.',403);
 }
+// Collegamento Frase (2.1.30): fuori dal blocco del blog, perché l'importazione prende il proprio blocco.
+function blog_frase_api(string $action,string $method,array $input): never {
+    require_once __DIR__.'/frase.php';
+    try {
+        $c=blog_config();
+        if($action==='blog-frase-status'&&$method==='GET')respond(['connected'=>($c['frase_api_key']??'')!=='','webhook'=>($c['frase_webhook_id']??'')!=='','url'=>rtrim($c['site_url'],'/').'/blog/frase.php','auto_publish'=>!empty($c['auto_publish']),'log'=>frase_log_lines()]);
+        if($action==='blog-frase-list'&&$method==='GET'){
+            $list=frase_list($c,(int)($_GET['page']??1));$db=blog_db();
+            foreach($list['items'] as &$item){$a=blog_one($db,'SELECT id,status FROM blog_articles WHERE source_id=?',['frase-'.$item['id']]);$item['imported']=$a?($a['status']==='published'?'published':'draft'):null;}
+            unset($item);respond($list);
+        }
+        if($action==='blog-frase-import'&&$method==='POST'){
+            if(!is_string($input['id']??null))fail('Articolo non indicato.');
+            set_time_limit(90);respond(frase_import($input['id'],'importazione manuale'));
+        }
+        if(in_array($action,['blog-frase-connect','blog-frase-disconnect'],true)&&$method==='POST'){
+            blog_reauthenticate($input);$lock=blog_lock(true);
+            if($action==='blog-frase-disconnect'){frase_disconnect($c);audit('blog-frase','disconnected');respond(['ok'=>true]);}
+            $key=trim((string)($input['api_key']??''));
+            if(!preg_match('/^[\x21-\x7e]{16,300}$/D',$key))fail('Incollare la chiave API di Frase (Settings > API).');
+            $r=frase_connect($c,$key);audit('blog-frase','connected');respond($r);
+        }
+        fail('Operazione Frase non disponibile.',404);
+    } catch(InvalidArgumentException|RuntimeException $e){fail($e->getMessage());}
+    catch(PDOException $e){error_log('Blog frase database: '.$e->getCode());fail('Slug già usato da un altro articolo.',409);}
+}
 function blog_api(string $action,string $method,array $input): never {
+    if(str_starts_with($action,'blog-frase-'))blog_frase_api($action,$method,$input);
     $lock=blog_lock($method!=='GET');$c=blog_config();$db=blog_db();
     try {
         if($action==='blog-list'&&$method==='GET')respond(['articles'=>blog_rows($db,'SELECT id,title,slug,language,status,featured,published_at FROM blog_articles ORDER BY id DESC')]);
@@ -24,7 +51,7 @@ function blog_api(string $action,string $method,array $input): never {
             $db->prepare('DELETE FROM blog_articles WHERE id=?')->execute([(int)($input['id']??0)]);audit('blog-delete',(string)($input['id']??0));seo_indexes();respond(['ok'=>true]);
         }
         if($action==='blog-config'&&$method==='GET'){
-            $visible=$c;unset($visible['webhook_hash'],$visible['db']['password']);$visible['token_set']=$c['webhook_hash']!=='';
+            $visible=$c;unset($visible['webhook_hash'],$visible['db']['password'],$visible['frase_api_key'],$visible['frase_webhook_secret']);$visible['token_set']=$c['webhook_hash']!=='';
             respond(['config'=>$visible]);
         }
         if(in_array($action,['blog-config','blog-token','blog-database'],true)&&$method==='POST')blog_reauthenticate($input);
