@@ -24,10 +24,17 @@ function blog_api(string $action,string $method,array $input): never {
             $db->prepare('DELETE FROM blog_articles WHERE id=?')->execute([(int)($input['id']??0)]);audit('blog-delete',(string)($input['id']??0));seo_indexes();respond(['ok'=>true]);
         }
         if($action==='blog-config'&&$method==='GET'){
-            $visible=$c;unset($visible['webhook_hash'],$visible['db']['password']);$visible['token_set']=$c['webhook_hash']!=='';
+            $visible=$c;unset($visible['webhook_hash'],$visible['wp_password_hash'],$visible['db']['password']);$visible['token_set']=$c['webhook_hash']!=='';$visible['frase_set']=($c['wp_password_hash']??'')!=='';
             respond(['config'=>$visible]);
         }
-        if(in_array($action,['blog-config','blog-token','blog-database'],true)&&$method==='POST')blog_reauthenticate($input);
+        // Collegamento Frase (2.1.30): ultime richieste ricevute dal ponte WordPress, senza testi né password.
+        if($action==='blog-frase-log'&&$method==='GET'){$f=PRIVATE_DIR.'/wp-bridge.log';respond(['lines'=>is_file($f)?array_slice(array_reverse(array_filter(explode("\n",(string)file_get_contents($f)))),0,40):[]]);}
+        if(in_array($action,['blog-config','blog-token','blog-database','blog-frase-password'],true)&&$method==='POST')blog_reauthenticate($input);
+        if($action==='blog-frase-password'&&$method==='POST'){
+            // Stesso formato delle password applicazione di WordPress: 24 caratteri in gruppi di 4.
+            $chars='abcdefghijkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789';$p='';for($i=0;$i<24;$i++)$p.=$chars[random_int(0,strlen($chars)-1)];
+            $c['wp_password_hash']=hash('sha256',$p);blog_save_config($c);audit('blog-frase-password','rotated');respond(['password'=>implode(' ',str_split($p,4))]);
+        }
         if($action==='blog-config'&&$method==='POST'){
             if(!is_bool($input['auto_publish']??null))fail('Selezione non valida.');$c['auto_publish']=$input['auto_publish'];blog_save_config($c);audit('blog-config','publication');respond(['ok'=>true]);
         }

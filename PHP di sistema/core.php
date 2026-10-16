@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-const APP_VERSION = '2.1.29';
+const APP_VERSION = '2.1.30';
 const ROOT = __DIR__ . '/..';
 const PAGE_SLUGS = ['home', 'acquistiamo', 'chisiamo', 'faq', 'valutazione', 'grazie', 'privacy', 'cookie'];
 require_once __DIR__.'/settings.php';
@@ -74,8 +74,10 @@ function content(string $slug,string $lang): array {
     }
     return $c;
 }
-// tempnam() crea il file con permessi 0600: le pagine pubbliche vanno rese leggibili (0644), altrimenti
-// nginx su Plesk (che serve i file statici con un altro utente) risponde 403 a tutto il sito (2.1.22).
+// tempnam() crea il file con permessi 0600: le pagine pubbliche vanno rese leggibili (0644), altrimenti
+
+// nginx su Plesk (che serve i file statici con un altro utente) risponde 403 a tutto il sito (2.1.22).
+
 function atomic_write(string $path,string $text,int $mode=0600): void {
     $tmp=tempnam(dirname($path),'.write-'); if($tmp===false) throw new RuntimeException('Scrittura non disponibile.');
     try { if(file_put_contents($tmp,$text)===false || !chmod($tmp,$mode) || !rename($tmp,$path)) throw new RuntimeException('Salvataggio non riuscito.'); } finally { if(is_file($tmp)) unlink($tmp); }

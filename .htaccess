@@ -15,6 +15,10 @@ RewriteEngine On
 RewriteCond %{THE_REQUEST} \s/+(.*/)?public/(it|en)/([^?\s]*) [NC]
 RewriteRule ^public/(it|en)/(.*)$ /%1%2/%3 [R=301,L,NE]
 RewriteRule ^(?:old-page|data|content|pages-src|partials|tools|files\ MD|PHP\ di\ sistema)(?:/|$) - [F,L,NC]
+# Collegamento Frase (2.1.30): il sito risponde come un WordPress su /wp-json/ tramite blog/wp-bridge.php.
+RewriteCond %{HTTP:Authorization} .
+RewriteRule ^(?:wp-json|wp-admin) - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+RewriteRule ^(?:wp-json(?:/.*)?|wp-admin(?:/.*)?|wp-login\.php|xmlrpc\.php)$ blog/wp-bridge.php [L,QSA]
 RewriteCond %{REQUEST_URI} ^(.*/)[^/]*$
 RewriteRule ^(?:Admin|Login)\.dc\.html$ %1admin/ [R=302,L,NC]
 RewriteCond %{REQUEST_URI} ^(.*/)[^/]*$
