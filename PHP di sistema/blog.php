@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-const BLOG_VERSION = '2.1.30';
+const BLOG_VERSION = '2.1.31';
 const PRIVATE_DIR = ROOT . '/data';
 function blog_h($v): string { return htmlspecialchars((string)$v, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); }
 function blog_abort_request(int $code, string $message): void { http_response_code($code); echo blog_h($message); exit; }
@@ -184,3 +184,16 @@ function blog_faq_items(?string $json): array {
 function blog_db(): PDO { $db=blog_connection(blog_config()['db']); blog_schema($db); return $db; }
 function blog_lock(bool $exclusive = false) { $handle=fopen(ROOT.'/data/blog.lock','c'); if(!$handle||!flock($handle,$exclusive?LOCK_EX:LOCK_SH))throw new RuntimeException('Blog occupato.');return $handle; }
 function blog_seo_entries(): array { return blog_rows(blog_db(), "SELECT slug,language,title,updated_at,image_url FROM blog_articles WHERE status='published' ORDER BY published_at DESC,id DESC"); }
+
+// Registro diagnostico del collegamento ContentAI Pro (2.1.31): evento, id, esito, nomi dei campi ricevuti. Mai token o testi.
+const CONTENTAI_LOG = PRIVATE_DIR . '/contentai.log';
+function contentai_log(string $line): void {
+    $line = gmdate('Y-m-d H:i:s') . ' ' . str_replace(["\r", "\n"], ' ', mb_substr($line, 0, 400)) . "\n";
+    $old = is_file(CONTENTAI_LOG) ? (string)@file_get_contents(CONTENTAI_LOG) : '';
+    $lines = array_slice(array_filter(explode("\n", $old)), -199);
+    @file_put_contents(CONTENTAI_LOG, implode("\n", $lines) . ($lines ? "\n" : '') . $line, LOCK_EX);
+    @chmod(CONTENTAI_LOG, 0600);
+}
+function contentai_log_lines(int $max = 40): array {
+    return is_file(CONTENTAI_LOG) ? array_slice(array_reverse(array_filter(explode("\n", (string)file_get_contents(CONTENTAI_LOG)))), 0, $max) : [];
+}

@@ -52,7 +52,7 @@ function blog_api(string $action,string $method,array $input): never {
         }
         if($action==='blog-config'&&$method==='GET'){
             $visible=$c;unset($visible['webhook_hash'],$visible['db']['password'],$visible['frase_api_key'],$visible['frase_webhook_secret']);$visible['token_set']=$c['webhook_hash']!=='';
-            respond(['config'=>$visible]);
+            respond(['config'=>$visible,'contentai_log'=>contentai_log_lines()]);
         }
         if(in_array($action,['blog-config','blog-token','blog-database'],true)&&$method==='POST')blog_reauthenticate($input);
         if($action==='blog-config'&&$method==='POST'){
