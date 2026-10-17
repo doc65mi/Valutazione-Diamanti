@@ -1,11 +1,11 @@
 'use strict';
-let blogEditing=null;
+let blogEditing=null,blogContentaiLog=[];
 async function loadBlog(){
  const [list,settings]=await Promise.all([api('blog-list'),api('blog-config')]);
  const box=$('#blog-list');box.replaceChildren();if(!list.articles.length)box.append(el('p','Nessun articolo: crea il primo oppure configura il webhook.'));
  for(const a of list.articles){const row=el('div',undefined,'blog-admin-row');const title=el('strong',a.title);const state=el('span',(a.language||'it').toUpperCase()+' · '+(a.status==='published'?'Pubblicato':'Bozza')+(a.featured?' · In primo piano':''));const edit=el('button','Modifica');edit.type='button';edit.onclick=()=>openBlogArticle(a.id).catch(e=>message(e.message));const remove=el('button','Elimina');remove.type='button';remove.onclick=async()=>{if(!confirm('Eliminare definitivamente “'+a.title+'”?'))return;try{await api('blog-delete',{id:a.id,confirm:true});await loadBlog();message('Articolo eliminato.');}catch(e){message(e.message);}};row.append(title,state,edit,remove);box.append(row);}
  const c=settings.config;$('#blog-integration').elements.auto_publish.checked=c.auto_publish;
- $('#blog-webhook-url').textContent=c.base_url+'/webhook.php';$('#blog-token-state').textContent=c.token_set?'Token configurato.':'Ricezione disattivata: genera un token.';
+ $('#blog-webhook-url').textContent=c.base_url+'/webhook.php';$('#blog-contentai-url').textContent=c.base_url+'/contentai.php';blogContentaiLog=settings.contentai_log||[];$('#blog-token-state').textContent=c.token_set?'Token configurato.':'Ricezione disattivata: genera un token.';
  loadFraseStatus().catch(()=>{});
  $('#blog-db-state').textContent='Database attivo: '+(c.db.driver==='sqlite'?'SQLite locale':('MariaDB · '+c.db.database));
 }
@@ -18,6 +18,8 @@ $('#blog-editor').onsubmit=async e=>{e.preventDefault();const f=e.target,d=Objec
 $('#blog-integration').onsubmit=async e=>{e.preventDefault();const f=e.target;e.submitter.disabled=true;try{await api('blog-config',{auto_publish:f.elements.auto_publish.checked,current_password:f.elements.current_password.value});f.elements.current_password.value='';await loadBlog();message('Preferenza salvata.');}catch(err){message(err.message);}finally{e.submitter.disabled=false;}};
 $('#blog-token').onclick=async()=>{const f=$('#blog-integration');try{const d=await api('blog-token',{current_password:f.elements.current_password.value});f.elements.current_password.value='';$('#blog-token-once').textContent='Copia il token ora, non verrà mostrato di nuovo: '+d.token;await loadBlog();message('Token generato: il precedente è revocato.');}catch(err){message(err.message);}};
 $('#blog-database').onsubmit=async e=>{e.preventDefault();const d=Object.fromEntries(new FormData(e.target));d.port=Number(d.port);e.submitter.disabled=true;try{await api('blog-database',d);e.target.reset();await loadBlog();message('Articoli copiati e verificati. Nuovo database attivo.');}catch(err){message(err.message);}finally{e.submitter.disabled=false;}};
+// Collegamento ContentAI Pro (2.1.31): registro degli ultimi invii ricevuti.
+$('#blog-contentai-log-load').onclick=async()=>{try{await loadBlog();const box=$('#blog-contentai-log');box.textContent=blogContentaiLog.length?blogContentaiLog.join('\n'):'Nessun invio ricevuto finora.';box.hidden=false;}catch(err){message(err.message);}};
 // Collegamento Frase (2.1.30): chiave API, webhook registrato dal sito, importazione manuale e registro eventi.
 async function loadFraseStatus(){const d=await api('blog-frase-status');$('#blog-frase-state').textContent=!d.connected?'Non collegato: incolla la chiave API di Frase.':(d.webhook?'Collegato. Frase invia gli articoli approvati o pubblicati a '+d.url+'.':'Collegato senza invio automatico: usa «Importa da Frase».');$('#blog-frase-disconnect').hidden=!d.connected;return d;}
 $('#blog-frase-form').onsubmit=async e=>{e.preventDefault();const f=e.target;if(!f.elements.api_key.value.trim()){message('Incolla la chiave API di Frase.');return;}e.submitter.disabled=true;try{const d=await api('blog-frase-connect',{api_key:f.elements.api_key.value.trim(),current_password:f.elements.current_password.value});f.reset();await loadFraseStatus();message(d.webhook?'Frase collegato: invio automatico attivo.':'Frase collegato. '+(d.warning||''));}catch(err){message(err.message);}finally{e.submitter.disabled=false;}};

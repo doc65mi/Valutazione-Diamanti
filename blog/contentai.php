@@ -1,8 +1,9 @@
 <?php
 declare(strict_types=1);
-// Ricevitore ContentAI Pro (Content Studio) -> blog di Valutazione Diamanti. Versione 2.1.21.
+// Ricevitore ContentAI Pro (Content Studio) -> blog di Valutazione Diamanti. Versione 2.1.21, registro eventi 2.1.31.
 // POST JSON con "Authorization: Bearer <token>" (lo stesso token del collegamento webhook in Admin > Blog).
-// Gli articoli arrivano sempre come BOZZA: la pubblicazione resta decisa dal backend (impostazione auto_publish).
+// I nuovi articoli arrivano in BOZZA, oppure online se in Admin > Blog e attivo "Pubblica subito" (auto_publish).
+// Ogni invio lascia una riga in data/contentai.log, visibile in Admin > Blog > Ultimi eventi.
 require_once __DIR__.'/../PHP di sistema/core.php';
 require_once __DIR__.'/../PHP di sistema/blog.php';
 security_headers(true);
@@ -54,6 +55,12 @@ function contentai_store_cover(mixed $image, string $slug): ?string {
     @chmod($dir . '/' . $name, 0644);
     return $name;
 }
+/** Nomi dei campi ricevuti (non i valori), per riconoscere il formato reale di ContentAI Pro dal registro. */
+function contentai_fields(array $input): string {
+    $art = is_array($input['article'] ?? null) ? $input['article'] : [];
+    $clean = fn(array $keys) => implode(',', array_map(fn($k) => preg_replace('/[^A-Za-z0-9_.-]/', '', (string)$k), array_slice($keys, 0, 30)));
+    return 'campi: ' . $clean(array_keys($input)) . ($art ? ' | article: ' . $clean(array_keys($art)) : '');
+}
 /** Elimina solo file generati da questo endpoint (nome validato da regex, cartella fissa). */
 function contentai_remove_cover(?string $url): void {
     if (!$url) return;
@@ -72,6 +79,7 @@ try {
     $c = blog_config();
     $auth = $_SERVER['HTTP_AUTHORIZATION'] ?? $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] ?? '';
     if (!$c['webhook_hash'] || !preg_match('/^Bearer (\S{16,200})$/D', $auth, $m) || !hash_equals($c['webhook_hash'], hash('sha256', $m[1]))) {
+        contentai_log('rifiutato: ' . (!$c['webhook_hash'] ? 'token non ancora generato in Admin > Blog' : ($auth === '' ? 'header Authorization assente (il server potrebbe non inoltrarlo)' : 'token non valido')));
         rate('blog-contentai-fail', 10, 900);
         fail('Autenticazione non valida.', 401);
     }
@@ -83,8 +91,8 @@ try {
     $input = json_decode($raw, true, 16, JSON_THROW_ON_ERROR);
     if (!is_array($input)) fail('Oggetto JSON richiesto.');
     $event = $input['event'] ?? null;
-    if ($event === 'ping') respond(['ok' => true]);
-    if ($event !== 'article.publish') fail('Evento non supportato.');
+    if ($event === 'ping') { contentai_log('ping ricevuto: collegamento funzionante'); respond(['ok' => true]); }
+    if ($event !== 'article.publish') { contentai_log('evento non supportato: ' . (is_string($event) ? preg_replace('/[^A-Za-z0-9_.-]/', '', mb_substr($event, 0, 40)) : '(assente)') . ' | ' . contentai_fields($input)); fail('Evento non supportato.'); }
 
     set_time_limit(60);
     $art = $input['article'] ?? null;
@@ -137,17 +145,21 @@ try {
     $id = blog_persist_article($db, $a, $old ? (int)$old['id'] : null);
     if ($newCover && $old && $old['image_url'] !== $a['image_url']) contentai_remove_cover($old['image_url']);
     audit('blog-contentai', (string)$id);
+    contentai_log('articolo ' . $externalId . ' -> ' . $id . ' (' . ($old ? 'aggiornato' : 'nuovo') . ', ' . ($a['status'] === 'published' ? 'pubblicato' : 'bozza') . ($newCover ? ', con copertina' : '') . ') | ' . contentai_fields($input));
     seo_indexes();
     respond(['id' => $id, 'status' => $a['status'], 'url' => $a['status'] === 'published' ? blog_article_url($c, $a) : null], $old ? 200 : 201);
 } catch (JsonException | InvalidArgumentException $e) {
+    contentai_log('dati non validi (' . ($e instanceof JsonException ? 'JSON' : mb_substr($e->getMessage(), 0, 120)) . ')' . (isset($input) && is_array($input) ? ' | ' . contentai_fields($input) : ''));
     if ($newCover) contentai_remove_cover('/uploads/site/' . $newCover);
     fail('Dati articolo non validi.', 422);
 } catch (PDOException $e) {
     if ($newCover) contentai_remove_cover('/uploads/site/' . $newCover);
     error_log('Blog contentai database: ' . $e->getCode());
+    contentai_log('conflitto: slug o identificatore già usato da un altro articolo');
     fail('Slug o identificatore in conflitto.', 409);
 } catch (Throwable $e) {
     if ($newCover) contentai_remove_cover('/uploads/site/' . $newCover);
     error_log('Blog contentai: ' . get_class($e));
+    contentai_log('errore interno: ' . get_class($e));
     fail('Ricezione temporaneamente non disponibile.', 503);
 }
