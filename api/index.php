@@ -27,7 +27,7 @@ try {
     }
     $u=user();
     if(str_starts_with($action,'blog-')){admin_user();require_once __DIR__.'/../PHP di sistema/blog-api.php';blog_api($action,$method,$input);}
-    if($action==='settings'&&$method==='GET'){admin_user();$s=settings();$s['recaptcha_secret_set']=$s['recaptcha_secret']!=='';$s['smtp_pass_set']=$s['smtp_pass']!=='';unset($s['recaptcha_secret'],$s['smtp_pass']);foreach(customer_email_defaults() as $k=>$v)if(trim((string)$s[$k])==='')$s[$k]=$v;respond(['settings'=>$s]);}
+    if($action==='settings'&&$method==='GET'){admin_user();$s=settings();$s['recaptcha_secret_set']=$s['recaptcha_secret']!=='';$s['smtp_pass_set']=$s['smtp_pass']!=='';unset($s['recaptcha_secret'],$s['smtp_pass']);$s['indexnow_last']=indexnow_status()['last'];foreach(customer_email_defaults() as $k=>$v)if(trim((string)$s[$k])==='')$s[$k]=$v;respond(['settings'=>$s]);}
     if($action==='email-settings'&&$method==='POST'){admin_user();email_settings_save($input);audit('settings','email');respond(['ok'=>true]);}
     if($action==='email-test'&&$method==='POST'){admin_user();rate('email-test',20,3600);$kind=$input['kind']??'test';if(!in_array($kind,['test','customer_it','customer_en'],true))fail('Tipo di prova non valido.');send_test_email(is_string($input['to']??null)?trim($input['to']):'',$kind);audit('email-test',$kind);respond(['ok'=>true]);}
     if($action==='settings'&&$method==='POST'){
@@ -36,6 +36,8 @@ try {
             db()->beginTransaction();settings_save($input);foreach(PAGE_SLUGS as $slug)foreach(['it','en'] as $lang)publish($slug,$lang,content($slug,$lang));seo_indexes();audit('settings','site');db()->commit();respond(['ok'=>true]);
         }catch(Throwable $e){if(db()->inTransaction())db()->rollBack();foreach(PAGE_SLUGS as $slug)foreach(['it','en'] as $lang)publish($slug,$lang,content($slug,$lang));seo_indexes();throw $e;}finally{flock($lock,LOCK_UN);fclose($lock);}
     }
+    // IndexNow (2.1.32): invio manuale di tutti gli indirizzi della sitemap.
+    if($action==='indexnow-submit'&&$method==='POST'){admin_user();rate('indexnow',10,3600);if(!settings()['indexnow_enabled'])fail('Attiva IndexNow e salva le impostazioni prima dell’invio.');$r=indexnow_submit(sitemap_entries(),false);if(!$r)fail('Nessun indirizzo da inviare: controlla l’URL pubblico del sito.');if(!$r['ok'])fail('IndexNow ha risposto con codice '.$r['http'].'. Riprova tra qualche minuto.');audit('indexnow','site');respond(['ok'=>true,'last'=>$r]);}
     // Pannello Menu: accende e spegne le voci di header e footer, poi ripubblica tutte le pagine e la sitemap (2.1.27).
     if($action==='menu'&&$method==='GET'){admin_user();$items=[];foreach(MENU_ITEMS as $key=>$item)$items[]=['key'=>$key,'label'=>$item['label'],'enabled'=>menu_enabled($key)];respond(['items'=>$items]);}
     if($action==='menu'&&$method==='POST'){

@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-const APP_VERSION = '2.1.31';
+const APP_VERSION = '2.1.32';
 const ROOT = __DIR__ . '/..';
 const PAGE_SLUGS = ['home', 'acquistiamo', 'chisiamo', 'faq', 'valutazione', 'grazie', 'privacy', 'cookie'];
 require_once __DIR__.'/settings.php';
@@ -74,8 +74,10 @@ function content(string $slug,string $lang): array {
     }
     return $c;
 }
-// tempnam() crea il file con permessi 0600: le pagine pubbliche vanno rese leggibili (0644), altrimenti
-// nginx su Plesk (che serve i file statici con un altro utente) risponde 403 a tutto il sito (2.1.22).
+// tempnam() crea il file con permessi 0600: le pagine pubbliche vanno rese leggibili (0644), altrimenti
+
+// nginx su Plesk (che serve i file statici con un altro utente) risponde 403 a tutto il sito (2.1.22).
+
 function atomic_write(string $path,string $text,int $mode=0600): void {
     $tmp=tempnam(dirname($path),'.write-'); if($tmp===false) throw new RuntimeException('Scrittura non disponibile.');
     try { if(file_put_contents($tmp,$text)===false || !chmod($tmp,$mode) || !rename($tmp,$path)) throw new RuntimeException('Salvataggio non riuscito.'); } finally { if(is_file($tmp)) unlink($tmp); }
@@ -166,6 +168,7 @@ function build_html(string $slug,string $lang,array $c): string {
     hide_menu_items($xp);
 
     tidy_footer($doc,$lang);
+    seo_verification_meta($doc);
     $url=seo_base().'/'.$lang.'/'.($slug==='home'?'index':$slug).'.html';
     seo_markup($doc,$lang,$url,$c['meta']['title'],$c['meta']['description'],$slug==='faq'?'FAQPage':($slug==='chisiamo'?'AboutPage':'WebPage'));
     if($slug==='grazie'||in_array($slug,hidden_page_slugs(),true)){$meta=$doc->createElement('meta');$meta->setAttribute('name','robots');$meta->setAttribute('content','noindex,follow');$head->appendChild($meta);}
@@ -196,7 +199,9 @@ function seo_indexes(): void {
     atomic_write(ROOT.'/sitemap.xml',$xml.'</urlset>',0644);atomic_write(ROOT.'/llms.txt',$llms,0644);
     $robots="User-agent: *\nDisallow: /admin/\nDisallow: /api/\nDisallow: /data/\nDisallow: /uploads/clienti/\nDisallow: /pages-src/\nDisallow: /partials/\nDisallow: /content/\nDisallow: /tools/\nDisallow: /old-page/\nDisallow: /Login.dc.html\nDisallow: /Admin.dc.html\n";
     if($base)$robots.='Sitemap: '.$base."/sitemap.xml\n";atomic_write(ROOT.'/robots.txt',$robots,0644);
+    seo_verification_files();
     mark_published();
+    try{indexnow_submit(sitemap_entries());}catch(Throwable $e){error_log('IndexNow non raggiunto: '.$e->getMessage());}
 }
 // Dopo un Pull le pagine in it/ en/ e sitemap, robots, llms tornano alla versione del repository: al primo accesso
 // all'API (ogni pagina pubblica la chiama) si rigenerano dai testi in data/content (2.1.29).

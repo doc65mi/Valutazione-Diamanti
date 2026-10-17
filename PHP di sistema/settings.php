@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 function settings_defaults(): array {
-    return ['mail_enabled'=>false,'mail_from'=>'','mail_to'=>'','recaptcha_enabled'=>false,'recaptcha_site_key'=>'','recaptcha_secret'=>'','recaptcha_hostname'=>'','recaptcha_score'=>0.5,'analytics_enabled'=>false,'analytics_id'=>'','ads_enabled'=>false,'ads_id'=>'','ads_label'=>'','meta_enabled'=>false,'meta_id'=>'','gtm_enabled'=>false,'gtm_id'=>'','legal_company'=>'La Diamanteria','legal_address'=>'Via Vincenzo Monti 47, 20123 Milano','legal_vat'=>'','legal_email'=>'sl@ladiamanteria.com','retention_months'=>12,'site_url'=>'','consent_version'=>1,'menu_hidden'=>['blog'],'mail_from_name'=>'Valutazione Diamanti','mail_transport'=>'php','smtp_host'=>'','smtp_port'=>587,'smtp_secure'=>'tls','smtp_user'=>'','smtp_pass'=>'','smtp_verify'=>true,'mail_check_domain'=>true]+customer_email_defaults();
+    return ['mail_enabled'=>false,'mail_from'=>'','mail_to'=>'','recaptcha_enabled'=>false,'recaptcha_site_key'=>'','recaptcha_secret'=>'','recaptcha_hostname'=>'','recaptcha_score'=>0.5,'analytics_enabled'=>false,'analytics_id'=>'','ads_enabled'=>false,'ads_id'=>'','ads_label'=>'','meta_enabled'=>false,'meta_id'=>'','gtm_enabled'=>false,'gtm_id'=>'','legal_company'=>'La Diamanteria','legal_address'=>'Via Vincenzo Monti 47, 20123 Milano','legal_vat'=>'','legal_email'=>'sl@ladiamanteria.com','retention_months'=>12,'site_url'=>'','consent_version'=>1,'menu_hidden'=>['blog'],'mail_from_name'=>'Valutazione Diamanti','mail_transport'=>'php','smtp_host'=>'','smtp_port'=>587,'smtp_secure'=>'tls','smtp_user'=>'','smtp_pass'=>'','smtp_verify'=>true,'mail_check_domain'=>true,'google_verification'=>'','google_file'=>'','bing_verification'=>'','indexnow_enabled'=>false,'indexnow_key'=>'']+customer_email_defaults();
 }
 function settings(): array {
     db()->exec('CREATE TABLE IF NOT EXISTS settings (id INTEGER PRIMARY KEY CHECK(id=1), value TEXT NOT NULL)');
@@ -25,6 +25,9 @@ function settings_tracking_ids(array $input): array {
         $v=$input[$key]??'';if(!is_string($v)||strlen($v)>20000)continue;$v=trim($v);
         if($v!==''&&($key==='ads_id'&&preg_match('~\\bAW-[0-9]{4,}/([A-Za-z0-9_-]{1,100})~i',$v,$m)||preg_match($pattern,$v,$m))){$input[$key]=strtoupper(explode('/',$m[0])[0]);if($key==='ads_id'&&!empty($m[1])&&trim((string)($input['ads_label']??''))==='')$input['ads_label']=$m[1];}
     }
+    // Search Console e Bing Webmaster Tools (2.1.32): si può incollare il meta tag intero o il contenuto del file HTML di Google.
+    foreach(['google_verification','bing_verification'] as $key){$v=$input[$key]??'';if(is_string($v)&&strlen($v)<=2000&&preg_match('/content\s*=\s*["\']([^"\']+)["\']/i',$v,$m))$input[$key]=$m[1];}
+    $file=$input['google_file']??'';if(is_string($file)&&strlen($file)<=2000&&preg_match('/\bgoogle[a-z0-9]{8,64}\.html\b/i',$file,$m))$input['google_file']=strtolower($m[0]);
     $meta=$input['meta_id']??'';
     if(is_string($meta)&&strlen($meta)<=20000&&preg_match('/fbq\(\s*[\'"]init[\'"]\s*,\s*[\'"]?([0-9]{5,30})/',$meta,$m))$input['meta_id']=$m[1];
     return $input;
@@ -41,6 +44,9 @@ function settings_save(array $input): array {
     $secret=$input['recaptcha_secret']??'';if(!is_string($secret)||strlen($secret)>300)fail('Chiave segreta non valida.');if($secret!=='')$s['recaptcha_secret']=trim($secret);
     if(($input['recaptcha_clear_secret']??false)===true)$s['recaptcha_secret']='';
     foreach(['analytics_id'=>['/^G-[A-Z0-9]+$/','G-XXXXXXXXXX'],'ads_id'=>['/^AW-[0-9]+$/','AW-123456789'],'meta_id'=>['/^[0-9]{5,30}$/','solo cifre, es. 123456789012345'],'gtm_id'=>['/^GTM-[A-Z0-9]+$/','GTM-XXXXXXX']] as $key=>[$pattern,$example])if($s[$key]!==''&&!preg_match($pattern,$s[$key]))fail('ID non valido per '.TRACKING_LABELS[substr($key,0,-3)].': usa il formato '.$example.'.');
+    foreach(['google_verification'=>['/^[A-Za-z0-9_-]{10,100}$/','Google Search Console'],'bing_verification'=>['/^[A-Za-z0-9]{8,64}$/','Bing Webmaster Tools']] as $key=>[$pattern,$label]){$v=$input[$key]??'';if(!is_string($v)||strlen($v)>2000)fail('Codice di verifica non valido per '.$label.'.');$v=trim($v);if($v!==''&&!preg_match($pattern,$v))fail('Codice di verifica non valido per '.$label.': incolla il meta tag o solo il valore di content.');$s[$key]=$v;}
+    $file=trim((string)($input['google_file']??''));if($file!==''&&!preg_match('/^google[a-z0-9]{8,64}\.html$/',$file))fail('Nome del file di verifica Google non valido: deve essere simile a google1234abcd5678.html.');$s['google_file']=$file;
+    if(!is_bool($input['indexnow_enabled']??false))fail('Selezione non valida: IndexNow');$s['indexnow_enabled']=$input['indexnow_enabled']??false;if($s['indexnow_enabled']&&!preg_match('/^[a-f0-9]{32}$/',$s['indexnow_key']))$s['indexnow_key']=bin2hex(random_bytes(16));
     if($s['ads_label']!==''&&!preg_match('/^[A-Za-z0-9_-]{1,100}$/',$s['ads_label']))fail('Etichetta conversione non valida.');
     if(!filter_var($s['legal_email'],FILTER_VALIDATE_EMAIL)||$s['legal_company']===''||$s['legal_address']==='')fail('Compila titolare, indirizzo e contatto privacy.');
     if($s['site_url']!==''&&(!filter_var($s['site_url'],FILTER_VALIDATE_URL)||!preg_match('~^https?://~',$s['site_url'])||strpbrk($s['site_url'],'?#')))fail('Inserisci l’URL pubblico del sito senza query o frammenti.');

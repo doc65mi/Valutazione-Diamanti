@@ -75,6 +75,7 @@ function blog_render_site(PDO $db,array $c,string $lang,?array $article,int $sta
     if($status===404||!empty($_GET['q'])||!empty($_GET['pagina'])){$meta=$doc->createElement('meta');$meta->setAttribute('name','robots');$meta->setAttribute('content','noindex,follow');$head->appendChild($meta);}
     foreach($xp->query('//*[contains(concat(" ",normalize-space(@class)," ")," language-nav ")]//a') as $node){$target=$node->getAttribute('lang')==='en'?'en':'it';$node->setAttribute('href',blog_url($c,'/').($target==='en'?'?lang=en':''));if($target===$lang)$node->setAttribute('aria-current','page');else $node->removeAttribute('aria-current');}
     foreach($xp->query('//header//a[contains(@class,"site-blog-link")]') as $node)$node->setAttribute('aria-current','page');
+    seo_verification_meta($doc);
     if($status===200)seo_markup($doc,$lang,$link->getAttribute('href'),$title,$description,$article?'WebPage':'Blog',$article);
     else foreach(iterator_to_array($xp->query('//script[@type="application/ld+json"]')) as $node)$node->parentNode->removeChild($node);
     return $doc->saveHTML();

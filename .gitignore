@@ -18,3 +18,7 @@ __pycache__/
 /data/content/
 /data/published.stamp
 /data/*.tmp
+/google*.html
+/BingSiteAuth.xml
+/indexnow-*.txt
+/data/indexnow.json
