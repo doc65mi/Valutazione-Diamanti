@@ -58,13 +58,23 @@ try {
         $newHash=password_hash($p,defined('PASSWORD_ARGON2ID')?PASSWORD_ARGON2ID:PASSWORD_DEFAULT);db()->prepare('UPDATE users SET password_hash=? WHERE id=?')->execute([$newHash,$u['id']]);$_SESSION['credential_stamp']=hash('sha256',$newHash);
         if(is_file(ROOT.'/data/first-login.txt')) unlink(ROOT.'/data/first-login.txt'); audit('password',(string)$u['id']); respond(['ok'=>true]);
     }
-    if($action==='users'&&$method==='GET') { admin_user(); respond(['users'=>db()->query('SELECT id,username,role,pages FROM users')->fetchAll()]); }
+    // Elenco account con ultimo accesso (2.1.34).
+    if($action==='users'&&$method==='GET') { admin_user(); respond(['users'=>db()->query("SELECT u.id,u.username,u.role,u.pages,(SELECT MAX(created_at) FROM audit WHERE action='login' AND target=CAST(u.id AS TEXT)) AS last_login FROM users u ORDER BY u.username")->fetchAll()]); }
+    // Nuova password per un account scelto dall'amministratore (2.1.34): le sessioni aperte con la vecchia password decadono.
+    if($action==='user-password'&&$method==='POST') {
+        admin_user(); rate('user-password',20,900); $id=filter_var($input['id']??null,FILTER_VALIDATE_INT); $p=$input['password']??null;
+        if(!is_int($id)) fail('Account non valido.'); if(!is_string($p)||strlen($p)<12||strlen($p)>200) fail('Usa una password da 12 a 200 caratteri.');
+        $newHash=password_hash($p,defined('PASSWORD_ARGON2ID')?PASSWORD_ARGON2ID:PASSWORD_DEFAULT);$q=db()->prepare('UPDATE users SET password_hash=? WHERE id=?');$q->execute([$newHash,$id]);if(!$q->rowCount())fail('Account non trovato.',404);
+        if($id===(int)$u['id'])$_SESSION['credential_stamp']=hash('sha256',$newHash); audit('user-password',(string)$id); respond(['ok'=>true]);
+    }
     if($action==='users'&&$method==='POST') {
         admin_user(); $name=$input['username']??''; $p=$input['password']??''; $role=$input['role']??'client'; $pages=$input['pages']??[];
         if(!is_string($name)||!preg_match('/^[a-zA-Z0-9._-]{3,50}$/',$name)||!is_string($p)||strlen($p)<12||strlen($p)>200||!in_array($role,['admin','client'],true)||!is_array($pages)||array_diff($pages,PAGE_SLUGS)) fail('Controlla nome, password, ruolo e pagine assegnate.');
         db()->prepare('INSERT INTO users(username,password_hash,role,pages) VALUES(?,?,?,?)')->execute([$name,password_hash($p,PASSWORD_DEFAULT),$role,json_encode($pages)]); audit('user-create',$name); respond(['ok'=>true]);
     }
     if($action==='retry-emails'&&$method==='POST'){admin_user();if(!settings()['mail_enabled'])fail('Abilita prima gli invii nella scheda Email.');$id=$input['id']??'';if(!is_string($id)||!preg_match('/^R-[A-F0-9]{12}$/',$id))fail('Richiesta non valida.');send_queued_emails($id);respond(['ok'=>true]);}
+    // Cancellazione definitiva di una richiesta con allegati ed email in coda (2.1.34).
+    if($action==='request-delete'&&$method==='POST'){admin_user();$id=$input['id']??'';if(!is_string($id)||!preg_match('/^R-[A-F0-9]{12}$/',$id))fail('Richiesta non valida.');if(!delete_request($id))fail('Richiesta non trovata.',404);audit('request-delete',$id);respond(['ok'=>true]);}
     if($action==='requests'&&$method==='GET') {
         mail_queue_schema();
         admin_user(); purge_expired_requests(); $rows=db()->query('SELECT * FROM requests ORDER BY created_at DESC LIMIT 1000')->fetchAll();
