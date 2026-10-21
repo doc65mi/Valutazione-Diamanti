@@ -22,3 +22,5 @@ __pycache__/
 /BingSiteAuth.xml
 /indexnow-*.txt
 /data/indexnow.json
+/data/reviews-*.json
+/data/reviews.lock

@@ -1,12 +1,13 @@
 <?php
 declare(strict_types=1);
-const APP_VERSION = '2.1.32';
+const APP_VERSION = '2.1.33';
 const ROOT = __DIR__ . '/..';
 const PAGE_SLUGS = ['home', 'acquistiamo', 'chisiamo', 'faq', 'valutazione', 'grazie', 'privacy', 'cookie'];
 require_once __DIR__.'/settings.php';
 require_once __DIR__.'/seo.php';
 require_once __DIR__.'/footer.php';
 require_once __DIR__.'/emails.php';
+require_once __DIR__.'/reviews.php';
 function db(): PDO {
     static $db;
     if (!$db) {
@@ -169,6 +170,10 @@ function build_html(string $slug,string $lang,array $c): string {
 
     tidy_footer($doc,$lang);
     seo_verification_meta($doc);
+    // Recensioni Google (2.1.33): il riquadro si riempie dal browser; se il servizio è spento il segnaposto sparisce.
+    $reviewBoxes=iterator_to_array($xp->query('//*[@data-google-reviews]'));
+    if($reviewBoxes&&settings()['reviews_enabled']){$script=$doc->createElement('script');$script->setAttribute('src','../assets/reviews.js');$script->setAttribute('defer','defer');$head->appendChild($script);}
+    else foreach($reviewBoxes as $box)$box->parentNode->removeChild($box);
     $url=seo_base().'/'.$lang.'/'.($slug==='home'?'index':$slug).'.html';
     seo_markup($doc,$lang,$url,$c['meta']['title'],$c['meta']['description'],$slug==='faq'?'FAQPage':($slug==='chisiamo'?'AboutPage':'WebPage'));
     if($slug==='grazie'||in_array($slug,hidden_page_slugs(),true)){$meta=$doc->createElement('meta');$meta->setAttribute('name','robots');$meta->setAttribute('content','noindex,follow');$head->appendChild($meta);}
