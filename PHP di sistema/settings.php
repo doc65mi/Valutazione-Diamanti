@@ -112,6 +112,12 @@ function verify_recaptcha(): void {
     if($http!==200||!is_array($v)||empty($v['success'])||($v['action']??'')!=='valuation'||($v['hostname']??'')!==$s['recaptcha_hostname']||!is_numeric($v['score']??null)||(float)$v['score']<$s['recaptcha_score'])fail($error);
     $timestamp=strtotime($v['challenge_ts']??'');if(!$timestamp||time()-$timestamp>120||$timestamp>time()+10)fail($error);
 }
+// Cancella una richiesta, i suoi allegati (righe e file) e le email in coda tramite ON DELETE CASCADE (2.1.34).
+function delete_request(string $id): bool {
+    $q=db()->prepare('SELECT path FROM attachments WHERE request_id=?');$q->execute([$id]);$files=$q->fetchAll();
+    db()->beginTransaction();try{db()->prepare('DELETE FROM attachments WHERE request_id=?')->execute([$id]);$q=db()->prepare('DELETE FROM requests WHERE id=?');$q->execute([$id]);$found=$q->rowCount()>0;db()->commit();}catch(Throwable $e){db()->rollBack();throw $e;}
+    foreach($files as $f)foreach(['','-thumb.png'] as $suffix){$p=ROOT.'/uploads/clienti/'.$f['path'].$suffix;if(is_file($p))unlink($p);}return $found;
+}
 function purge_expired_requests(): int {
     $cutoff=(new DateTimeImmutable('now',new DateTimeZone('UTC')))->modify('-'.settings()['retention_months'].' months')->format('c');
     $q=db()->prepare('SELECT id,path FROM attachments WHERE request_id IN(SELECT id FROM requests WHERE created_at < ?)');$q->execute([$cutoff]);$files=$q->fetchAll();
