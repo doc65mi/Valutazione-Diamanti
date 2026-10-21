@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 function settings_defaults(): array {
-    return ['mail_enabled'=>false,'mail_from'=>'','mail_to'=>'','recaptcha_enabled'=>false,'recaptcha_site_key'=>'','recaptcha_secret'=>'','recaptcha_hostname'=>'','recaptcha_score'=>0.5,'analytics_enabled'=>false,'analytics_id'=>'','ads_enabled'=>false,'ads_id'=>'','ads_label'=>'','meta_enabled'=>false,'meta_id'=>'','gtm_enabled'=>false,'gtm_id'=>'','legal_company'=>'La Diamanteria','legal_address'=>'Via Vincenzo Monti 47, 20123 Milano','legal_vat'=>'','legal_email'=>'sl@ladiamanteria.com','retention_months'=>12,'site_url'=>'','consent_version'=>1,'menu_hidden'=>['blog'],'mail_from_name'=>'Valutazione Diamanti','mail_transport'=>'php','smtp_host'=>'','smtp_port'=>587,'smtp_secure'=>'tls','smtp_user'=>'','smtp_pass'=>'','smtp_verify'=>true,'mail_check_domain'=>true,'google_verification'=>'','google_file'=>'','bing_verification'=>'','indexnow_enabled'=>false,'indexnow_key'=>'','reviews_enabled'=>false,'reviews_place_id'=>'ChIJFR80gkTBhkcRJGjlclhYteg','reviews_api_key'=>'']+customer_email_defaults();
+    return ['mail_enabled'=>false,'mail_from'=>'','mail_to'=>'','recaptcha_enabled'=>false,'recaptcha_site_key'=>'','recaptcha_secret'=>'','recaptcha_hostname'=>'','recaptcha_score'=>0.5,'analytics_enabled'=>false,'analytics_id'=>'','ads_enabled'=>false,'ads_id'=>'','ads_label'=>'','meta_enabled'=>false,'meta_id'=>'','gtm_enabled'=>false,'gtm_id'=>'','legal_company'=>'La Diamanteria','legal_address'=>'Via Vincenzo Monti 47, 20123 Milano','legal_vat'=>'','legal_email'=>'sl@ladiamanteria.com','retention_months'=>12,'site_url'=>'','consent_version'=>1,'menu_hidden'=>['blog'],'home_guides_enabled'=>false,'mail_from_name'=>'Valutazione Diamanti','mail_transport'=>'php','smtp_host'=>'','smtp_port'=>587,'smtp_secure'=>'tls','smtp_user'=>'','smtp_pass'=>'','smtp_verify'=>true,'mail_check_domain'=>true,'google_verification'=>'','google_file'=>'','bing_verification'=>'','indexnow_enabled'=>false,'indexnow_key'=>'','reviews_enabled'=>false,'reviews_place_id'=>'ChIJFR80gkTBhkcRJGjlclhYteg','reviews_api_key'=>'']+customer_email_defaults();
 }
 function settings(): array {
     db()->exec('CREATE TABLE IF NOT EXISTS settings (id INTEGER PRIMARY KEY CHECK(id=1), value TEXT NOT NULL)');
@@ -12,10 +12,12 @@ const MENU_ITEMS = ['acquistiamo'=>['label'=>'Vendere un diamante','href'=>'acqu
 function menu_enabled(string $key): bool { return !in_array($key,(array)settings()['menu_hidden'],true); }
 /** Pagine statiche spente dal menu: restano raggiungibili ma escono da sitemap e indicizzazione. */
 function hidden_page_slugs(): array { $out=[];foreach(MENU_ITEMS as $key=>$item)if($item['page']&&!menu_enabled($key))$out[]=$item['page'];return $out; }
+// Sezione «Guide e approfondimenti» della home: spenta finché il blog non è pronto, si accende dal pannello Menu (2.1.35).
+const HOME_GUIDES_LABEL = 'Sezione «Guide e approfondimenti» in home';
 function menu_save(array $input): array {
-    $enabled=$input['enabled']??null;if(!is_array($enabled)||array_diff_key($enabled,MENU_ITEMS)||count($enabled)!==count(MENU_ITEMS))fail('Selezione menu non valida.');
+    $enabled=$input['enabled']??null;$guides=is_array($enabled)?($enabled['guide']??false):false;if(is_array($enabled))unset($enabled['guide']);if(!is_bool($guides))fail('Selezione menu non valida.');if(!is_array($enabled)||array_diff_key($enabled,MENU_ITEMS)||count($enabled)!==count(MENU_ITEMS))fail('Selezione menu non valida.');
     $hidden=[];foreach($enabled as $key=>$on){if(!is_bool($on))fail('Selezione menu non valida.');if(!$on)$hidden[]=$key;}
-    $s=settings();$s['menu_hidden']=$hidden;db()->prepare('INSERT INTO settings(id,value) VALUES(1,?) ON CONFLICT(id) DO UPDATE SET value=excluded.value')->execute([json_encode($s,JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR)]);return $s;
+    $s=settings();$s['menu_hidden']=$hidden;$s['home_guides_enabled']=$guides;db()->prepare('INSERT INTO settings(id,value) VALUES(1,?) ON CONFLICT(id) DO UPDATE SET value=excluded.value')->execute([json_encode($s,JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR)]);return $s;
 }
 const TRACKING_LABELS = ['analytics'=>'Google Analytics 4','ads'=>'Google Ads','meta'=>'Meta Pixel','gtm'=>'Google Tag Manager'];
 /** Ricava l'ID anche quando si incolla lo snippet completo o l'ID scritto in minuscolo (es. "aw-123/etichetta"). */
