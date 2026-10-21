@@ -6,7 +6,7 @@ declare(strict_types=1);
 const REVIEWS_TTL = 43200;        // 12 ore tra una lettura e l'altra
 const REVIEWS_STALE = 259200;     // se Google non risponde si mostra la copia precedente al massimo per 3 giorni
 const REVIEWS_RETRY = 900;        // dopo un errore si riprova dopo 15 minuti
-const REVIEWS_MIN_RATING = 4;     // sul sito solo recensioni da 4 stelle in su (2.1.34); media e totale restano quelli di Google
+const REVIEWS_MIN_RATING = 4;     // sul sito solo recensioni da 4 stelle in su (2.1.36); media e totale restano quelli di Google
 
 function reviews_cache_path(string $lang): string { return ROOT.'/data/reviews-'.$lang.'.json'; }
 
@@ -18,7 +18,7 @@ function reviews_fetch_google(string $lang): array {
     $ch=curl_init('https://places.googleapis.com/v1/places/'.rawurlencode($s['reviews_place_id']).'?languageCode='.$lang);
     curl_setopt_array($ch,[CURLOPT_RETURNTRANSFER=>true,CURLOPT_CONNECTTIMEOUT=>5,CURLOPT_TIMEOUT=>10,CURLOPT_PROTOCOLS=>CURLPROTO_HTTPS,
         CURLOPT_HTTPHEADER=>['X-Goog-Api-Key: '.$s['reviews_api_key'],'X-Goog-FieldMask: displayName,rating,userRatingCount,googleMapsUri,reviews','Accept: application/json',
-        // Se la chiave è limitata ai referrer HTTP, Google accetta la richiesta solo con il Referer del sito (2.1.34).
+        // Se la chiave è limitata ai referrer HTTP, Google accetta la richiesta solo con il Referer del sito (2.1.36).
         'Referer: '.seo_base().'/']]);
     $body=curl_exec($ch);$http=curl_getinfo($ch,CURLINFO_HTTP_CODE);$error=curl_error($ch);curl_close($ch);
     if($body===false)throw new RuntimeException('Google non raggiungibile: '.$error);

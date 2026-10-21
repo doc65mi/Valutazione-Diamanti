@@ -7,7 +7,7 @@ body:has(#cookie-banner) .privacy-reopen,body:has(#cookie-dialog[open]) .privacy
 
 .site-subfooter{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px 24px}.subfooter-links{display:flex;align-items:center;flex-wrap:wrap;gap:8px}.site-subfooter a,.site-subfooter button{color:inherit;font:inherit}.site-subfooter button{background:none;border:0;padding:0;text-decoration:underline;cursor:pointer}.site-subfooter button:hover,.site-subfooter a:hover{color:#C9B48A}@media(max-width:640px){.site-subfooter{justify-content:flex-start}.subfooter-links{row-gap:12px}}
 .frontend-editor-dialog .frontend-editor-preview{display:block;max-width:100%;max-height:200px;margin:8px 0;border-radius:6px}
-/* Recensioni Google (2.1.33, carosello 2.1.34) */
+/* Recensioni Google (2.1.33, carosello 2.1.36) */
 .google-reviews{display:flex;flex-direction:column;gap:14px;font-size:15px;color:#1C1B19}.google-reviews[hidden]{display:none!important}
 .gr-stars{position:relative;display:inline-block;font-size:20px;line-height:1;letter-spacing:2px;color:#DADADA;white-space:nowrap}.gr-stars-fill{position:absolute;inset:0 auto 0 0;overflow:hidden;color:#F29A2E}
 .gr-g{display:inline-flex;width:16px;height:16px;vertical-align:-3px}.gr-g svg{width:100%;height:100%}

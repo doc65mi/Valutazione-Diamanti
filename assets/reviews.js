@@ -1,5 +1,5 @@
 'use strict';
-// Recensioni Google (2.1.33, carosello 2.1.34): riepilogo della scheda a sinistra e recensioni da 4 stelle in su in un carosello.
+// Recensioni Google (2.1.33, carosello 2.1.36): riepilogo della scheda a sinistra e recensioni da 4 stelle in su in un carosello.
 // Se il servizio non risponde il riquadro resta nascosto e la pagina mostra solo i link alla scheda Google.
 (() => {
  const boxes=[...document.querySelectorAll('[data-google-reviews]')];if(!boxes.length)return;
