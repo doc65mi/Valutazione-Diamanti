@@ -16,4 +16,10 @@ function tidy_footer(DOMDocument $doc,string $lang): void {
     }elseif($legal){
         $legal->setAttribute('class','legal-footer site-subfooter');$copy=$doc->createElement('span',$lang==='en'?'© 2026 Valutazione Diamanti by La Diamanteria · All rights reserved.':'© 2026 Valutazione Diamanti by La Diamanteria · Tutti i diritti riservati.');$legal->insertBefore($copy,$legal->firstChild);
     }
+    // Credits dell'agenzia in fondo al footer, IT/EN e blog (2.1.36).
+    $row=$copyright?$copyright->parentNode:$legal;
+    if($row&&!$xp->query('.//*[contains(concat(" ",normalize-space(@class)," ")," site-credits ")]',$row)->length){
+        $credits=$doc->createElement('span','Credits: ');$credits->setAttribute('class','site-credits');
+        $a=$doc->createElement('a','Oltre Media');$a->setAttribute('href','https://www.oltre.media');$a->setAttribute('target','_blank');$a->setAttribute('rel','noopener');$credits->appendChild($a);$row->appendChild($credits);
+    }
 }

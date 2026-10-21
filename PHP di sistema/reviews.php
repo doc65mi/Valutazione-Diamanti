@@ -6,6 +6,7 @@ declare(strict_types=1);
 const REVIEWS_TTL = 43200;        // 12 ore tra una lettura e l'altra
 const REVIEWS_STALE = 259200;     // se Google non risponde si mostra la copia precedente al massimo per 3 giorni
 const REVIEWS_RETRY = 900;        // dopo un errore si riprova dopo 15 minuti
+const REVIEWS_MIN_RATING = 4;     // sul sito solo recensioni da 4 stelle in su (2.1.36); media e totale restano quelli di Google
 
 function reviews_cache_path(string $lang): string { return ROOT.'/data/reviews-'.$lang.'.json'; }
 
@@ -16,25 +17,35 @@ function reviews_fetch_google(string $lang): array {
     if(!function_exists('curl_init'))throw new RuntimeException('Estensione PHP cURL non disponibile sul server.');
     $ch=curl_init('https://places.googleapis.com/v1/places/'.rawurlencode($s['reviews_place_id']).'?languageCode='.$lang);
     curl_setopt_array($ch,[CURLOPT_RETURNTRANSFER=>true,CURLOPT_CONNECTTIMEOUT=>5,CURLOPT_TIMEOUT=>10,CURLOPT_PROTOCOLS=>CURLPROTO_HTTPS,
-        CURLOPT_HTTPHEADER=>['X-Goog-Api-Key: '.$s['reviews_api_key'],'X-Goog-FieldMask: rating,userRatingCount,googleMapsUri,reviews','Accept: application/json']]);
+        CURLOPT_HTTPHEADER=>['X-Goog-Api-Key: '.$s['reviews_api_key'],'X-Goog-FieldMask: displayName,rating,userRatingCount,googleMapsUri,reviews','Accept: application/json',
+        // Se la chiave è limitata ai referrer HTTP, Google accetta la richiesta solo con il Referer del sito (2.1.36).
+        'Referer: '.seo_base().'/']]);
     $body=curl_exec($ch);$http=curl_getinfo($ch,CURLINFO_HTTP_CODE);$error=curl_error($ch);curl_close($ch);
     if($body===false)throw new RuntimeException('Google non raggiungibile: '.$error);
     $v=json_decode((string)$body,true);
+    if($http===403&&str_contains((string)$body,'referer'))throw new RuntimeException('Google ha bloccato la chiave per via della restrizione "Siti web" (referrer HTTP). In Google Cloud Console > API e servizi > Credenziali apri la chiave e in "Limitazioni delle applicazioni" scegli "Indirizzi IP" con l’IP del server, oppure "Nessuna"; in "Limitazioni delle API" lascia solo Places API (New). Il sito chiede le recensioni dal server, non dal browser.');
     if($http!==200||!is_array($v))throw new RuntimeException('Google ha risposto con codice '.$http.(is_array($v)&&isset($v['error']['message'])?': '.mb_substr((string)$v['error']['message'],0,300):'.'));
     $reviews=[];
     foreach(array_slice((array)($v['reviews']??[]),0,5) as $r){
-        $text=trim((string)($r['text']['text']??''));if($text==='')continue;
+        if((int)($r['rating']??0)<REVIEWS_MIN_RATING)continue;
+        $text=trim((string)($r['text']['text']??''));
         $author=$r['authorAttribution']??[];
-        $reviews[]=['author'=>mb_substr((string)($author['displayName']??''),0,100),'author_url'=>reviews_url($author['uri']??''),'rating'=>max(1,min(5,(int)($r['rating']??0))),
+        $reviews[]=['author'=>mb_substr((string)($author['displayName']??''),0,100),'author_url'=>reviews_url($author['uri']??''),'photo'=>reviews_photo($author['photoUri']??''),'rating'=>max(1,min(5,(int)($r['rating']??0))),
             'time'=>mb_substr((string)($r['relativePublishTimeDescription']??''),0,60),'text'=>mb_substr($text,0,2000),'url'=>reviews_url($r['googleMapsUri']??''),
             'translated'=>isset($r['originalText']['languageCode'],$r['text']['languageCode'])&&$r['originalText']['languageCode']!==$r['text']['languageCode']];
     }
-    return ['rating'=>round((float)($v['rating']??0),1),'count'=>(int)($v['userRatingCount']??0),'url'=>reviews_url($v['googleMapsUri']??''),'reviews'=>$reviews];
+    return ['name'=>mb_substr((string)($v['displayName']['text']??''),0,150),'rating'=>round((float)($v['rating']??0),1),'count'=>(int)($v['userRatingCount']??0),'url'=>reviews_url($v['googleMapsUri']??''),
+        'write_url'=>'https://search.google.com/local/writereview?placeid='.rawurlencode($s['reviews_place_id']),'reviews'=>$reviews];
 }
 /** Solo link https verso Google: tutto il resto viene scartato. */
 function reviews_url(mixed $url): string {
     $url=is_string($url)?$url:'';$host=strtolower((string)parse_url($url,PHP_URL_HOST));
     return str_starts_with($url,'https://')&&preg_match('/(^|\.)(google\.[a-z.]+|goo\.gl)$/',$host)?$url:'';
+}
+/** Foto profilo dell'autore: solo immagini https di Google. */
+function reviews_photo(mixed $url): string {
+    $url=is_string($url)?$url:'';$host=strtolower((string)parse_url($url,PHP_URL_HOST));
+    return str_starts_with($url,'https://')&&preg_match('/(^|\.)googleusercontent\.com$/',$host)?$url:'';
 }
 /** Dati per le pagine pubbliche: copia in cache se recente, altrimenti nuova lettura da Google (una sola alla volta). */
 function reviews_public(string $lang): ?array {
