@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-const APP_VERSION = '2.1.33';
+const APP_VERSION = '2.1.35';
 const ROOT = __DIR__ . '/..';
 const PAGE_SLUGS = ['home', 'acquistiamo', 'chisiamo', 'faq', 'valutazione', 'grazie', 'privacy', 'cookie'];
 require_once __DIR__.'/settings.php';
@@ -133,6 +133,12 @@ function build_html(string $slug,string $lang,array $c): string {
         if($type==='text') $el->textContent=$v;
         if($type==='image') { $el->setAttribute('src',$v['src']); $el->setAttribute('alt',$v['alt']); }
         if($type==='button') { $el->setAttribute('href',$v['href']); $el->textContent=$v['label']; }
+    }
+    // Guide e approfondimenti (2.1.35): sezione tolta se spenta; se accesa, i vecchi link al prototipo Lovable portano al blog.
+    $guidesOn=(bool)settings()['home_guides_enabled'];
+    foreach(iterator_to_array($xp->query('//*[@data-om-section="guide"]')) as $section){
+        if(!$guidesOn){$section->parentNode->removeChild($section);continue;}
+        foreach($xp->query('.//a',$section) as $a)if(str_contains($a->getAttribute('href'),'lovable.app')){$a->setAttribute('href',$lang==='en'?'../blog/?lang=en':'../blog/');$a->removeAttribute('target');}
     }
     $legal=settings();
     $replacements=[];foreach(['company','address','vat','email'] as $key)$replacements['{{legal.'.$key.'}}']=$legal['legal_'.$key];$replacements['{{legal.retention}}']=(string)$legal['retention_months'];

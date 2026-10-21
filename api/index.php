@@ -42,7 +42,7 @@ try {
     // IndexNow (2.1.32): invio manuale di tutti gli indirizzi della sitemap.
     if($action==='indexnow-submit'&&$method==='POST'){admin_user();rate('indexnow',10,3600);if(!settings()['indexnow_enabled'])fail('Attiva IndexNow e salva le impostazioni prima dell’invio.');$r=indexnow_submit(sitemap_entries(),false);if(!$r)fail('Nessun indirizzo da inviare: controlla l’URL pubblico del sito.');if(!$r['ok'])fail('IndexNow ha risposto con codice '.$r['http'].'. Riprova tra qualche minuto.');audit('indexnow','site');respond(['ok'=>true,'last'=>$r]);}
     // Pannello Menu: accende e spegne le voci di header e footer, poi ripubblica tutte le pagine e la sitemap (2.1.27).
-    if($action==='menu'&&$method==='GET'){admin_user();$items=[];foreach(MENU_ITEMS as $key=>$item)$items[]=['key'=>$key,'label'=>$item['label'],'enabled'=>menu_enabled($key)];respond(['items'=>$items]);}
+    if($action==='menu'&&$method==='GET'){admin_user();$items=[];foreach(MENU_ITEMS as $key=>$item)$items[]=['key'=>$key,'label'=>$item['label'],'enabled'=>menu_enabled($key)];$items[]=['key'=>'guide','label'=>HOME_GUIDES_LABEL,'enabled'=>(bool)settings()['home_guides_enabled']];respond(['items'=>$items]);}
     if($action==='menu'&&$method==='POST'){
         admin_user();$lock=fopen(ROOT.'/data/build.lock','c');if(!$lock||!flock($lock,LOCK_EX))throw new RuntimeException('Build occupata.');
         try{
