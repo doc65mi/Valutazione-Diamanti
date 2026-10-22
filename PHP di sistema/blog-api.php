@@ -4,7 +4,7 @@ require_once __DIR__.'/blog.php';
 function blog_reauthenticate(array $input): void {
     $q=db()->prepare('SELECT password_hash FROM users WHERE id=?');$q->execute([$_SESSION['uid']??0]);
     $p=$input['current_password']??null;
-    if(!is_string($p)||!password_verify($p,(string)$q->fetchColumn()))fail('Password amministratore attuale non valida.',403);
+    if(!is_string($p)||!password_verify($p,(string)$q->fetchColumn()))fail('La password con cui sei entrato in questo pannello non è corretta (non è quella di Frase o di altri servizi).',403);
 }
 // Collegamento Frase (2.1.30): fuori dal blocco del blog, perché l'importazione prende il proprio blocco.
 function blog_frase_api(string $action,string $method,array $input): never {
@@ -22,7 +22,8 @@ function blog_frase_api(string $action,string $method,array $input): never {
             set_time_limit(90);respond(frase_import($input['id'],'importazione manuale'));
         }
         if(in_array($action,['blog-frase-connect','blog-frase-disconnect'],true)&&$method==='POST'){
-            blog_reauthenticate($input);$lock=blog_lock(true);
+            // 2.1.37: niente password di conferma. Collegare Frase non tocca le credenziali del sito e la richiesta è già protetta da sessione amministratore e token CSRF.
+            $lock=blog_lock(true);
             if($action==='blog-frase-disconnect'){frase_disconnect($c);audit('blog-frase','disconnected');respond(['ok'=>true]);}
             $key=trim((string)($input['api_key']??''));
             if(!preg_match('/^[\x21-\x7e]{16,300}$/D',$key))fail('Incollare la chiave API di Frase (Settings > API).');
