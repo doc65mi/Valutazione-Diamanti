@@ -1,8 +1,8 @@
-# Aggiornamento 2.1.50 — Recensioni Google scritte nella pagina
+# Aggiornamento 2.1.50 · Esempi di trattativa in «Come funziona»
 
-- Le recensioni Google (riepilogo e schede del carosello in home, media e numero nella pagina Valutazione) ora sono scritte direttamente nell'HTML delle pagine IT/EN, non solo aggiunte dal JavaScript. Si vedono anche se lo script non parte, e i motori di ricerca leggono il testo.
-- reviews.js resta: aggiunge frecce, pallini e "Leggi tutto" e aggiorna i dati.
-- Quando il sito rilegge le recensioni da Google (ogni 12 ore) o si preme "Prova il collegamento con Google", home e valutazione vengono ripubblicate con i dati nuovi.
-- Anche le copie salvate prima della 2.1.36 mostrano solo le recensioni da 4 stelle in su.
+Version: 2.1.50
 
-Dopo il Pull in Plesk: Admin > Privacy e integrazioni > "Prova il collegamento con Google" (ripubblica subito le pagine con le recensioni).
+- In home, sotto i quattro passaggi di «Come funziona», tre esempi di trattativa (IT e EN):
+  solitario GIA 1,52 ct G VS1, pietra sciolta 2,03 ct H SI1 senza certificato, anello con zaffiro 3,10 ct e diamanti laterali.
+- Sono dichiarati come casi esemplificativi con dati indicativi, non clienti reali. Nessun prezzo indicato.
+- Tutti i testi sono modificabili da «Modifica pagina»; nelle home già salvate online i campi nuovi si aggiungono da soli.
