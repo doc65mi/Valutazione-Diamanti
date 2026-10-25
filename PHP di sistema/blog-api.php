@@ -43,7 +43,7 @@ function blog_api(string $action,string $method,array $input): never {
     if(str_starts_with($action,'blog-frase-'))blog_frase_api($action,$method,$input);
     $lock=blog_lock($method!=='GET');$c=blog_config();$db=blog_db();
     try {
-        if($action==='blog-list'&&$method==='GET')respond(['articles'=>blog_rows($db,'SELECT id,title,slug,language,status,featured,published_at FROM blog_articles ORDER BY published_at DESC,id DESC')]);
+        if($action==='blog-list'&&$method==='GET')respond(['articles'=>blog_rows($db,'SELECT id,title,slug,language,status,featured,published_at FROM blog_articles ORDER BY published_at DESC,id DESC'),'blog_enabled'=>menu_enabled('blog')]);
         // Pulsante «In evidenza» dell'elenco (2.1.43): gli articoli in evidenza compaiono per primi in home e nel blog.
         if($action==='blog-feature'&&$method==='POST'){
             $id=(int)($input['id']??0);if(!is_bool($input['featured']??null))fail('Selezione non valida.');
