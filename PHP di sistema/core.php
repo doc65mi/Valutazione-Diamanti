@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-const APP_VERSION = '2.1.42';
+const APP_VERSION = '2.1.43';
 const ROOT = __DIR__ . '/..';
 const PAGE_SLUGS = ['home', 'acquistiamo', 'chisiamo', 'faq', 'valutazione', 'grazie', 'privacy', 'cookie'];
 require_once __DIR__.'/settings.php';
@@ -135,10 +135,10 @@ function build_html(string $slug,string $lang,array $c): string {
         if($type==='image') { $el->setAttribute('src',$v['src']); $el->setAttribute('alt',$v['alt']); }
         if($type==='button') { $el->setAttribute('href',$v['href']); $el->textContent=$v['label']; }
     }
-    // Guide e approfondimenti (2.1.35): sezione tolta se spenta; se accesa, i vecchi link al prototipo Lovable portano al blog.
+    // Guide e approfondimenti (2.1.35, 2.1.43): sezione tolta se spenta; se accesa mostra gli ultimi articoli del blog, prima quelli in evidenza.
     $guidesOn=(bool)settings()['home_guides_enabled'];
     foreach(iterator_to_array($xp->query('//*[@data-om-section="guide"]')) as $section){
-        if(!$guidesOn){$section->parentNode->removeChild($section);continue;}
+        if(!$guidesOn||!home_guide_cards($xp,$section,$lang)){$section->parentNode->removeChild($section);continue;}
         foreach($xp->query('.//a',$section) as $a)if(str_contains($a->getAttribute('href'),'lovable.app')){$a->setAttribute('href',$lang==='en'?'../blog/?lang=en':'../blog/');$a->removeAttribute('target');}
     }
     $legal=settings();
@@ -186,6 +186,31 @@ function build_html(string $slug,string $lang,array $c): string {
     if($slug==='grazie'||in_array($slug,hidden_page_slugs(),true)){$meta=$doc->createElement('meta');$meta->setAttribute('name','robots');$meta->setAttribute('content','noindex,follow');$head->appendChild($meta);}
     return str_replace('../../assets/', '../assets/', $doc->saveHTML());
 }
+// Schede della sezione Guide in home (2.1.43): la prima scheda del template fa da modello (data, titolo, testo, «Leggi →»)
+// e viene ripetuta per i 3 articoli pubblicati più recenti nella lingua della pagina, quelli in evidenza per primi.
+// Senza blog attivo o senza articoli restituisce false e la sezione sparisce. Le schede non sono modificabili dall'editor.
+function home_guide_cards(DOMXPath $xp,DOMElement $section,string $lang): bool {
+    if(!menu_enabled('blog'))return false;
+    $cards=iterator_to_array($xp->query('.//a[span]',$section));if(!$cards)return false;
+    require_once __DIR__.'/blog.php';
+    try{$posts=blog_rows(blog_db(),"SELECT slug,title,excerpt,published_at FROM blog_articles WHERE status='published' AND language=? ORDER BY featured DESC,published_at DESC,id DESC LIMIT 3",[$lang]);}
+    catch(Throwable $e){error_log('Guide in home: blog non leggibile: '.$e->getMessage());return false;}
+    if(!$posts)return false;
+    $model=$cards[0];$grid=$model->parentNode;foreach($cards as $card)$card->parentNode->removeChild($card);
+    while($grid->firstChild)$grid->removeChild($grid->firstChild);
+    $months=$lang==='en'?['January','February','March','April','May','June','July','August','September','October','November','December']:['gennaio','febbraio','marzo','aprile','maggio','giugno','luglio','agosto','settembre','ottobre','novembre','dicembre'];
+    foreach($posts as $p){
+        $card=$model->cloneNode(true);$spans=iterator_to_array($xp->query('./span',$card));
+        $card->setAttribute('href','../blog/articolo/'.rawurlencode($p['slug']).($lang==='en'?'?lang=en':''));$card->removeAttribute('target');
+        $d=DateTimeImmutable::createFromFormat('!Y-m-d',substr((string)$p['published_at'],0,10));
+        $excerpt=trim((string)$p['excerpt']);if(mb_strlen($excerpt)>200)$excerpt=rtrim(mb_substr($excerpt,0,197)).'…';
+        foreach([$d?$d->format('j').' '.$months[(int)$d->format('n')-1].' '.$d->format('Y'):'',(string)$p['title'],$excerpt] as $i=>$text)if(isset($spans[$i]))$spans[$i]->textContent=$text;
+        if(isset($spans[2])&&$excerpt==='')$card->removeChild($spans[2]);
+        foreach(iterator_to_array($xp->query('.//*[@data-om-slot]',$card)) as $el)foreach(['data-om-slot','data-om-type','data-om-label','data-om-max','data-cd-slot'] as $attr)$el->removeAttribute($attr);
+        $grid->appendChild($card);
+    }
+    return true;
+}
 // Toglie da header e footer i link delle voci spente nel pannello Menu (2.1.27).
 function hide_menu_items(DOMXPath $xp): void {
     $off=[];foreach(MENU_ITEMS as $key=>$item)if(!menu_enabled($key))$off[]=$item['href'];if(!$off)return;
@@ -193,6 +218,8 @@ function hide_menu_items(DOMXPath $xp): void {
 }
 function publish(string $slug,string $lang,array $c): void { $name=$slug==='home'?'index':$slug; atomic_write(ROOT.'/'.$lang.'/'.$name.'.html',build_html($slug,$lang,$c),0644); }
 function seo_indexes(): void {
+    // La home mostra gli ultimi articoli (2.1.43): ogni modifica al blog passa di qui e la rigenera.
+    foreach(['it','en'] as $lang)publish('home',$lang,content('home',$lang));
     $s=settings();$base=seo_base();$xml='<?xml version="1.0" encoding="UTF-8"?>'."\n".'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">';
     $llms="# Valutazione Diamanti\n\nDirect buying and free valuations of natural diamonds, jewellery and selected watches by La Diamanteria in Milan.\n\n## Pages\n";
     $hiddenPages=hidden_page_slugs();foreach(PAGE_SLUGS as $slug)if($slug!=='grazie'&&!in_array($slug,$hiddenPages,true))foreach(['it','en'] as $lang){$name=$slug==='home'?'index':$slug;$url=$base.'/'.$lang.'/'.$name.'.html';$c=content($slug,$lang);if($base)$xml.='<url><loc>'.htmlspecialchars($url,ENT_XML1).'</loc></url>';$llms.='- ['.$c['meta']['title'].']('.$url.")\n";}

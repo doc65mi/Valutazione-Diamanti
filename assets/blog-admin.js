@@ -1,9 +1,18 @@
 'use strict';
 let blogEditing=null,blogContentaiLog=[];
 async function loadBlog(){
- const [list,settings]=await Promise.all([api('blog-list'),api('blog-config')]);
- const box=$('#blog-list');box.replaceChildren();if(!list.articles.length)box.append(el('p','Nessun articolo: crea il primo oppure configura il webhook.'));
- for(const a of list.articles){const row=el('div',undefined,'blog-admin-row');const title=el('strong',a.title);const state=el('span',(a.language||'it').toUpperCase()+' · '+(a.status==='published'?'Pubblicato':'Bozza')+(a.featured?' · In primo piano':''));const edit=el('button','Modifica');edit.type='button';edit.onclick=()=>openBlogArticle(a.id).catch(e=>message(e.message));const remove=el('button','Elimina');remove.type='button';remove.onclick=async()=>{if(!confirm('Eliminare definitivamente “'+a.title+'”?'))return;try{await api('blog-delete',{id:a.id,confirm:true});await loadBlog();message('Articolo eliminato.');}catch(e){message(e.message);}};row.append(title,state,edit,remove);box.append(row);}
+ // 2.1.43: l'elenco compare anche se la configurazione non si carica; pubblicati e bozze separati, pulsante «In evidenza».
+ const settingsLoad=api('blog-config');settingsLoad.catch(()=>{});const list=await api('blog-list');
+ const box=$('#blog-list');box.replaceChildren();if(!list.articles.length)box.append(el('p','Nessun articolo: crea il primo oppure collega ContentAI o Frase.'));
+ const groups=[['Articoli pubblicati',list.articles.filter(a=>a.status==='published')],['Bozze',list.articles.filter(a=>a.status!=='published')]];
+ for(const [label,items] of groups){if(!items.length)continue;box.append(el('h2',label+' ('+items.length+')'));
+  if(label==='Articoli pubblicati')box.append(el('p','Gli articoli in evidenza compaiono per primi nella sezione «Guide e approfondimenti» della home (tre articoli per lingua) e nel blog; gli altri seguono dal più recente.','hint'));
+  for(const a of items){const row=el('div',undefined,'blog-admin-row');const title=el('strong',(a.featured?'★ ':'')+a.title);const state=el('span',(a.language||'it').toUpperCase()+' · '+(a.published_at||'')+(a.featured?' · In evidenza':''));
+   const feature=el('button',a.featured?'★ In evidenza':'☆ Metti in evidenza');feature.type='button';feature.setAttribute('aria-pressed',a.featured?'true':'false');feature.title=a.featured?'Clic per togliere dall’evidenza':'Clic per mettere in evidenza';
+   feature.onclick=async()=>{feature.disabled=true;try{await api('blog-feature',{id:a.id,featured:!Number(a.featured)});await loadBlog();message(Number(a.featured)?'Articolo tolto dall’evidenza.':'Articolo in evidenza: home e blog aggiornati.');}catch(e){feature.disabled=false;message(e.message);}};
+   const edit=el('button','Modifica');edit.type='button';edit.onclick=()=>openBlogArticle(a.id).catch(e=>message(e.message));const remove=el('button','Elimina');remove.type='button';remove.onclick=async()=>{if(!confirm('Eliminare definitivamente “'+a.title+'”?'))return;try{await api('blog-delete',{id:a.id,confirm:true});await loadBlog();message('Articolo eliminato.');}catch(e){message(e.message);}};
+   if(a.status==='published')row.append(title,state,feature,edit,remove);else row.append(title,state,edit,remove);box.append(row);}}
+ const settings=await settingsLoad;
  const c=settings.config;$('#blog-integration').elements.auto_publish.checked=c.auto_publish;
  $('#blog-webhook-url').textContent=c.base_url+'/webhook.php';$('#blog-contentai-url').textContent=c.base_url+'/contentai.php';blogContentaiLog=settings.contentai_log||[];keyState($('#blog-token-state'),c.token_set,c.token_set?'Token salvato (non mostrato): ricezione attiva.':'Ricezione disattivata: genera un token.');
  loadFraseStatus().catch(()=>{});
