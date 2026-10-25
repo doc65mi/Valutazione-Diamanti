@@ -143,6 +143,11 @@ function frase_import(string $contentId, string $origin): array {
     $db = blog_db();
     $source = 'frase-' . $contentId;
     $old = blog_one($db, 'SELECT * FROM blog_articles WHERE source_id=?', [$source]);
+    // Lo stesso articolo può essere già arrivato dal connettore WordPress di Frase (2.1.39): si aggiorna quello, senza doppioni.
+    if (!$old && is_string($item['slug'] ?? null) && $item['slug'] !== '') {
+        $old = blog_one($db, "SELECT * FROM blog_articles WHERE slug=? AND source_id LIKE 'frase-%'", [blog_slugify($item['slug'])]);
+        if ($old) $source = (string)$old['source_id'];
+    }
     $flat = ['id' => $source, 'title' => $title, 'slug' => (string)($item['slug'] ?? ''), 'language' => $lang, 'content' => $html, 'published_at' => '',
         'category' => $lang === 'en' ? 'Insights' : 'Approfondimenti', 'image_url' => '', 'image_alt' => $title];
     $excerpt = frase_plain($item['excerpt'] ?? $item['meta_description'] ?? '', 400);
