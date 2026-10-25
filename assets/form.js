@@ -31,6 +31,8 @@ form.onsubmit=async e=>{e.preventDefault();if(busy)return;error('');if(!validate
  catch(err){error(err instanceof SyntaxError?t('Invio non riuscito. Controlla la connessione o la dimensione degli allegati.','Unable to submit. Please check your connection or attachment size.'):err.message);}
  finally{busy=false;$('#next').disabled=false;$('#back').disabled=false;show();}
 };
-const urlCat=new URLSearchParams(location.search).get('cat');const aliases={diamanti:'loose-diamond',pietre:'gemstone',orologi:'watch',solitario:'solitaire'};if(urlCat)field('cat').value=aliases[urlCat]||urlCat;
+// Le card delle categorie aprono il modulo con il tipo già scelto: ?tipo=diamanti|gioielli|pietre|vintage|orologi (2.1.49; ?cat= resta valido).
+const query=new URLSearchParams(location.search);const urlCat=query.get('tipo')||query.get('cat');const aliases={diamanti:'loose-diamond',gioielli:'solitaire',pietre:'gemstone',vintage:'other',orologi:'watch',solitario:'solitaire'};
+if(urlCat){const value=aliases[urlCat]||urlCat;if([...field('cat').options].some(o=>o.value===value)){field('cat').value=value;field('cat').dispatchEvent(new Event('change',{bubbles:true}));}}
 form.querySelectorAll('[data-choice-for]').forEach(group=>{group.addEventListener('click',e=>{const button=e.target.closest('button[data-value]');if(!button||button.disabled)return;field(group.dataset.choiceFor).value=button.dataset.value;field(group.dataset.choiceFor).dispatchEvent(new Event('change',{bubbles:true}));});});
 show();getCsrf().catch(err=>error(err.message));
