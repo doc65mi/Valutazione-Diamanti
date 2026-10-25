@@ -58,6 +58,13 @@ function blog_render_site(PDO $db,array $c,string $lang,?array $article,int $sta
         $node->setAttribute($attr,$absolute);
     }
     $main=$doc->getElementsByTagName('main')->item(0);$fragment=new DOMDocument('1.0','UTF-8');libxml_use_internal_errors(true);$fragment->loadHTML('<?xml encoding="UTF-8">'.blog_fragment($db,$c,$lang,$article,$status),LIBXML_NONET);libxml_clear_errors();libxml_use_internal_errors($old);$replacement=$doc->importNode($fragment->getElementsByTagName('main')->item(0),true);$main->parentNode->replaceChild($replacement,$main);
+    // 2.1.41: CSS, script, immagini, link e moduli del sito diventano relativi alla radice. Con l'URL pubblico impostato su un host
+    // diverso da quello aperto (www/senza www, http/https) la Content-Security-Policy 'self' bloccava i fogli di stile: pagina senza grafica.
+    $siteBase=rtrim($c['site_url'],'/');$rootPath=blog_prefix();
+    foreach($xp->query('//*[@href or @src or @action]') as $node)foreach(['href','src','action'] as $attr){
+        $value=$node->getAttribute($attr);
+        if($siteBase!==''&&($value===$siteBase||str_starts_with($value,$siteBase.'/')||str_starts_with($value,$siteBase.'?')))$node->setAttribute($attr,$rootPath.(substr($value,strlen($siteBase))?:'/'));
+    }
     $title=$article?$article['title']:($lang==='en'?'Diamond and jewellery blog':'Blog su diamanti e gioielli');if($status===404)$title=$lang==='en'?'Article not found':'Articolo non trovato';
     $pageTitle=($article&&trim((string)($article['meta_title']??''))!=='')?trim($article['meta_title']):$title;
     $doc->getElementsByTagName('title')->item(0)->textContent=stripos($pageTitle,'Valutazione Diamanti')!==false?$pageTitle:$pageTitle.' | Valutazione Diamanti';
@@ -65,7 +72,7 @@ function blog_render_site(PDO $db,array $c,string $lang,?array $article,int $sta
     foreach($xp->query('//meta[@name="description"]') as $node)$node->setAttribute('content',$description);
     foreach(iterator_to_array($xp->query('//link[@rel="canonical" or @rel="alternate"]|//meta[starts-with(@property,"og:")]')) as $node)$node->parentNode->removeChild($node);
     $head=$doc->getElementsByTagName('head')->item(0);$link=$doc->createElement('link');$link->setAttribute('rel','canonical');$link->setAttribute('href',$article?blog_article_url($c,$article):blog_url($c,'/').($lang==='en'?'?lang=en':''));$head->appendChild($link);
-    $css=$doc->createElement('link');$css->setAttribute('rel','stylesheet');$css->setAttribute('href',$c['site_url'].'/assets/blog.css');$head->appendChild($css);
+    $css=$doc->createElement('link');$css->setAttribute('rel','stylesheet');$css->setAttribute('href',$rootPath.'/assets/blog.css');$head->appendChild($css);
     if($status===200&&$article){
         $og=['og:type'=>'article','og:site_name'=>'Valutazione Diamanti','og:title'=>$pageTitle,'og:description'=>$description,'og:url'=>$link->getAttribute('href'),'og:locale'=>$lang==='en'?'en_GB':'it_IT','article:published_time'=>(new DateTimeImmutable($article['published_at']))->format(DATE_ATOM)];
         if($article['image_url'])$og['og:image']=$article['image_url'];
