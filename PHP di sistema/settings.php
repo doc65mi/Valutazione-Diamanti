@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 function settings_defaults(): array {
-    return ['mail_enabled'=>false,'mail_from'=>'','mail_to'=>'','recaptcha_enabled'=>false,'recaptcha_site_key'=>'','recaptcha_secret'=>'','recaptcha_hostname'=>'','recaptcha_score'=>0.5,'analytics_enabled'=>false,'analytics_id'=>'','ads_enabled'=>false,'ads_id'=>'','ads_label'=>'','meta_enabled'=>false,'meta_id'=>'','gtm_enabled'=>false,'gtm_id'=>'','legal_company'=>'La Diamanteria','legal_address'=>'Via Vincenzo Monti 47, 20123 Milano','legal_vat'=>'','legal_email'=>'sl@ladiamanteria.com','retention_months'=>12,'site_url'=>'','consent_version'=>1,'menu_hidden'=>['blog'],'home_guides_enabled'=>false,'mail_from_name'=>'Valutazione Diamanti','mail_transport'=>'php','smtp_host'=>'','smtp_port'=>587,'smtp_secure'=>'tls','smtp_user'=>'','smtp_pass'=>'','smtp_verify'=>true,'mail_check_domain'=>true,'google_verification'=>'','google_file'=>'','bing_verification'=>'','indexnow_enabled'=>false,'indexnow_key'=>'','reviews_enabled'=>false,'reviews_place_id'=>'ChIJFR80gkTBhkcRJGjlclhYteg','reviews_api_key'=>'']+customer_email_defaults();
+    return ['mail_enabled'=>false,'mail_from'=>'','mail_to'=>'','recaptcha_enabled'=>false,'recaptcha_site_key'=>'','recaptcha_secret'=>'','recaptcha_hostname'=>'','recaptcha_score'=>0.5,'analytics_enabled'=>false,'analytics_id'=>'','ads_enabled'=>false,'ads_id'=>'','ads_label'=>'','meta_enabled'=>false,'meta_id'=>'','gtm_enabled'=>false,'gtm_id'=>'','clarity_enabled'=>false,'clarity_id'=>'','custom_codes'=>[],'legal_company'=>'La Diamanteria','legal_address'=>'Via Vincenzo Monti 47, 20123 Milano','legal_vat'=>'','legal_email'=>'sl@ladiamanteria.com','retention_months'=>12,'site_url'=>'','consent_version'=>1,'menu_hidden'=>['blog'],'home_guides_enabled'=>false,'mail_from_name'=>'Valutazione Diamanti','mail_transport'=>'php','smtp_host'=>'','smtp_port'=>587,'smtp_secure'=>'tls','smtp_user'=>'','smtp_pass'=>'','smtp_verify'=>true,'mail_check_domain'=>true,'google_verification'=>'','google_file'=>'','bing_verification'=>'','indexnow_enabled'=>false,'indexnow_key'=>'','reviews_enabled'=>false,'reviews_place_id'=>'ChIJFR80gkTBhkcRJGjlclhYteg','reviews_api_key'=>'']+customer_email_defaults();
 }
 function settings(): array {
     db()->exec('CREATE TABLE IF NOT EXISTS settings (id INTEGER PRIMARY KEY CHECK(id=1), value TEXT NOT NULL)');
@@ -19,7 +19,8 @@ function menu_save(array $input): array {
     $hidden=[];foreach($enabled as $key=>$on){if(!is_bool($on))fail('Selezione menu non valida.');if(!$on)$hidden[]=$key;}
     $s=settings();$s['menu_hidden']=$hidden;$s['home_guides_enabled']=$guides;db()->prepare('INSERT INTO settings(id,value) VALUES(1,?) ON CONFLICT(id) DO UPDATE SET value=excluded.value')->execute([json_encode($s,JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR)]);return $s;
 }
-const TRACKING_LABELS = ['analytics'=>'Google Analytics 4','ads'=>'Google Ads','meta'=>'Meta Pixel','gtm'=>'Google Tag Manager'];
+const TRACKING_LABELS = ['analytics'=>'Google Analytics 4','ads'=>'Google Ads','meta'=>'Meta Pixel','gtm'=>'Google Tag Manager','clarity'=>'Microsoft Clarity'];
+const CUSTOM_CODE_CATEGORIES = ['analytics','marketing','necessary'];
 /** Ricava l'ID anche quando si incolla lo snippet completo o l'ID scritto in minuscolo (es. "aw-123/etichetta"). */
 function settings_tracking_ids(array $input): array {
     $patterns=['analytics_id'=>'/\bG-[A-Z0-9]{4,}\b/i','gtm_id'=>'/\bGTM-[A-Z0-9]{4,}\b/i','ads_id'=>'~\bAW-[0-9]{4,}(?:/([A-Za-z0-9_-]{1,100}))?~i'];
@@ -30,6 +31,9 @@ function settings_tracking_ids(array $input): array {
     // Search Console e Bing Webmaster Tools (2.1.32): si può incollare il meta tag intero o il contenuto del file HTML di Google.
     foreach(['google_verification','bing_verification'] as $key){$v=$input[$key]??'';if(is_string($v)&&strlen($v)<=2000&&preg_match('/content\s*=\s*["\']([^"\']+)["\']/i',$v,$m))$input[$key]=$m[1];}
     $file=$input['google_file']??'';if(is_string($file)&&strlen($file)<=2000&&preg_match('/\bgoogle[a-z0-9]{8,64}\.html\b/i',$file,$m))$input['google_file']=strtolower($m[0]);
+    // Microsoft Clarity (2.1.44): va bene lo snippet intero o il link clarity.ms/tag/ID.
+    $clarity=$input['clarity_id']??'';
+    if(is_string($clarity)&&strlen($clarity)<=20000&&preg_match('~clarity\.ms/tag/([a-z0-9]{6,20})|["\']clarity["\']\s*,\s*["\']script["\']\s*,\s*["\']([a-z0-9]{6,20})["\']~i',$clarity,$m))$input['clarity_id']=$m[1]!==''?$m[1]:$m[2];
     $meta=$input['meta_id']??'';
     if(is_string($meta)&&strlen($meta)<=20000&&preg_match('/fbq\(\s*[\'"]init[\'"]\s*,\s*[\'"]?([0-9]{5,30})/',$meta,$m))$input['meta_id']=$m[1];
     return $input;
@@ -63,8 +67,13 @@ function settings_save(array $input): array {
     foreach(['recaptcha_site_key','recaptcha_secret'] as $key)if($s[$key]!==''&&!preg_match('/^[a-zA-Z0-9_-]{10,300}$/',$s[$key]))fail('Chiave reCAPTCHA non valida.');
     if($s['recaptcha_hostname']!==''&&!preg_match('/^[a-zA-Z0-9.-]+$/',$s['recaptcha_hostname']))fail('Inserisci il dominio reCAPTCHA senza protocollo o percorso.');
     if($s['recaptcha_enabled']&&(!$s['recaptcha_site_key']||!$s['recaptcha_secret']||!$s['recaptcha_hostname']))fail('Per attivare reCAPTCHA servono entrambe le chiavi e il dominio.');
-    foreach(['analytics','ads','meta','gtm'] as $service)if($s[$service.'_enabled']&&!$s[$service.'_id'])fail('Inserisci l’ID per '.TRACKING_LABELS[$service].'.');
-    $old=settings();if(array_intersect_key($s,array_flip(['analytics_enabled','ads_enabled','meta_enabled','gtm_enabled','analytics_id','ads_id','meta_id','gtm_id']))!==array_intersect_key($old,array_flip(['analytics_enabled','ads_enabled','meta_enabled','gtm_enabled','analytics_id','ads_id','meta_id','gtm_id'])))$s['consent_version']=$old['consent_version']+1;
+    if(!is_bool($input['clarity_enabled']??false))fail('Selezione non valida: Microsoft Clarity');$s['clarity_enabled']=$input['clarity_enabled']??false;
+    $clarity=$input['clarity_id']??$s['clarity_id'];if(!is_string($clarity)||strlen($clarity)>500)fail('ID non valido per Microsoft Clarity.');$clarity=strtolower(trim($clarity));if($clarity!==''&&!preg_match('/^[a-z0-9]{6,20}$/',$clarity))fail('ID non valido per Microsoft Clarity: incolla l’ID del progetto (es. abcd1234ef) o lo snippet intero.');$s['clarity_id']=$clarity;
+    if(array_key_exists('custom_codes',$input))$s['custom_codes']=custom_codes_input($input['custom_codes']);
+    foreach(['analytics','ads','meta','gtm','clarity'] as $service)if($s[$service.'_enabled']&&!$s[$service.'_id'])fail('Inserisci l’ID per '.TRACKING_LABELS[$service].'.');
+    // Ogni strumento nuovo o spento richiede di nuovo il consenso ai visitatori; modificare solo il codice no.
+    $consentKeys=['analytics_enabled','ads_enabled','meta_enabled','gtm_enabled','clarity_enabled','analytics_id','ads_id','meta_id','gtm_id','clarity_id'];
+    $old=settings();if(array_intersect_key($s,array_flip($consentKeys))!==array_intersect_key($old,array_flip($consentKeys))||custom_codes_consent($s['custom_codes'])!==custom_codes_consent($old['custom_codes']))$s['consent_version']=$old['consent_version']+1;
     db()->prepare('INSERT INTO settings(id,value) VALUES(1,?) ON CONFLICT(id) DO UPDATE SET value=excluded.value')->execute([json_encode($s,JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR)]);return $s;
 }
 /** Impostazioni della scheda Email: invio, SMTP, validazione del modulo e testi al cliente (2.1.28). */
@@ -97,8 +106,46 @@ function email_domain_exists(string $email): bool {
     $ascii=function_exists('idn_to_ascii')?(idn_to_ascii($domain,IDNA_DEFAULT,INTL_IDNA_VARIANT_UTS46)?:$domain):$domain;
     return checkdnsrr($ascii.'.','MX')||checkdnsrr($ascii.'.','A')||checkdnsrr($ascii.'.','AAAA');
 }
+/**
+ * Altri codici di tracciamento (2.1.44): incollati dall'amministratore (es. Hotjar, LinkedIn, TikTok).
+ * Il codice arriva in base64 perché ModSecurity blocca le richieste con <script>; si carica solo dopo il consenso della sua categoria.
+ */
+function custom_codes_input(mixed $list): array {
+    if(!is_array($list)||!array_is_list($list)||count($list)>20)fail('Altri codici: al massimo 20 codici.');
+    $out=[];$ids=[];
+    foreach($list as $i=>$c){
+        $n='Altri codici, riga '.($i+1).': ';
+        if(!is_array($c))fail($n.'dati non validi.');
+        $id=$c['id']??'';if(!is_string($id)||!preg_match('/^[a-f0-9]{8}$/',$id)||isset($ids[$id]))$id=bin2hex(random_bytes(4));$ids[$id]=true;
+        $name=$c['name']??'';if(!is_string($name)||mb_strlen(trim($name))<1||mb_strlen($name)>80||preg_match('/[<>\x00-\x1F]/',$name))fail($n.'scrivi un nome (es. Hotjar), al massimo 80 caratteri, senza < >.');
+        $category=$c['category']??'';if(!in_array($category,CUSTOM_CODE_CATEGORIES,true))fail($n.'categoria non valida.');
+        $position=$c['position']??'';if(!in_array($position,['head','body'],true))fail($n.'posizione non valida.');
+        if(!is_bool($c['enabled']??null))fail($n.'selezione non valida.');
+        $code=base64_decode((string)($c['code_b64']??''),true);if($code===false||!mb_check_encoding($code,'UTF-8')||strlen($code)>30000)fail($n.'codice non valido o troppo lungo (massimo 30000 caratteri).');
+        $code=trim(str_replace("\r\n","\n",$code));if($c['enabled']&&$code==='')fail($n.'incolla il codice o disattiva la riga.');
+        $out[]=['id'=>$id,'name'=>trim($name),'category'=>$category,'position'=>$position,'enabled'=>$c['enabled'],'code'=>$code];
+    }
+    return $out;
+}
+/** Quello che il visitatore vede nelle preferenze cookie: se cambia, il consenso va chiesto di nuovo. */
+function custom_codes_consent(array $list): array {
+    return array_values(array_map(fn($c)=>[$c['name'],$c['category']],array_filter($list,fn($c)=>$c['enabled']&&$c['category']!=='necessary')));
+}
+function custom_code_find(string $id): ?array {
+    foreach(settings()['custom_codes'] as $c)if($c['enabled']&&$c['id']===$id)return $c;
+    return null;
+}
+/** Gli script in linea non possono girare con la CSP del sito ('unsafe-inline' è vietato): li serve l'API come file JS. */
+function custom_code_inline_script(string $id,int $n): ?string {
+    $c=custom_code_find($id);if(!$c)return null;
+    preg_match_all('~<script\b([^>]*)>(.*?)</script\s*>~is',$c['code'],$m,PREG_SET_ORDER);
+    $inline=array_values(array_filter($m,fn($s)=>!preg_match('~\ssrc\s*=~i',' '.$s[1])));
+    return isset($inline[$n])?$inline[$n][2]:null;
+}
 function public_settings(): array {
-    $s=settings();$keys=['recaptcha_enabled','recaptcha_site_key','analytics_enabled','analytics_id','ads_enabled','ads_id','ads_label','meta_enabled','meta_id','gtm_enabled','gtm_id','consent_version'];return array_intersect_key($s,array_flip($keys));
+    $s=settings();$keys=['recaptcha_enabled','recaptcha_site_key','analytics_enabled','analytics_id','ads_enabled','ads_id','ads_label','meta_enabled','meta_id','gtm_enabled','gtm_id','clarity_enabled','clarity_id','consent_version'];$out=array_intersect_key($s,array_flip($keys));
+    $out['custom_codes']=[];foreach($s['custom_codes'] as $c)if($c['enabled']&&$c['code']!=='')$out['custom_codes'][]=['id'=>$c['id'],'name'=>$c['name'],'category'=>$c['category'],'position'=>$c['position'],'html'=>$c['code'],'v'=>substr(sha1($c['code']),0,10)];
+    return $out;
 }
 function verify_recaptcha(): void {
     $s=settings();if(!$s['recaptcha_enabled'])return;
