@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-const APP_VERSION = '2.1.50';
+const APP_VERSION = '2.1.51';
 const ROOT = __DIR__ . '/..';
 const PAGE_SLUGS = ['home', 'acquistiamo', 'chisiamo', 'faq', 'valutazione', 'grazie', 'privacy', 'cookie'];
 require_once __DIR__.'/settings.php';
@@ -202,7 +202,7 @@ function build_html(string $slug,string $lang,array $c): string {
     seo_verification_meta($doc);
     // Recensioni Google (2.1.33): il riquadro si riempie dal browser; se il servizio è spento il segnaposto sparisce.
     $reviewBoxes=iterator_to_array($xp->query('//*[@data-google-reviews]'));
-    if($reviewBoxes&&settings()['reviews_enabled']){$script=$doc->createElement('script');$script->setAttribute('src','../assets/reviews.js');$script->setAttribute('defer','defer');$head->appendChild($script);}
+    if($reviewBoxes&&settings()['reviews_enabled']){$script=$doc->createElement('script');$script->setAttribute('src','../assets/reviews.js');$script->setAttribute('defer','defer');$head->appendChild($script);$data=reviews_cached($lang);if($data)foreach($reviewBoxes as $box)reviews_render($doc,$box,$data,$lang);}
     else foreach($reviewBoxes as $box)$box->parentNode->removeChild($box);
     $url=seo_base().'/'.$lang.'/'.($slug==='home'?'index':$slug).'.html';
     seo_open_graph($doc,$lang,$url,$c['meta']['title'],$c['meta']['description']);
