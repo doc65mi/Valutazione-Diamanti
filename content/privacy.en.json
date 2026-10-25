@@ -5,7 +5,7 @@
   "version": 1,
   "meta": {
     "title": "Privacy policy | Valutazione Diamanti",
-    "description": "Free valuations and direct buying of diamonds, jewellery and luxury watches in Milan. La Diamanteria, established in 2009."
+    "description": "How we process the data you send with the valuation form: controller, purposes, retention and your rights."
   },
   "slots": {
     "privacy-contenuto-001": {
@@ -19,7 +19,7 @@
     "privacy-contenuto-003": "Privacy policy",
     "privacy-contenuto-004": "Last updated: 8 October 2026",
     "privacy-contenuto-005": "Controller and contact details",
-    "privacy-contenuto-006": "The data controller is {{legal.company}}, based at {{legal.address}}. VAT / tax identification number: {{legal.vat}}. For information about your personal data or to exercise your rights, contact {{legal.email}}.",
+    "privacy-contenuto-006": "The data controller is {{legal.controller}}. For information about how your personal data is processed or to exercise your rights, contact {{legal.email}}.",
     "privacy-contenuto-007": "Data we process and why",
     "privacy-contenuto-008": "When you submit a valuation enquiry, we process your name, contact details, preferred contact method, item details and any photographs or grading reports you choose to attach. We use this information to assess your enquiry, respond to you and manage follow-up communications. We do not request identity documents through this form. Our systems also process technical data needed for security, such as IP addresses, sessions and login attempts.",
     "privacy-contenuto-009": "Legal basis and providing your data",

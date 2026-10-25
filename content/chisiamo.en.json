@@ -4,8 +4,8 @@
   "language": "en",
   "version": 1,
   "meta": {
-    "title": "About us | La Diamanteria",
-    "description": "Free valuations and direct buying of diamonds, jewellery and luxury watches in Milan. La Diamanteria, established in 2009."
+    "title": "About us: the Silvera family | Valutazione Diamanti",
+    "description": "La Diamanteria's direct buying service: five generations of diamantaires, accredited gemmologists, Via Vincenzo Monti 47, Milan, since 2009."
   },
   "slots": {
     "chisiamo-contenuto-001": "Valutazione Diamanti",
@@ -79,7 +79,7 @@
     "chisiamo-contenuto-039": "Direct buying and valuation of diamonds and jewellery from private sellers. Via Vincenzo Monti 47, Milan.",
     "chisiamo-contenuto-040": "Contact us",
     "chisiamo-contenuto-041": {
-      "label": "+39 02 466 891",
+      "label": "+39 02 466891",
       "href": "tel:+3902466891"
     },
     "chisiamo-contenuto-042": {

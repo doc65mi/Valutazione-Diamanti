@@ -4,8 +4,8 @@
   "language": "it",
   "version": 1,
   "meta": {
-    "title": "Cosa acquistiamo | Valutazione Diamanti",
-    "description": "Acquisto diretto e valutazione gratuita di diamanti, gioielli e orologi a Milano. La Diamanteria, dal 2009."
+    "title": "Cosa acquistiamo: diamanti, gioielli, orologi | Valutazione Diamanti",
+    "description": "Criteri di acquisto: diamanti naturali da 1 ct con certificato GIA, HRD, IGI o senza, gemme colorate, gioielli firmati e orologi di alta gamma."
   },
   "slots": {
     "acquistiamo-contenuto-001": "Valutazione Diamanti",
@@ -40,7 +40,7 @@
     "acquistiamo-contenuto-015": "Solitari e gioielli con più pietre, valutati con domande dedicate.",
     "acquistiamo-contenuto-016": "Quotazione gratuita →",
     "acquistiamo-contenuto-017": "Pietre preziose",
-    "acquistiamo-contenuto-018": "Rubini, zaffiri e smeraldi, anche sotto 2 ct.",
+    "acquistiamo-contenuto-018": "Rubini, zaffiri e smeraldi di qualità, comprese pietre sotto i 2 carati.",
     "acquistiamo-contenuto-019": "Quotazione gratuita →",
     "acquistiamo-contenuto-020": "Gioielli vintage e firmati",
     "acquistiamo-contenuto-021": "Pezzi rari, con particolare attenzione alla qualità delle gemme.",
@@ -61,9 +61,9 @@
     "acquistiamo-contenuto-036": "Compriamo direttamente",
     "acquistiamo-contenuto-037": "Non mettiamo il tuo diamante in asta e non lo proponiamo a una rete di acquirenti. Se rientra nei nostri criteri, siamo noi a formulare direttamente l'offerta. Un solo interlocutore, un processo più lineare.",
     "acquistiamo-contenuto-038": "Cosa non acquistiamo",
-    "acquistiamo-contenuto-039": "Valutiamo anche rubini, zaffiri e smeraldi sotto i 2 carati. I gioielli con più pietre seguono un percorso dedicato nel modulo.",
+    "acquistiamo-contenuto-039": "Prima di inviarci la richiesta verifica che l'oggetto non rientri in questi casi.",
     "acquistiamo-contenuto-040": "—",
-    "acquistiamo-contenuto-041": "Diamanti inferiori a 1 carato per singola pietra",
+    "acquistiamo-contenuto-041": "Diamanti inferiori a 1 carato come pietra singola (i gioielli con più pietre seguono un percorso dedicato nel modulo)",
     "acquistiamo-contenuto-042": "—",
     "acquistiamo-contenuto-043": "Diamanti sintetici o creati in laboratorio",
     "acquistiamo-contenuto-044": "—",
@@ -80,7 +80,7 @@
     "acquistiamo-contenuto-052": "Servizio di acquisto diretto e valutazione di diamanti e gioielli da privati. Milano, Via Vincenzo Monti 47.",
     "acquistiamo-contenuto-053": "Contatti",
     "acquistiamo-contenuto-054": {
-      "label": "+39 02 466 891",
+      "label": "+39 02 466891",
       "href": "tel:+3902466891"
     },
     "acquistiamo-contenuto-055": {

@@ -4,8 +4,8 @@
   "language": "it",
   "version": 1,
   "meta": {
-    "title": "Chi siamo | La Diamanteria",
-    "description": "Acquisto diretto e valutazione gratuita di diamanti, gioielli e orologi a Milano. La Diamanteria, dal 2009."
+    "title": "Chi siamo: famiglia Silvera e La Diamanteria | Valutazione Diamanti",
+    "description": "Il servizio di acquisto diretto di La Diamanteria: cinque generazioni di diamantaires, gemmologi accreditati, sede in Via Vincenzo Monti 47 dal 2009."
   },
   "slots": {
     "chisiamo-contenuto-001": "Valutazione Diamanti",
@@ -79,7 +79,7 @@
     "chisiamo-contenuto-039": "Servizio di acquisto diretto e valutazione di diamanti e gioielli da privati. Milano, Via Vincenzo Monti 47.",
     "chisiamo-contenuto-040": "Contatti",
     "chisiamo-contenuto-041": {
-      "label": "+39 02 466 891",
+      "label": "+39 02 466891",
       "href": "tel:+3902466891"
     },
     "chisiamo-contenuto-042": {

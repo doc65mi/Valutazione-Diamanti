@@ -65,12 +65,12 @@ function blog_render_site(PDO $db,array $c,string $lang,?array $article,int $sta
         $value=$node->getAttribute($attr);
         if($siteBase!==''&&($value===$siteBase||str_starts_with($value,$siteBase.'/')||str_starts_with($value,$siteBase.'?')))$node->setAttribute($attr,$rootPath.(substr($value,strlen($siteBase))?:'/'));
     }
-    $title=$article?$article['title']:($lang==='en'?'Diamond and jewellery blog':'Blog su diamanti e gioielli');if($status===404)$title=$lang==='en'?'Article not found':'Articolo non trovato';
+    $title=$article?$article['title']:($lang==='en'?'Blog: guides to selling diamonds and jewellery':'Blog: guide per vendere diamanti e gioielli');if($status===404)$title=$lang==='en'?'Article not found':'Articolo non trovato';
     $pageTitle=($article&&trim((string)($article['meta_title']??''))!=='')?trim($article['meta_title']):$title;
     $doc->getElementsByTagName('title')->item(0)->textContent=stripos($pageTitle,'Valutazione Diamanti')!==false?$pageTitle:$pageTitle.' | Valutazione Diamanti';
-    $description=$article?(trim((string)($article['meta_description']??''))!==''?trim($article['meta_description']):$article['excerpt']):($lang==='en'?'Guides and insights from La Diamanteria.':'Guide e approfondimenti a cura de La Diamanteria.');
+    $description=$article?(trim((string)($article['meta_description']??''))!==''?trim($article['meta_description']):$article['excerpt']):($lang==='en'?'Practical guides for selling a diamond: certificates, the 4Cs, realisable value, inheritance and how to prepare for the appointment.':'Guide pratiche per chi vuole vendere un diamante: certificati, 4C, valore di realizzo, eredità e come prepararsi all\'appuntamento.');
     foreach($xp->query('//meta[@name="description"]') as $node)$node->setAttribute('content',$description);
-    foreach(iterator_to_array($xp->query('//link[@rel="canonical" or @rel="alternate"]|//meta[starts-with(@property,"og:")]')) as $node)$node->parentNode->removeChild($node);
+    foreach(iterator_to_array($xp->query('//link[@rel="canonical" or @rel="alternate"]|//meta[starts-with(@property,"og:")]|//meta[starts-with(@name,"twitter:")]')) as $node)$node->parentNode->removeChild($node);
     $head=$doc->getElementsByTagName('head')->item(0);$link=$doc->createElement('link');$link->setAttribute('rel','canonical');$link->setAttribute('href',$article?blog_article_url($c,$article):blog_url($c,'/').($lang==='en'?'?lang=en':''));$head->appendChild($link);
     $css=$doc->createElement('link');$css->setAttribute('rel','stylesheet');$css->setAttribute('href',$rootPath.'/assets/blog.css?v='.APP_VERSION);$head->appendChild($css);
     if($status===200&&$article){
@@ -79,6 +79,7 @@ function blog_render_site(PDO $db,array $c,string $lang,?array $article,int $sta
         foreach($og as $property=>$content){$meta=$doc->createElement('meta');$meta->setAttribute('property',$property);$meta->setAttribute('content',(string)$content);$head->appendChild($meta);}
         foreach(['twitter:card'=>$article['image_url']?'summary_large_image':'summary','twitter:title'=>$pageTitle,'twitter:description'=>$description] as $name=>$content){$meta=$doc->createElement('meta');$meta->setAttribute('name',$name);$meta->setAttribute('content',(string)$content);$head->appendChild($meta);}
     }
+    elseif($status===200)seo_open_graph($doc,$lang,$link->getAttribute('href'),$pageTitle,$description);
     if($status===404||!empty($_GET['q'])||!empty($_GET['pagina'])){$meta=$doc->createElement('meta');$meta->setAttribute('name','robots');$meta->setAttribute('content','noindex,follow');$head->appendChild($meta);}
     foreach($xp->query('//*[contains(concat(" ",normalize-space(@class)," ")," language-nav ")]//a') as $node){$target=$node->getAttribute('lang')==='en'?'en':'it';$node->setAttribute('href',blog_url($c,'/').($target==='en'?'?lang=en':''));if($target===$lang)$node->setAttribute('aria-current','page');else $node->removeAttribute('aria-current');}
     foreach($xp->query('//header//a[contains(@class,"site-blog-link")]') as $node)$node->setAttribute('aria-current','page');

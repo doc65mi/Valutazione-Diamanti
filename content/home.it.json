@@ -5,7 +5,7 @@
   "version": 1,
   "meta": {
     "title": "Vendi diamanti e gioielli a Milano | Valutazione Diamanti",
-    "description": "Acquisto diretto e valutazione gratuita di diamanti, gioielli e orologi a Milano. La Diamanteria, dal 2009."
+    "description": "Vendi il tuo diamante da 1 ct in su a un compratore diretto a Milano. Valutazione gratuita del gemmologo, offerta senza aste, pagamento con bonifico."
   },
   "slots": {
     "home-contenuto-001": "Valutazione Diamanti",
@@ -125,7 +125,7 @@
     "home-contenuto-079": "La nostra sede in Via Vincenzo Monti 47, Milano",
     "home-contenuto-080": "Il servizio Valutazione Diamanti è gestito da La Diamanteria nella sede di Via Vincenzo Monti 47, Milano. Una sede fisica, un interlocutore diretto, una valutazione professionale.",
     "home-contenuto-081": {
-      "label": "+39 02 466 891",
+      "label": "+39 02 466891",
       "href": "tel:+3902466891"
     },
     "home-contenuto-082": {
@@ -158,7 +158,7 @@
       "href": "https://search.google.com/local/writereview?placeid=ChIJFR80gkTBhkcRJGjlclhYteg"
     },
     "home-contenuto-093": "Domande frequenti",
-    "home-contenuto-094": "Per una valutazione immediata contattaci su WhatsApp o chiamaci al 02 466891.",
+    "home-contenuto-094": "Per una valutazione immediata contattaci su WhatsApp o chiamaci al +39 02 466891.",
     "home-contenuto-095": {
       "label": "Tutte le domande →",
       "href": "faq.html"
@@ -166,15 +166,15 @@
     "home-contenuto-096": "Devo vendere il mio anello con diamante: a chi posso rivolgermi?",
     "home-contenuto-097": "−",
     "home-contenuto-098": "A un acquirente specializzato in diamanti. La Diamanteria acquista direttamente da privati dal 2009 a Milano: esaminiamo la pietra con criteri gemmologici e, se rientra nei nostri criteri, formuliamo la nostra offerta senza aste né intermediari.",
-    "home-contenuto-099": "Quali diamanti acquistate?",
+    "home-contenuto-099": "La valutazione è gratuita?",
     "home-contenuto-100": "−",
-    "home-contenuto-101": "Valutiamo diamanti naturali a partire da 1 carato per singola pietra, con certificato GIA, HRD o IGI oppure senza certificato. Non acquistiamo diamanti sintetici né diamanti certificati AIG, GRA, GWLAB o ALGT. Valutiamo anche rubini, zaffiri e smeraldi sotto i 2 carati.",
-    "home-contenuto-102": "Quanto tempo serve per avere una prima valutazione?",
+    "home-contenuto-101": "Sì. La quotazione preliminare e l'esame in sede sono gratuiti e senza impegno. Dopo l'offerta sei libero di non vendere.",
+    "home-contenuto-102": "Sono obbligato a vendere dopo la valutazione?",
     "home-contenuto-103": "−",
-    "home-contenuto-104": "Per una valutazione immediata contattaci su WhatsApp o chiamaci al 02 466891. In alternativa compila il modulo di quotazione online: un nostro gemmologo esamina la richiesta e la valutazione definitiva avviene dopo l'esame della pietra in sede.",
-    "home-contenuto-105": "Come viene calcolato il valore di un diamante?",
+    "home-contenuto-104": "No. L'offerta è vincolante per noi, non per te: puoi accettarla, prendere tempo o rifiutarla.",
+    "home-contenuto-105": "Che differenza c'è tra voi e una casa d'aste o un broker?",
     "home-contenuto-106": "−",
-    "home-contenuto-107": "Il prezzo dipende dalle 4C: peso in carati, colore, purezza e taglio. Contano anche fluorescenza, proporzioni e la presenza di un certificato internazionale. Il riferimento sono le quotazioni aggiornate delle borse di Anversa, Tel Aviv, New York, Dubai e Mumbai.",
+    "home-contenuto-107": "Un'asta o un broker propongono la pietra a terzi e ti girano l'offerta migliore, spesso con commissioni e tempi più lunghi. Noi siamo il compratore: l'offerta arriva direttamente da noi e, se l'accetti, paghiamo noi.",
     "home-contenuto-108": "Guide e approfondimenti",
     "home-contenuto-109": {
       "label": "Tutte le guide ↗",
@@ -207,7 +207,7 @@
     "home-contenuto-128": "Servizio di acquisto diretto e valutazione di diamanti e gioielli da privati. Milano, Via Vincenzo Monti 47.",
     "home-contenuto-129": "Contatti",
     "home-contenuto-130": {
-      "label": "+39 02 466 891",
+      "label": "+39 02 466891",
       "href": "tel:+3902466891"
     },
     "home-contenuto-131": {

@@ -4,7 +4,7 @@ function seo_base(): string { return rtrim(settings()['site_url'] ?: 'https://ww
 function seo_markup(DOMDocument $doc,string $lang,string $url,string $title,string $description,string $type='WebPage',?array $article=null): void {
     $xp=new DOMXPath($doc);$head=$doc->getElementsByTagName('head')->item(0);
     foreach(iterator_to_array($xp->query('//script[@type="application/ld+json"]')) as $n)$n->parentNode->removeChild($n);
-    $base=seo_base();$org=['@type'=>'Organization','@id'=>$base.'/#organization','name'=>settings()['legal_company'],'url'=>$base.'/'];
+    $base=seo_base();$org=seo_store();
     $page=['@type'=>$type,'@id'=>$url.'#page','url'=>$url,'name'=>$title,'description'=>$description,'inLanguage'=>$lang,'isPartOf'=>['@id'=>$base.'/#website']];
     if($type==='FAQPage'){
         $questions=[];
@@ -15,13 +15,49 @@ function seo_markup(DOMDocument $doc,string $lang,string $url,string $title,stri
         }
         $page['mainEntity']=$questions;
     }
-    $graph=[$org,['@type'=>'WebSite','@id'=>$base.'/#website','url'=>$base.'/','name'=>'Valutazione Diamanti','publisher'=>['@id'=>$org['@id']]],$page];
+    $graph=[$org,['@type'=>'WebSite','@id'=>$base.'/#website','url'=>$base.'/','name'=>'Valutazione Diamanti','inLanguage'=>['it','en'],'publisher'=>['@id'=>$org['@id']]],$page];
     if($article){$post=['@type'=>'BlogPosting','@id'=>$url.'#article','url'=>$url,'mainEntityOfPage'=>['@id'=>$page['@id']],'headline'=>$article['title'],'description'=>$article['excerpt'],'datePublished'=>(new DateTimeImmutable($article['published_at']))->format(DATE_ATOM),'dateModified'=>(new DateTimeImmutable($article['updated_at']))->format(DATE_ATOM),'inLanguage'=>$lang,'articleSection'=>$article['category'],'author'=>['@id'=>$org['@id']],'publisher'=>['@id'=>$org['@id']]];if($article['image_url'])$post['image']=['@type'=>'ImageObject','url'=>$article['image_url'],'caption'=>$article['image_alt']];
         if(trim((string)($article['keywords']??''))!=='')$post['keywords']=trim($article['keywords']);
         $post['wordCount']=str_word_count(strip_tags($article['content']));$graph[]=$post;
         $faq=blog_faq_items($article['faq_json']??null);
         if($faq)$graph[]=['@type'=>'FAQPage','@id'=>$url.'#faq','url'=>$url,'inLanguage'=>$lang,'isPartOf'=>['@id'=>$page['@id']],'mainEntity'=>array_map(fn($item)=>['@type'=>'Question','name'=>$item['question'],'acceptedAnswer'=>['@type'=>'Answer','text'=>$item['answer']]],$faq)];}
     $script=$doc->createElement('script');$script->setAttribute('type','application/ld+json');$script->appendChild($doc->createTextNode(json_encode(['@context'=>'https://schema.org','@graph'=>$graph],JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS|JSON_HEX_QUOT|JSON_THROW_ON_ERROR)));$head->appendChild($script);
+}
+// Attività locale (2.1.48, audit SEO): JewelryStore con sede, telefono e mappa al posto dell'Organization generica.
+// Ragione sociale, P.IVA ed email arrivano da Privacy e integrazioni > Dati del titolare. Niente aggregateRating:
+// le recensioni Google non vanno ripetute come dati strutturati del sito.
+function seo_store(): array {
+    $s=settings();$base=seo_base();
+    $store=['@type'=>'JewelryStore','@id'=>$base.'/#store','name'=>'Valutazione Diamanti by La Diamanteria','url'=>$base.'/','logo'=>$base.'/assets/logo.svg','image'=>seo_share_image(null)?:$base.'/assets/logo.svg',
+        'description'=>'Acquisto diretto e valutazione gratuita di diamanti, gioielli e orologi da privati a Milano.','telephone'=>'+39 02 466891',
+        'address'=>['@type'=>'PostalAddress','streetAddress'=>'Via Vincenzo Monti 47','postalCode'=>'20123','addressLocality'=>'Milano','addressRegion'=>'MI','addressCountry'=>'IT'],
+        'priceRange'=>'$$$','areaServed'=>'IT','foundingDate'=>'2009','sameAs'=>['https://www.ladiamanteria.com'],
+        'parentOrganization'=>['@type'=>'Organization','name'=>'La Diamanteria','url'=>'https://www.ladiamanteria.com']];
+    if($s['reviews_place_id']!=='')$store['hasMap']='https://www.google.com/maps/place/?q=place_id:'.$s['reviews_place_id'];
+    if(trim($s['legal_company'])!==''&&$s['legal_company']!=='La Diamanteria')$store['legalName']=$s['legal_company'];
+    $vat=preg_replace('/\s+/','',$s['legal_vat']);if($vat!=='')$store['vatID']=preg_match('/^\d{11}$/',$vat)?'IT'.$vat:$vat;
+    if(filter_var($s['legal_email'],FILTER_VALIDATE_EMAIL))$store['email']=$s['legal_email'];
+    return $store;
+}
+/** Immagine per WhatsApp, Facebook e LinkedIn: quella scelta in Privacy e integrazioni, poi uploads/site/og-cover.jpg, poi la prima foto della pagina. */
+function seo_share_image(?DOMDocument $doc): string {
+    $base=seo_base();$s=settings();
+    $pick=trim((string)($s['og_image']??''));
+    if($pick===''&&is_file(ROOT.'/uploads/site/og-cover.jpg'))$pick='/uploads/site/og-cover.jpg';
+    if($pick===''&&$doc)foreach((new DOMXPath($doc))->query('//main//img[@src]') as $img){$src=$img->getAttribute('src');if(str_contains($src,'uploads/site/')){$pick=$src;break;}}
+    if($pick==='')return '';
+    if(preg_match('~^https?://~i',$pick))return $pick;
+    return $base.'/'.preg_replace('~^(?:\.\./|\./|/)+~','',$pick);
+}
+// Open Graph e Twitter (2.1.48): le pagine condivise su WhatsApp escono con titolo, testo e foto.
+function seo_open_graph(DOMDocument $doc,string $lang,string $url,string $title,string $description): void {
+    $xp=new DOMXPath($doc);$head=$doc->getElementsByTagName('head')->item(0);if(!$head)return;
+    foreach(iterator_to_array($xp->query('//meta[starts-with(@property,"og:") or starts-with(@name,"twitter:")]')) as $n)$n->parentNode->removeChild($n);
+    $image=seo_share_image($doc);
+    $og=['og:type'=>'website','og:site_name'=>'Valutazione Diamanti by La Diamanteria','og:locale'=>$lang==='en'?'en_GB':'it_IT','og:title'=>$title,'og:description'=>$description,'og:url'=>$url];
+    if($image!==''){$og['og:image']=$image;$local=str_starts_with($image,seo_base().'/')?ROOT.'/'.rawurldecode((string)parse_url($image,PHP_URL_PATH)):'';$size=$local!==''&&is_file($local)?@getimagesize($local):false;if($size){$og['og:image:width']=(string)$size[0];$og['og:image:height']=(string)$size[1];}}
+    foreach($og as $property=>$content){$meta=$doc->createElement('meta');$meta->setAttribute('property',$property);$meta->setAttribute('content',$content);$head->appendChild($meta);}
+    foreach(['twitter:card'=>$image!==''?'summary_large_image':'summary','twitter:title'=>$title,'twitter:description'=>$description] as $name=>$content){$meta=$doc->createElement('meta');$meta->setAttribute('name',$name);$meta->setAttribute('content',$content);$head->appendChild($meta);}
 }
 // Collegamento a Google Search Console e Bing Webmaster Tools (2.1.32): meta tag in ogni pagina pubblica,
 // file di verifica nella radice del sito e notifica IndexNow (Bing, Yandex, Seznam) dei contenuti nuovi.
