@@ -29,7 +29,7 @@ function seo_markup(DOMDocument $doc,string $lang,string $url,string $title,stri
 function seo_store(): array {
     $s=settings();$base=seo_base();
     $store=['@type'=>'JewelryStore','@id'=>$base.'/#store','name'=>'Valutazione Diamanti by La Diamanteria','url'=>$base.'/','logo'=>$base.'/assets/logo.svg','image'=>seo_share_image(null)?:$base.'/assets/logo.svg',
-        'description'=>'Acquisto diretto e valutazione gratuita di diamanti, gioielli e orologi da privati a Milano.','telephone'=>'+39 02 466891',
+        'description'=>'Acquisto diretto e valutazione gratuita di diamanti, gioielli e orologi da privati a Milano.','telephone'=>'+39 02 466 891',
         'address'=>['@type'=>'PostalAddress','streetAddress'=>'Via Vincenzo Monti 47','postalCode'=>'20123','addressLocality'=>'Milano','addressRegion'=>'MI','addressCountry'=>'IT'],
         'priceRange'=>'$$$','areaServed'=>'IT','foundingDate'=>'2009','sameAs'=>['https://www.ladiamanteria.com'],
         'parentOrganization'=>['@type'=>'Organization','name'=>'La Diamanteria','url'=>'https://www.ladiamanteria.com']];

@@ -36,7 +36,7 @@ function legal_footer_text(string $lang): string {
     $parts=[];
     if(legal_has_registered_office())$parts[]=($en?'Registered office: ':'Sede legale: ').trim($s['legal_address']);
     foreach(['legal_vat'=>$en?'VAT no. ':'P.IVA ','legal_rea'=>'REA ','legal_license'=>$en?'Precious metals licence (art. 127 TULPS) no. ':'Licenza di Pubblica Sicurezza per il commercio di preziosi (art. 127 TULPS) n. '] as $key=>$label)if(trim((string)($s[$key]??''))!=='')$parts[]=$label.trim($s[$key]);
-    $parts[]='Via Vincenzo Monti 47, 20123 Milano · +39 02 466891';
+    $parts[]='Via Vincenzo Monti 47, 20123 Milano · +39 02 466 891';
     return rtrim($text,'.').'. '.implode(' · ',$parts);
 }
 /** Vero quando l'indirizzo dei Dati del titolare è una sede legale diversa dallo showroom di Via Vincenzo Monti 47. */
