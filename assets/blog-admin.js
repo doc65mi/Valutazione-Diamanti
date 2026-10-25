@@ -6,13 +6,15 @@ function blogRow(a,after){const row=el('div',undefined,'blog-admin-row');const t
   feature.onclick=async()=>{feature.disabled=true;try{await api('blog-feature',{id:a.id,featured:!Number(a.featured)});await after();message(Number(a.featured)?'Articolo tolto dall’evidenza.':'Articolo in evidenza: home e blog aggiornati.');}catch(e){feature.disabled=false;message(e.message);}};row.append(feature);}
  const edit=el('button','Modifica');edit.type='button';edit.onclick=()=>{tab('blog');openBlogArticle(a.id).catch(e=>message(e.message));};const remove=el('button','Elimina');remove.type='button';remove.onclick=async()=>{if(!confirm('Eliminare definitivamente “'+a.title+'”?'))return;try{await api('blog-delete',{id:a.id,confirm:true});await after();message('Articolo eliminato.');}catch(e){message(e.message);}};
  row.append(edit,remove);return row;}
+// Con «Blog» spento nel pannello Menu gli articoli pubblicati danno 404 ai visitatori e si vedono solo da amministratore (2.1.46).
+function blogOffNotice(list,box){if(list.blog_enabled!==false)return;const p=el('p',undefined,'blog-off-notice');const link=el('a','Menu');link.href='#';link.onclick=e=>{e.preventDefault();tab('menu');};p.append(el('strong','Blog spento nel pannello Menu: '),document.createTextNode('gli articoli pubblicati si vedono solo da amministratore, i visitatori ricevono «Articolo non trovato». Per metterli online spunta «Blog» nella scheda '),link,document.createTextNode(' e salva.'));box.append(p);}
 // Scheda «Elenco articoli» (2.1.45): pubblicati e bozze separati, dal più recente.
-async function loadArticles(){const list=await api('blog-list');const box=$('#articles-list');box.replaceChildren();if(!list.articles.length)box.append(el('p','Nessun articolo: crea il primo dalla scheda Blog oppure collega ContentAI o Frase.'));
+async function loadArticles(){const list=await api('blog-list');const box=$('#articles-list');box.replaceChildren();blogOffNotice(list,box);if(!list.articles.length)box.append(el('p','Nessun articolo: crea il primo dalla scheda Blog oppure collega ContentAI o Frase.'));
  for(const [label,items] of [['Articoli pubblicati',list.articles.filter(a=>a.status==='published')],['Bozze',list.articles.filter(a=>a.status!=='published')]]){if(!items.length)continue;box.append(el('h2',label+' ('+items.length+')'));for(const a of items)box.append(blogRow(a,loadArticles));}}
 async function loadBlog(){
  // Scheda Blog (2.1.45): solo l'ultimo articolo caricato; l'elenco completo è nella scheda «Elenco articoli».
  const settingsLoad=api('blog-config');settingsLoad.catch(()=>{});const list=await api('blog-list');
- const box=$('#blog-list');box.replaceChildren();const last=list.articles.reduce((m,a)=>!m||Number(a.id)>Number(m.id)?a:m,null);
+ const box=$('#blog-list');box.replaceChildren();blogOffNotice(list,box);const last=list.articles.reduce((m,a)=>!m||Number(a.id)>Number(m.id)?a:m,null);
  if(!last)box.append(el('p','Nessun articolo: crea il primo oppure collega ContentAI o Frase.'));else{box.append(el('h2','Ultimo articolo caricato'));box.append(blogRow(last,loadBlog));}
  const settings=await settingsLoad;
  const c=settings.config;$('#blog-integration').elements.auto_publish.checked=c.auto_publish;

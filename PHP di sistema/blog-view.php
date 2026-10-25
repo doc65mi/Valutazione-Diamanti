@@ -24,7 +24,7 @@ function blog_fragment(PDO $db,array $c,string $lang,?array $article,int $status
     $home=blog_url($c,'/').($en?'?lang=en':'');
     $all=blog_rows($db,"SELECT slug,language,title,published_at FROM blog_articles WHERE status='published' AND language=? ORDER BY published_at DESC,id DESC",[$lang]);
     ob_start();?>
-<main class="cd-blog" id="blog-content">
+<main class="cd-blog" id="blog-content"><?php if(!menu_enabled('blog')&&admin_session()):?><p class="cd-admin-notice" role="status"><strong><?=$en?'Administrator preview.':'Anteprima amministratore.'?></strong> <?=$en?'The blog is switched off in Admin › Menu: visitors get «Article not found». Tick «Blog» there to publish it.':'Il blog è spento in Admin › Menu: i visitatori vedono «Articolo non trovato». Spunta «Blog» nel pannello Menu per metterlo online.'?></p><?php endif?>
 <?php if($status===404):?><section class="cd-empty"><span class="cd-kicker">404</span><h1><?=$en?'Article not found':'Articolo non trovato'?></h1><p><?=$en?'This content is not available or has not been published.':'Questo contenuto non è disponibile o non è ancora pubblicato.'?></p><a class="button" href="<?=blog_h($home)?>"><?=$en?'Back to the blog':'Torna al blog'?></a></section>
 <?php else:?>
 <?php if(!$article):?><section class="cd-blog-hero"><span class="cd-kicker">VALUTAZIONE DIAMANTI · BY LA DIAMANTERIA</span><h1><?=$en?'The world of diamonds,<br><em>with a clearer perspective.</em>':'Il mondo dei diamanti,<br><em>con uno sguardo più chiaro.</em>'?></h1><p><?=$en?'Guides, insights and stories to understand diamonds and jewellery.':'Guide, approfondimenti e storie per conoscere diamanti e gioielli.'?></p></section><?php else:?><div class="cd-breadcrumb"><a href="<?=blog_h($home)?>">Blog</a><span> / <?=blog_h($article['category'])?></span></div><?php endif?>
@@ -72,7 +72,7 @@ function blog_render_site(PDO $db,array $c,string $lang,?array $article,int $sta
     foreach($xp->query('//meta[@name="description"]') as $node)$node->setAttribute('content',$description);
     foreach(iterator_to_array($xp->query('//link[@rel="canonical" or @rel="alternate"]|//meta[starts-with(@property,"og:")]')) as $node)$node->parentNode->removeChild($node);
     $head=$doc->getElementsByTagName('head')->item(0);$link=$doc->createElement('link');$link->setAttribute('rel','canonical');$link->setAttribute('href',$article?blog_article_url($c,$article):blog_url($c,'/').($lang==='en'?'?lang=en':''));$head->appendChild($link);
-    $css=$doc->createElement('link');$css->setAttribute('rel','stylesheet');$css->setAttribute('href',$rootPath.'/assets/blog.css');$head->appendChild($css);
+    $css=$doc->createElement('link');$css->setAttribute('rel','stylesheet');$css->setAttribute('href',$rootPath.'/assets/blog.css?v='.APP_VERSION);$head->appendChild($css);
     if($status===200&&$article){
         $og=['og:type'=>'article','og:site_name'=>'Valutazione Diamanti','og:title'=>$pageTitle,'og:description'=>$description,'og:url'=>$link->getAttribute('href'),'og:locale'=>$lang==='en'?'en_GB':'it_IT','article:published_time'=>(new DateTimeImmutable($article['published_at']))->format(DATE_ATOM)];
         if($article['image_url'])$og['og:image']=$article['image_url'];
