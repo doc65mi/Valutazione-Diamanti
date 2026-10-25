@@ -1,17 +1,19 @@
 'use strict';
 let blogEditing=null,blogContentaiLog=[];
+// Riga di un articolo (2.1.45): pulsante «In evidenza» solo per i pubblicati; dopo ogni azione si ricaricano entrambe le schede.
+function blogRow(a,after){const row=el('div',undefined,'blog-admin-row');const title=el('strong',(Number(a.featured)?'★ ':'')+a.title);const state=el('span',(a.language||'it').toUpperCase()+' · '+(a.status==='published'?'Pubblicato':'Bozza')+' · '+(a.published_at||'')+(Number(a.featured)?' · In evidenza':''));row.append(title,state);
+ if(a.status==='published'){const feature=el('button',Number(a.featured)?'★ In evidenza':'☆ Metti in evidenza');feature.type='button';feature.setAttribute('aria-pressed',Number(a.featured)?'true':'false');feature.title=Number(a.featured)?'Clic per togliere dall’evidenza':'Clic per mettere in evidenza';
+  feature.onclick=async()=>{feature.disabled=true;try{await api('blog-feature',{id:a.id,featured:!Number(a.featured)});await after();message(Number(a.featured)?'Articolo tolto dall’evidenza.':'Articolo in evidenza: home e blog aggiornati.');}catch(e){feature.disabled=false;message(e.message);}};row.append(feature);}
+ const edit=el('button','Modifica');edit.type='button';edit.onclick=()=>{tab('blog');openBlogArticle(a.id).catch(e=>message(e.message));};const remove=el('button','Elimina');remove.type='button';remove.onclick=async()=>{if(!confirm('Eliminare definitivamente “'+a.title+'”?'))return;try{await api('blog-delete',{id:a.id,confirm:true});await after();message('Articolo eliminato.');}catch(e){message(e.message);}};
+ row.append(edit,remove);return row;}
+// Scheda «Elenco articoli» (2.1.45): pubblicati e bozze separati, dal più recente.
+async function loadArticles(){const list=await api('blog-list');const box=$('#articles-list');box.replaceChildren();if(!list.articles.length)box.append(el('p','Nessun articolo: crea il primo dalla scheda Blog oppure collega ContentAI o Frase.'));
+ for(const [label,items] of [['Articoli pubblicati',list.articles.filter(a=>a.status==='published')],['Bozze',list.articles.filter(a=>a.status!=='published')]]){if(!items.length)continue;box.append(el('h2',label+' ('+items.length+')'));for(const a of items)box.append(blogRow(a,loadArticles));}}
 async function loadBlog(){
- // 2.1.43: l'elenco compare anche se la configurazione non si carica; pubblicati e bozze separati, pulsante «In evidenza».
+ // Scheda Blog (2.1.45): solo l'ultimo articolo caricato; l'elenco completo è nella scheda «Elenco articoli».
  const settingsLoad=api('blog-config');settingsLoad.catch(()=>{});const list=await api('blog-list');
- const box=$('#blog-list');box.replaceChildren();if(!list.articles.length)box.append(el('p','Nessun articolo: crea il primo oppure collega ContentAI o Frase.'));
- const groups=[['Articoli pubblicati',list.articles.filter(a=>a.status==='published')],['Bozze',list.articles.filter(a=>a.status!=='published')]];
- for(const [label,items] of groups){if(!items.length)continue;box.append(el('h2',label+' ('+items.length+')'));
-  if(label==='Articoli pubblicati')box.append(el('p','Gli articoli in evidenza compaiono per primi nella sezione «Guide e approfondimenti» della home (tre articoli per lingua) e nel blog; gli altri seguono dal più recente.','hint'));
-  for(const a of items){const row=el('div',undefined,'blog-admin-row');const title=el('strong',(a.featured?'★ ':'')+a.title);const state=el('span',(a.language||'it').toUpperCase()+' · '+(a.published_at||'')+(a.featured?' · In evidenza':''));
-   const feature=el('button',a.featured?'★ In evidenza':'☆ Metti in evidenza');feature.type='button';feature.setAttribute('aria-pressed',a.featured?'true':'false');feature.title=a.featured?'Clic per togliere dall’evidenza':'Clic per mettere in evidenza';
-   feature.onclick=async()=>{feature.disabled=true;try{await api('blog-feature',{id:a.id,featured:!Number(a.featured)});await loadBlog();message(Number(a.featured)?'Articolo tolto dall’evidenza.':'Articolo in evidenza: home e blog aggiornati.');}catch(e){feature.disabled=false;message(e.message);}};
-   const edit=el('button','Modifica');edit.type='button';edit.onclick=()=>openBlogArticle(a.id).catch(e=>message(e.message));const remove=el('button','Elimina');remove.type='button';remove.onclick=async()=>{if(!confirm('Eliminare definitivamente “'+a.title+'”?'))return;try{await api('blog-delete',{id:a.id,confirm:true});await loadBlog();message('Articolo eliminato.');}catch(e){message(e.message);}};
-   if(a.status==='published')row.append(title,state,feature,edit,remove);else row.append(title,state,edit,remove);box.append(row);}}
+ const box=$('#blog-list');box.replaceChildren();const last=list.articles.reduce((m,a)=>!m||Number(a.id)>Number(m.id)?a:m,null);
+ if(!last)box.append(el('p','Nessun articolo: crea il primo oppure collega ContentAI o Frase.'));else{box.append(el('h2','Ultimo articolo caricato'));box.append(blogRow(last,loadBlog));}
  const settings=await settingsLoad;
  const c=settings.config;$('#blog-integration').elements.auto_publish.checked=c.auto_publish;
  $('#blog-webhook-url').textContent=c.base_url+'/webhook.php';$('#blog-contentai-url').textContent=c.base_url+'/contentai.php';blogContentaiLog=settings.contentai_log||[];keyState($('#blog-token-state'),c.token_set,c.token_set?'Token salvato (non mostrato): ricezione attiva.':'Ricezione disattivata: genera un token.');
@@ -40,3 +42,4 @@ $('#blog-frase-list-load').onclick=async()=>{const box=$('#blog-frase-list');box
 $('#blog-frase-log-load').onclick=async()=>{try{const d=await loadFraseStatus();const box=$('#blog-frase-log');box.textContent=d.log.length?d.log.join('\n'):'Nessun evento finora.';box.hidden=false;}catch(err){message(err.message);}};
 // Connettore WordPress di Frase (2.1.39): la password applicazione si vede una sola volta.
 $('#blog-frase-wp-generate').onclick=async e=>{const b=e.currentTarget;if(!confirm('Generare una nuova password per Frase? Quella precedente smette di funzionare.'))return;b.disabled=true;try{const d=await api('blog-frase-wp-password',{confirm:true});$('#blog-frase-wp-once').textContent='Copia ora la password in Frase, non verrà mostrata di nuovo: '+d.password;await loadFraseStatus();message('Password per Frase generata.');}catch(err){message(err.message);}finally{b.disabled=false;}};
+$('#articles-refresh').onclick=()=>loadArticles().catch(e=>message(e.message));$('#blog-all-link').onclick=e=>{e.preventDefault();tab('articles');};
