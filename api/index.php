@@ -41,6 +41,11 @@ try {
     if($action==='reviews-test'&&$method==='POST'){admin_user();rate('reviews-test',20,3600);try{$r=reviews_test();}catch(RuntimeException $e){fail($e->getMessage());}audit('reviews-test','google');respond(['ok'=>true]+$r);}
     // IndexNow (2.1.32): invio manuale di tutti gli indirizzi della sitemap.
     if($action==='indexnow-submit'&&$method==='POST'){admin_user();rate('indexnow',10,3600);if(!settings()['indexnow_enabled'])fail('Attiva IndexNow e salva le impostazioni prima dell’invio.');$r=indexnow_submit(sitemap_entries(),false);if(!$r)fail('Nessun indirizzo da inviare: controlla l’URL pubblico del sito.');if(!$r['ok'])fail('IndexNow ha risposto con codice '.$r['http'].'. Riprova tra qualche minuto.');audit('indexnow','site');respond(['ok'=>true,'last'=>$r]);}
+    // Invio diretto a Google (Indexing API) e Bing (SubmitUrl) con limite giornaliero (2.1.42). Le credenziali non tornano mai al browser.
+    if($action==='indexing'&&$method==='GET'){admin_user();respond(['indexing'=>indexing_public()]);}
+    if($action==='indexing-save'&&$method==='POST'){admin_user();indexing_save($input);audit('indexing','save');respond(['ok'=>true,'indexing'=>indexing_public()]);}
+    if($action==='indexing-test'&&$method==='POST'){admin_user();rate('indexing-test',20,3600);$r=indexing_test();audit('indexing','test');respond(['ok'=>true,'results'=>$r]);}
+    if($action==='indexing-run'&&$method==='POST'){admin_user();rate('indexing-run',20,3600);$c=indexing_config();if(!indexing_active($c,'google')&&!indexing_active($c,'bing'))fail('Attiva Google o Bing e salva prima di inviare.');try{$r=indexing_run(true);}catch(RuntimeException $e){fail($e->getMessage());}if(!empty($r['busy']))fail('Un invio è già in corso: riprova tra un minuto.');audit('indexing','run');respond(['ok'=>true,'summary'=>$r,'indexing'=>indexing_public()]);}
     // Pannello Menu: accende e spegne le voci di header e footer, poi ripubblica tutte le pagine e la sitemap (2.1.27).
     if($action==='menu'&&$method==='GET'){admin_user();$items=[];foreach(MENU_ITEMS as $key=>$item)$items[]=['key'=>$key,'label'=>$item['label'],'enabled'=>menu_enabled($key)];$items[]=['key'=>'guide','label'=>HOME_GUIDES_LABEL,'enabled'=>(bool)settings()['home_guides_enabled']];respond(['items'=>$items]);}
     if($action==='menu'&&$method==='POST'){

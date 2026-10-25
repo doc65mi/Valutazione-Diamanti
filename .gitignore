@@ -24,3 +24,6 @@ __pycache__/
 /data/indexnow.json
 /data/reviews-*.json
 /data/reviews.lock
+/data/indexing.json
+/data/indexing-state.json
+/data/indexing-token.json
