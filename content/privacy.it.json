@@ -5,7 +5,7 @@
   "version": 1,
   "meta": {
     "title": "Informativa privacy | Valutazione Diamanti",
-    "description": "Acquisto diretto e valutazione gratuita di diamanti, gioielli e orologi a Milano. La Diamanteria, dal 2009."
+    "description": "Come trattiamo i dati inviati con il modulo di valutazione: titolare, finalità, conservazione e diritti dell'interessato."
   },
   "slots": {
     "privacy-contenuto-001": {
@@ -19,7 +19,7 @@
     "privacy-contenuto-003": "Informativa privacy",
     "privacy-contenuto-004": "Ultimo aggiornamento: 8 ottobre 2026",
     "privacy-contenuto-005": "Titolare e contatti",
-    "privacy-contenuto-006": "Il titolare del trattamento è {{legal.company}}, con sede in {{legal.address}}. Partita IVA / identificativo fiscale: {{legal.vat}}. Per informazioni sui dati personali e per esercitare i tuoi diritti scrivi a {{legal.email}}.",
+    "privacy-contenuto-006": "Il titolare del trattamento è {{legal.controller}}. Per informazioni sul trattamento dei dati personali e per esercitare i tuoi diritti scrivi a {{legal.email}}.",
     "privacy-contenuto-007": "Dati trattati e finalità",
     "privacy-contenuto-008": "Se invii il modulo di valutazione, trattiamo nome, contatti, preferenza di contatto, informazioni sull’oggetto, fotografie e certificati che scegli di allegare. Questi dati servono a esaminare la richiesta, risponderti e gestire gli eventuali contatti successivi. Non richiediamo documenti d’identità tramite questo modulo. I sistemi registrano inoltre i dati tecnici necessari per la sicurezza, come indirizzo IP, sessione e tentativi di accesso.",
     "privacy-contenuto-009": "Base giuridica e conferimento",

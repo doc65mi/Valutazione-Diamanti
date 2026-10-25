@@ -1,0 +1,309 @@
+{
+  "acquistiamo.en": {
+    "slots": {
+      "acquistiamo-contenuto-039": [
+        "We also assess rubies, sapphires and emeralds weighing less than two carats. Our form includes tailored questions for multi-stone jewellery."
+      ],
+      "acquistiamo-contenuto-041": [
+        "Diamonds weighing less than one carat per stone"
+      ],
+      "acquistiamo-contenuto-054": [
+        {
+          "label": "+39 02 466 891",
+          "href": "tel:+3902466891"
+        }
+      ]
+    },
+    "meta": {
+      "title": [
+        "What we buy | Valutazione Diamanti"
+      ],
+      "description": [
+        "Free valuations and direct buying of diamonds, jewellery and luxury watches in Milan. La Diamanteria, established in 2009."
+      ]
+    }
+  },
+  "acquistiamo.it": {
+    "slots": {
+      "acquistiamo-contenuto-018": [
+        "Rubini, zaffiri e smeraldi, anche sotto 2 ct."
+      ],
+      "acquistiamo-contenuto-039": [
+        "Valutiamo anche rubini, zaffiri e smeraldi sotto i 2 carati. I gioielli con più pietre seguono un percorso dedicato nel modulo."
+      ],
+      "acquistiamo-contenuto-041": [
+        "Diamanti inferiori a 1 carato per singola pietra"
+      ],
+      "acquistiamo-contenuto-054": [
+        {
+          "label": "+39 02 466 891",
+          "href": "tel:+3902466891"
+        }
+      ]
+    },
+    "meta": {
+      "title": [
+        "Cosa acquistiamo | Valutazione Diamanti"
+      ],
+      "description": [
+        "Acquisto diretto e valutazione gratuita di diamanti, gioielli e orologi a Milano. La Diamanteria, dal 2009."
+      ]
+    }
+  },
+  "chisiamo.en": {
+    "slots": {
+      "chisiamo-contenuto-041": [
+        {
+          "label": "+39 02 466 891",
+          "href": "tel:+3902466891"
+        }
+      ]
+    },
+    "meta": {
+      "title": [
+        "About us | La Diamanteria"
+      ],
+      "description": [
+        "Free valuations and direct buying of diamonds, jewellery and luxury watches in Milan. La Diamanteria, established in 2009."
+      ]
+    }
+  },
+  "chisiamo.it": {
+    "slots": {
+      "chisiamo-contenuto-041": [
+        {
+          "label": "+39 02 466 891",
+          "href": "tel:+3902466891"
+        }
+      ]
+    },
+    "meta": {
+      "title": [
+        "Chi siamo | La Diamanteria"
+      ],
+      "description": [
+        "Acquisto diretto e valutazione gratuita di diamanti, gioielli e orologi a Milano. La Diamanteria, dal 2009."
+      ]
+    }
+  },
+  "cookie.en": {
+    "meta": {
+      "description": [
+        "Free valuations and direct buying of diamonds, jewellery and luxury watches in Milan. La Diamanteria, established in 2009."
+      ]
+    }
+  },
+  "cookie.it": {
+    "meta": {
+      "title": [
+        "Informativa cookie | Valutazione Diamanti"
+      ],
+      "description": [
+        "Acquisto diretto e valutazione gratuita di diamanti, gioielli e orologi a Milano. La Diamanteria, dal 2009."
+      ]
+    }
+  },
+  "faq.en": {
+    "slots": {
+      "faq-contenuto-015": [
+        "We assess natural diamonds of one carat or more per stone, with a GIA, HRD or IGI report, or without a report. We do not buy synthetic diamonds or diamonds with AIG, GRA, GWLAB or ALGT reports. We also assess rubies, sapphires and emeralds under two carats."
+      ],
+      "faq-contenuto-018": [
+        "For an immediate valuation, message us on WhatsApp or call +39 02 466891. Alternatively, complete our online enquiry form. A gemmologist will review your request; the final valuation is made after examining the stone at our showroom."
+      ],
+      "faq-contenuto-021": [
+        "A diamond's price depends on the 4Cs: carat weight, colour, clarity and cut. Fluorescence, proportions and an internationally recognised grading report also matter. We refer to current market prices in Antwerp, Tel Aviv, New York, Dubai and Mumbai."
+      ],
+      "faq-contenuto-022": [
+        "What should I prepare?"
+      ],
+      "faq-contenuto-024": [
+        "Send clear photographs and a GIA, HRD or IGI report if you have one. We also consider diamonds without a report. Proof of identity is required if you decide to sell to us."
+      ],
+      "faq-contenuto-027": [
+        "If needed, we arrange an appointment at Via Vincenzo Monti 47 in Milan to examine your item. If you accept our offer, we pay by bank transfer."
+      ],
+      "faq-contenuto-033": [
+        "+39 02 466 891"
+      ],
+      "faq-contenuto-038": [
+        {
+          "label": "+39 02 466 891",
+          "href": "tel:+3902466891"
+        }
+      ]
+    },
+    "meta": {
+      "title": [
+        "Frequently asked questions | Valutazione Diamanti"
+      ],
+      "description": [
+        "Free valuations and direct buying of diamonds, jewellery and luxury watches in Milan. La Diamanteria, established in 2009."
+      ]
+    }
+  },
+  "faq.it": {
+    "slots": {
+      "faq-contenuto-015": [
+        "Valutiamo diamanti naturali a partire da 1 carato per singola pietra, con certificato GIA, HRD o IGI oppure senza certificato. Non acquistiamo diamanti sintetici né diamanti certificati AIG, GRA, GWLAB o ALGT. Valutiamo anche rubini, zaffiri e smeraldi sotto i 2 carati."
+      ],
+      "faq-contenuto-018": [
+        "Per una valutazione immediata contattaci su WhatsApp o chiamaci al 02 466891. In alternativa compila il modulo di quotazione online: un nostro gemmologo esamina la richiesta e la valutazione definitiva avviene dopo l'esame della pietra in sede."
+      ],
+      "faq-contenuto-021": [
+        "Il prezzo dipende dalle 4C: peso in carati, colore, purezza e taglio. Contano anche fluorescenza, proporzioni e la presenza di un certificato internazionale. Il riferimento sono le quotazioni aggiornate delle borse di Anversa, Tel Aviv, New York, Dubai e Mumbai."
+      ],
+      "faq-contenuto-022": [
+        "Cosa devo preparare?"
+      ],
+      "faq-contenuto-024": [
+        "Invia foto nitide e, se disponibile, un certificato GIA, HRD o IGI. Puoi proporci anche un diamante senza certificato. Il documento d'identità è necessario se concludiamo la vendita."
+      ],
+      "faq-contenuto-027": [
+        "Se necessario fissiamo un appuntamento in Via Vincenzo Monti 47, Milano, per esaminare l'oggetto. Se accetti la nostra offerta, paghiamo con bonifico tracciabile."
+      ],
+      "faq-contenuto-033": [
+        "+39 02 466 891"
+      ],
+      "faq-contenuto-038": [
+        {
+          "label": "+39 02 466 891",
+          "href": "tel:+3902466891"
+        }
+      ]
+    },
+    "meta": {
+      "title": [
+        "Domande frequenti | Valutazione Diamanti"
+      ],
+      "description": [
+        "Acquisto diretto e valutazione gratuita di diamanti, gioielli e orologi a Milano. La Diamanteria, dal 2009."
+      ]
+    }
+  },
+  "home.en": {
+    "slots": {
+      "home-contenuto-081": [
+        {
+          "label": "+39 02 466 891",
+          "href": "tel:+3902466891"
+        }
+      ],
+      "home-contenuto-099": [
+        "Which diamonds do you buy?"
+      ],
+      "home-contenuto-101": [
+        "We assess natural diamonds of one carat or more per stone, with a GIA, HRD or IGI report, or without a report. We do not buy synthetic diamonds or diamonds with AIG, GRA, GWLAB or ALGT reports. We also assess rubies, sapphires and emeralds under two carats."
+      ],
+      "home-contenuto-102": [
+        "How long does an initial valuation take?"
+      ],
+      "home-contenuto-104": [
+        "For an immediate valuation, message us on WhatsApp or call +39 02 466891. Alternatively, complete our online enquiry form. A gemmologist will review your request; the final valuation is made after examining the stone at our showroom."
+      ],
+      "home-contenuto-105": [
+        "How is a diamond's value determined?"
+      ],
+      "home-contenuto-107": [
+        "A diamond's price depends on the 4Cs: carat weight, colour, clarity and cut. Fluorescence, proportions and an internationally recognised grading report also matter. We refer to current market prices in Antwerp, Tel Aviv, New York, Dubai and Mumbai."
+      ],
+      "home-contenuto-130": [
+        {
+          "label": "+39 02 466 891",
+          "href": "tel:+3902466891"
+        }
+      ]
+    },
+    "meta": {
+      "description": [
+        "Free valuations and direct buying of diamonds, jewellery and luxury watches in Milan. La Diamanteria, established in 2009."
+      ]
+    }
+  },
+  "home.it": {
+    "slots": {
+      "home-contenuto-081": [
+        {
+          "label": "+39 02 466 891",
+          "href": "tel:+3902466891"
+        }
+      ],
+      "home-contenuto-094": [
+        "Per una valutazione immediata contattaci su WhatsApp o chiamaci al 02 466891."
+      ],
+      "home-contenuto-099": [
+        "Quali diamanti acquistate?"
+      ],
+      "home-contenuto-101": [
+        "Valutiamo diamanti naturali a partire da 1 carato per singola pietra, con certificato GIA, HRD o IGI oppure senza certificato. Non acquistiamo diamanti sintetici né diamanti certificati AIG, GRA, GWLAB o ALGT. Valutiamo anche rubini, zaffiri e smeraldi sotto i 2 carati."
+      ],
+      "home-contenuto-102": [
+        "Quanto tempo serve per avere una prima valutazione?"
+      ],
+      "home-contenuto-104": [
+        "Per una valutazione immediata contattaci su WhatsApp o chiamaci al 02 466891. In alternativa compila il modulo di quotazione online: un nostro gemmologo esamina la richiesta e la valutazione definitiva avviene dopo l'esame della pietra in sede."
+      ],
+      "home-contenuto-105": [
+        "Come viene calcolato il valore di un diamante?"
+      ],
+      "home-contenuto-107": [
+        "Il prezzo dipende dalle 4C: peso in carati, colore, purezza e taglio. Contano anche fluorescenza, proporzioni e la presenza di un certificato internazionale. Il riferimento sono le quotazioni aggiornate delle borse di Anversa, Tel Aviv, New York, Dubai e Mumbai."
+      ],
+      "home-contenuto-130": [
+        {
+          "label": "+39 02 466 891",
+          "href": "tel:+3902466891"
+        }
+      ]
+    },
+    "meta": {
+      "description": [
+        "Acquisto diretto e valutazione gratuita di diamanti, gioielli e orologi a Milano. La Diamanteria, dal 2009."
+      ]
+    }
+  },
+  "privacy.en": {
+    "slots": {
+      "privacy-contenuto-006": [
+        "The data controller is {{legal.company}}, based at {{legal.address}}. VAT / tax identification number: {{legal.vat}}. For information about your personal data or to exercise your rights, contact {{legal.email}}."
+      ]
+    },
+    "meta": {
+      "description": [
+        "Free valuations and direct buying of diamonds, jewellery and luxury watches in Milan. La Diamanteria, established in 2009."
+      ]
+    }
+  },
+  "privacy.it": {
+    "slots": {
+      "privacy-contenuto-006": [
+        "Il titolare del trattamento è {{legal.company}}, con sede in {{legal.address}}. Partita IVA / identificativo fiscale: {{legal.vat}}. Per informazioni sui dati personali e per esercitare i tuoi diritti scrivi a {{legal.email}}."
+      ]
+    },
+    "meta": {
+      "description": [
+        "Acquisto diretto e valutazione gratuita di diamanti, gioielli e orologi a Milano. La Diamanteria, dal 2009."
+      ]
+    }
+  },
+  "valutazione.en": {
+    "meta": {
+      "title": [
+        "Free valuation | Valutazione Diamanti"
+      ],
+      "description": [
+        "Free valuations and direct buying of diamonds, jewellery and luxury watches in Milan. La Diamanteria, established in 2009."
+      ]
+    }
+  },
+  "valutazione.it": {
+    "meta": {
+      "title": [
+        "Valutazione gratuita | Valutazione Diamanti"
+      ],
+      "description": [
+        "Acquisto diretto e valutazione gratuita di diamanti, gioielli e orologi a Milano. La Diamanteria, dal 2009."
+      ]
+    }
+  }
+}

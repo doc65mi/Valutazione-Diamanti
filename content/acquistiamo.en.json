@@ -4,8 +4,8 @@
   "language": "en",
   "version": 1,
   "meta": {
-    "title": "What we buy | Valutazione Diamanti",
-    "description": "Free valuations and direct buying of diamonds, jewellery and luxury watches in Milan. La Diamanteria, established in 2009."
+    "title": "What we buy: diamonds, jewellery, watches | Valutazione Diamanti",
+    "description": "Our buying criteria: natural diamonds from 1 ct with GIA, HRD, IGI or no certificate, coloured gemstones, signed jewellery and luxury watches."
   },
   "slots": {
     "acquistiamo-contenuto-001": "Valutazione Diamanti",
@@ -61,9 +61,9 @@
     "acquistiamo-contenuto-036": "We make our own offer",
     "acquistiamo-contenuto-037": "We do not auction your diamond or offer it to a network of buyers. If it meets our requirements, we make you an offer ourselves. One point of contact for a straightforward process.",
     "acquistiamo-contenuto-038": "What we do not buy",
-    "acquistiamo-contenuto-039": "We also assess rubies, sapphires and emeralds weighing less than two carats. Our form includes tailored questions for multi-stone jewellery.",
+    "acquistiamo-contenuto-039": "Before sending your enquiry, please check that your item does not fall into these cases.",
     "acquistiamo-contenuto-040": "—",
-    "acquistiamo-contenuto-041": "Diamonds weighing less than one carat per stone",
+    "acquistiamo-contenuto-041": "Diamonds under one carat as a single stone (jewellery with several stones follows a dedicated path in the form)",
     "acquistiamo-contenuto-042": "—",
     "acquistiamo-contenuto-043": "Synthetic or laboratory-grown diamonds",
     "acquistiamo-contenuto-044": "—",
@@ -80,7 +80,7 @@
     "acquistiamo-contenuto-052": "Direct buying and valuation of diamonds and jewellery from private sellers. Via Vincenzo Monti 47, Milan.",
     "acquistiamo-contenuto-053": "Contact us",
     "acquistiamo-contenuto-054": {
-      "label": "+39 02 466 891",
+      "label": "+39 02 466891",
       "href": "tel:+3902466891"
     },
     "acquistiamo-contenuto-055": {
