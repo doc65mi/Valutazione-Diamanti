@@ -1,8 +1,21 @@
 <?php
 declare(strict_types=1);
-const APP_VERSION = '2.1.51';
+const APP_VERSION = '2.1.52';
 const ROOT = __DIR__ . '/..';
 const PAGE_SLUGS = ['home', 'acquistiamo', 'chisiamo', 'faq', 'valutazione', 'grazie', 'privacy', 'cookie'];
+// Indirizzi inglesi per le pagine EN (2.1.52, audit): /en/sell-diamonds.html ecc. I vecchi nomi italiani restano come rimandi.
+const EN_PAGE_NAMES = ['acquistiamo'=>'sell-diamonds','valutazione'=>'free-valuation','chisiamo'=>'about-us','privacy'=>'privacy-policy','cookie'=>'cookie-policy','grazie'=>'thank-you'];
+/** Nome del file pubblicato, senza .html: index per la home, nome inglese per le pagine EN. */
+function page_name(string $slug,string $lang): string { return $slug==='home'?'index':($lang==='en'?(EN_PAGE_NAMES[$slug]??$slug):$slug); }
+/** Nelle pagine EN e nei link verso /en/ i nomi italiani diventano quelli inglesi (menu, pulsanti, cambio lingua, testi salvati). */
+function localize_links(DOMXPath $xp,string $lang): void {
+    foreach($xp->query('//*[@href]') as $el){
+        $href=$el->getAttribute('href');
+        if(!preg_match('~^((?:\.\./)?en/|)([a-z]+)\.html([?#].*)?$~',$href,$m)||!isset(EN_PAGE_NAMES[$m[2]]))continue;
+        if($m[1]===''&&$lang!=='en')continue;
+        $el->setAttribute('href',$m[1].EN_PAGE_NAMES[$m[2]].'.html'.($m[3]??''));
+    }
+}
 require_once __DIR__.'/settings.php';
 require_once __DIR__.'/seo.php';
 require_once __DIR__.'/indexing.php';
@@ -167,9 +180,9 @@ function build_html(string $slug,string $lang,array $c): string {
     foreach($xp->query('//text()') as $node)$node->nodeValue=strtr($node->nodeValue,$replacements);
     $legal['site_url']=seo_base();
     if($legal['site_url']) {
-        $name=$slug==='home'?'index':$slug;$head=$doc->getElementsByTagName('head')->item(0);
-        $link=$doc->createElement('link');$link->setAttribute('rel','canonical');$link->setAttribute('href',rtrim($legal['site_url'],'/').'/'.$lang.'/'.$name.'.html');$head->appendChild($link);
-        foreach($xp->query('//link[@rel="alternate"]') as $alt){$l=$alt->getAttribute('hreflang');$alt->setAttribute('href',rtrim($legal['site_url'],'/').'/'.($l==='x-default'?'it':$l).'/'.$name.'.html');}
+        $head=$doc->getElementsByTagName('head')->item(0);
+        $link=$doc->createElement('link');$link->setAttribute('rel','canonical');$link->setAttribute('href',rtrim($legal['site_url'],'/').'/'.$lang.'/'.page_name($slug,$lang).'.html');$head->appendChild($link);
+        foreach($xp->query('//link[@rel="alternate"]') as $alt){$l=$alt->getAttribute('hreflang')==='en'?'en':'it';$alt->setAttribute('href',rtrim($legal['site_url'],'/').'/'.$l.'/'.page_name($slug,$l).'.html');}
     }
     $doc->getElementsByTagName('title')->item(0)->textContent=$c['meta']['title'];
     $description=$xp->query('//meta[@name="description"]')->item(0);
@@ -197,6 +210,7 @@ function build_html(string $slug,string $lang,array $c): string {
     $mainNav=$xp->query('//header//nav[not(contains(@class,"language-nav"))]')->item(0);
     if($mainNav&&menu_enabled('blog')){$blogLink=$doc->createElement('a','Blog');$blogLink->setAttribute('href','../blog/');$blogLink->setAttribute('class','site-blog-link');if($lang==='en')$blogLink->setAttribute('href','../blog/?lang=en');$mainNav->appendChild($blogLink);}
     hide_menu_items($xp);
+    localize_links($xp,$lang);
 
     tidy_footer($doc,$lang);
     seo_verification_meta($doc);
@@ -204,7 +218,7 @@ function build_html(string $slug,string $lang,array $c): string {
     $reviewBoxes=iterator_to_array($xp->query('//*[@data-google-reviews]'));
     if($reviewBoxes&&settings()['reviews_enabled']){$script=$doc->createElement('script');$script->setAttribute('src','../assets/reviews.js');$script->setAttribute('defer','defer');$head->appendChild($script);$data=reviews_cached($lang);if($data)foreach($reviewBoxes as $box)reviews_render($doc,$box,$data,$lang);}
     else foreach($reviewBoxes as $box)$box->parentNode->removeChild($box);
-    $url=seo_base().'/'.$lang.'/'.($slug==='home'?'index':$slug).'.html';
+    $url=seo_base().'/'.$lang.'/'.page_name($slug,$lang).'.html';
     seo_open_graph($doc,$lang,$url,$c['meta']['title'],$c['meta']['description']);
     seo_markup($doc,$lang,$url,$c['meta']['title'],$c['meta']['description'],$slug==='faq'?'FAQPage':($slug==='chisiamo'?'AboutPage':'WebPage'));
     if($slug==='grazie'||in_array($slug,hidden_page_slugs(),true)){$meta=$doc->createElement('meta');$meta->setAttribute('name','robots');$meta->setAttribute('content','noindex,follow');$head->appendChild($meta);}
@@ -245,13 +259,18 @@ function page_lastmod(string $slug,string $lang,array $c): string {
     if(preg_match('/^\d{4}-\d{2}-\d{2}/',(string)($c['updated_at']??''),$m))return $m[0];
     return gmdate('Y-m-d',(int)@filemtime(ROOT.'/content/'.$slug.'.'.$lang.'.json')?:time());
 }
-function publish(string $slug,string $lang,array $c): void { $name=$slug==='home'?'index':$slug; atomic_write(ROOT.'/'.$lang.'/'.$name.'.html',build_html($slug,$lang,$c),0644); }
+function publish(string $slug,string $lang,array $c): void {
+    $name=page_name($slug,$lang);atomic_write(ROOT.'/'.$lang.'/'.$name.'.html',build_html($slug,$lang,$c),0644);
+    // Vecchio indirizzo italiano della pagina EN: con Apache il 301 è in .htaccess; se il file lo serve nginx, questa pagina rimanda alla nuova.
+    if($lang==='en'&&$name!==$slug&&$slug!=='home'){$to=seo_base().'/en/'.$name.'.html';$h=htmlspecialchars($to,ENT_QUOTES);
+        atomic_write(ROOT.'/en/'.$slug.'.html','<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Valutazione Diamanti</title><link rel="canonical" href="'.$h.'"><meta name="robots" content="noindex,follow"><meta http-equiv="refresh" content="0;url='.htmlspecialchars($name,ENT_QUOTES).'.html"></head><body><p>This page has moved: <a href="'.htmlspecialchars($name,ENT_QUOTES).'.html">'.$h.'</a></p></body></html>',0644);}
+}
 function seo_indexes(): void {
     // La home mostra gli ultimi articoli (2.1.43): ogni modifica al blog passa di qui e la rigenera.
     foreach(['it','en'] as $lang)publish('home',$lang,content('home',$lang));
     $s=settings();$base=seo_base();$xml='<?xml version="1.0" encoding="UTF-8"?>'."\n".'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">';
     $llms="# Valutazione Diamanti\n\nDirect buying and free valuations of natural diamonds, jewellery and selected watches by La Diamanteria in Milan.\n\n## Pages\n";
-    $hiddenPages=hidden_page_slugs();foreach(PAGE_SLUGS as $slug)if($slug!=='grazie'&&!in_array($slug,$hiddenPages,true))foreach(['it','en'] as $lang){$name=$slug==='home'?'index':$slug;$url=$base.'/'.$lang.'/'.$name.'.html';$c=content($slug,$lang);if($base)$xml.='<url><loc>'.htmlspecialchars($url,ENT_XML1).'</loc><lastmod>'.page_lastmod($slug,$lang,$c).'</lastmod></url>';$llms.='- ['.$c['meta']['title'].']('.$url.")\n";}
+    $hiddenPages=hidden_page_slugs();foreach(PAGE_SLUGS as $slug)if($slug!=='grazie'&&!in_array($slug,$hiddenPages,true))foreach(['it','en'] as $lang){$url=$base.'/'.$lang.'/'.page_name($slug,$lang).'.html';$c=content($slug,$lang);if($base)$xml.='<url><loc>'.htmlspecialchars($url,ENT_XML1).'</loc><lastmod>'.page_lastmod($slug,$lang,$c).'</lastmod></url>';$llms.='- ['.$c['meta']['title'].']('.$url.")\n";}
     require_once __DIR__.'/blog.php';
     $blogOn=menu_enabled('blog');$posts=[];
     if($base&&$blogOn){$posts=blog_seo_entries();$blogDay=max(array_map(fn($p)=>substr((string)$p['updated_at'],0,10),$posts)?:[gmdate('Y-m-d')]);
@@ -278,7 +297,8 @@ function seo_indexes(): void {
 // all'API (ogni pagina pubblica la chiama) si rigenerano dai testi in data/content (2.1.29).
 function published_stamp(): string {
     clearstatcache(); $s=APP_VERSION; $files=['sitemap.xml','robots.txt','llms.txt'];
-    foreach(PAGE_SLUGS as $slug) foreach(['it','en'] as $lang) $files[]=$lang.'/'.($slug==='home'?'index':$slug).'.html';
+    foreach(PAGE_SLUGS as $slug) foreach(['it','en'] as $lang) $files[]=$lang.'/'.page_name($slug,$lang).'.html';
+    foreach(EN_PAGE_NAMES as $slug=>$name) $files[]='en/'.$slug.'.html';
     foreach($files as $f) $s.='|'.$f.':'.@filemtime(ROOT.'/'.$f).':'.@filesize(ROOT.'/'.$f);
     return hash('sha256',$s);
 }
