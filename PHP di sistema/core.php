@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-const APP_VERSION = '2.1.46';
+const APP_VERSION = '2.1.47';
 const ROOT = __DIR__ . '/..';
 const PAGE_SLUGS = ['home', 'acquistiamo', 'chisiamo', 'faq', 'valutazione', 'grazie', 'privacy', 'cookie'];
 require_once __DIR__.'/settings.php';
@@ -77,8 +77,12 @@ function content(string $slug,string $lang): array {
             $c['slots'][$id]=$type==='image'?['src'=>$el->getAttribute('src'),'alt'=>$el->getAttribute('alt')]:($type==='button'?['href'=>$el->getAttribute('href'),'label'=>$el->textContent]:$el->textContent);
         }
     }
+    // 2.1.47: sul sito restano solo le immagini caricate qui (uploads/site). Gli indirizzi esterni rimasti dal vecchio prototipo
+    // (diamond-shine-guide.lovable.app) diventano «nessuna immagine»: la pagina non le carica più e l'editor chiede di caricarne una.
+    foreach($c['slots'] as $id=>$v)if(is_array($v)&&array_key_exists('src',$v)&&!site_image($v['src']))$c['slots'][$id]['src']='';
     return $c;
 }
+function site_image(string $src): bool { return $src==='' || !preg_match('~^([a-z][a-z0-9+.-]*:|//)~i',$src); }
 // tempnam() crea il file con permessi 0600: le pagine pubbliche vanno rese leggibili (0644), altrimenti
 
 // nginx su Plesk (che serve i file statici con un altro utente) risponde 403 a tutto il sito (2.1.22).
@@ -117,7 +121,8 @@ function validate_content(array $input,array $schema,array $previous,array $u): 
             if(!is_string($v)||mb_strlen($v)>$s['max']||str_contains($v,"\0")) fail('Testo non valido: '.$s['label']);
             $out['slots'][$id]=trim(strip_tags($v));
         } elseif($s['type']==='image') {
-            if(!is_array($v)||!is_string($v['src']??null)||!safe_url($v['src'],true)||!is_string($v['alt']??null)||trim($v['alt'])===''||mb_strlen($v['alt'])>250) fail('Inserisci un URL immagine valido e un testo alternativo: '.$s['label']);
+            if(is_array($v)&&is_string($v['src']??null)&&$v['src']!==''&&!site_image($v['src'])) fail('Carica l’immagine con il pulsante «Carica una nuova immagine»: non si possono usare immagini di altri siti. '.$s['label']);
+            if(!is_array($v)||!is_string($v['src']??null)||($v['src']!==''&&!safe_url($v['src'],true))||!is_string($v['alt']??null)||trim($v['alt'])===''||mb_strlen($v['alt'])>250) fail('Inserisci un URL immagine valido e un testo alternativo: '.$s['label']);
             $out['slots'][$id]=['src'=>$v['src'],'alt'=>strip_tags($v['alt'])];
         } elseif($s['type']==='button') {
             if(!is_array($v)||!is_string($v['href']??null)||!safe_url($v['href'])||!is_string($v['label']??null)||mb_strlen($v['label'])>300) fail('Collegamento non valido: '.$s['label']);
@@ -135,9 +140,12 @@ function build_html(string $slug,string $lang,array $c): string {
         $el->setAttribute('data-cd-slot',$el->getAttribute('data-om-slot'));
         $v=$c['slots'][$el->getAttribute('data-om-slot')]; $type=$el->getAttribute('data-om-type');
         if($type==='text') $el->textContent=$v;
-        if($type==='image') { $el->setAttribute('src',$v['src']); $el->setAttribute('alt',$v['alt']); }
+        if($type==='image') { $el->setAttribute('alt',$v['alt']); if($v['src']!=='')$el->setAttribute('src',$v['src']); else { $el->removeAttribute('src'); $el->setAttribute('hidden','hidden'); $el->setAttribute('data-cd-missing','1'); } }
         if($type==='button') { $el->setAttribute('href',$v['href']); $el->textContent=$v['label']; }
     }
+    // Presentazione foto in home (2.1.47): se la foto in primo piano non c'è, passa in primo piano la prima foto caricata.
+    foreach(iterator_to_array($xp->query('//img[@data-cd-missing and contains(@style,"opacity:1")]')) as $gone)
+        foreach($xp->query('following-sibling::img[not(@data-cd-missing)]',$gone) as $next){$swap=$gone->getAttribute('style');$gone->setAttribute('style',$next->getAttribute('style'));$next->setAttribute('style',$swap);break;}
     // Guide e approfondimenti (2.1.35, 2.1.43): sezione tolta se spenta; se accesa mostra gli ultimi articoli del blog, prima quelli in evidenza.
     $guidesOn=(bool)settings()['home_guides_enabled'];
     foreach(iterator_to_array($xp->query('//*[@data-om-section="guide"]')) as $section){
