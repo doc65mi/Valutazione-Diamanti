@@ -1,10 +1,11 @@
 <?php
 declare(strict_types=1);
-const APP_VERSION = '2.1.41';
+const APP_VERSION = '2.1.42';
 const ROOT = __DIR__ . '/..';
 const PAGE_SLUGS = ['home', 'acquistiamo', 'chisiamo', 'faq', 'valutazione', 'grazie', 'privacy', 'cookie'];
 require_once __DIR__.'/settings.php';
 require_once __DIR__.'/seo.php';
+require_once __DIR__.'/indexing.php';
 require_once __DIR__.'/footer.php';
 require_once __DIR__.'/emails.php';
 require_once __DIR__.'/reviews.php';
@@ -213,6 +214,7 @@ function seo_indexes(): void {
     seo_verification_files();
     mark_published();
     try{indexnow_submit(sitemap_entries());}catch(Throwable $e){error_log('IndexNow non raggiunto: '.$e->getMessage());}
+    try{indexing_sync();}catch(Throwable $e){error_log('Coda Google/Bing non aggiornata: '.$e->getMessage());}
 }
 // Dopo un Pull le pagine in it/ en/ e sitemap, robots, llms tornano alla versione del repository: al primo accesso
 // all'API (ogni pagina pubblica la chiama) si rigenerano dai testi in data/content (2.1.29).
@@ -224,6 +226,7 @@ function published_stamp(): string {
 }
 function mark_published(): void { @file_put_contents(ROOT.'/data/published.stamp',published_stamp()); }
 function ensure_published(): void {
+    indexing_tick();
     $file=ROOT.'/data/published.stamp'; if(is_file($file)&&trim((string)file_get_contents($file))===published_stamp()) return;
     $lock=fopen(ROOT.'/data/build.lock','c'); if(!$lock) return; if(!flock($lock,LOCK_EX|LOCK_NB)) { fclose($lock); return; }
     try { foreach(PAGE_SLUGS as $slug) foreach(['it','en'] as $lang) publish($slug,$lang,content($slug,$lang)); seo_indexes(); }
