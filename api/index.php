@@ -15,6 +15,8 @@ try {
     if($action==='config'&&$method==='GET') respond(public_settings());
     // Recensioni Google per le pagine pubbliche (2.1.33): dati già filtrati, letti da Google al massimo ogni 12 ore.
     if($action==='reviews'&&$method==='GET'){$lang=($_GET['lang']??'it')==='en'?'en':'it';session_write_close();$data=reviews_public($lang);header('Cache-Control: public, max-age=1800');header_remove('Pragma');header_remove('Expires');respond(['reviews'=>$data]);}
+    // Script in linea degli «Altri codici di tracciamento» (2.1.44), richiesti da consent.js solo dopo il consenso.
+    if($action==='tracking-code'&&$method==='GET'){session_write_close();$js=custom_code_inline_script(is_string($_GET['id']??null)?$_GET['id']:'',(int)($_GET['n']??-1));if($js===null){http_response_code(404);header('Content-Type: text/javascript; charset=utf-8');echo '/* codice non trovato */';exit;}header('Content-Type: text/javascript; charset=utf-8');header('Cache-Control: public, max-age=300');header_remove('Pragma');header_remove('Expires');echo $js;exit;}
     if($action==='login'&&$method==='POST') {
         rate('login',8,900); $q=db()->prepare('SELECT * FROM users WHERE username=?'); $q->execute([is_string($input['username']??null)?$input['username']:'']); $u=$q->fetch();
         $password=is_string($input['password']??null)?$input['password']:'';

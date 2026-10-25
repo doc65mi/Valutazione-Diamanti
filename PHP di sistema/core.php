@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-const APP_VERSION = '2.1.43';
+const APP_VERSION = '2.1.44';
 const ROOT = __DIR__ . '/..';
 const PAGE_SLUGS = ['home', 'acquistiamo', 'chisiamo', 'faq', 'valutazione', 'grazie', 'privacy', 'cookie'];
 require_once __DIR__.'/settings.php';
@@ -33,9 +33,12 @@ function session_start_secure(): void {
     $_SESSION['last'] = time();
     if (empty($_SESSION['csrf'])) $_SESSION['csrf'] = bin2hex(random_bytes(32));
 }
+// Le pagine pubbliche accettano script HTTPS per i codici di tracciamento (2.1.44); l'amministrazione resta stretta.
+const CSP_PRIVATE = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' https:; connect-src 'self'; frame-ancestors 'self'; base-uri 'self'; form-action 'self'; object-src 'none'";
+const CSP_PUBLIC = "default-src 'self'; script-src 'self' https:; style-src 'self' 'unsafe-inline' https:; font-src 'self' https: data:; img-src 'self' https: data:; connect-src 'self' https:; frame-src https:; frame-ancestors 'self'; base-uri 'self'; form-action 'self'; object-src 'none'";
 function security_headers(bool $private = false): void {
     header('X-Content-Type-Options: nosniff'); header('Referrer-Policy: strict-origin-when-cross-origin');
-    header("Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' https:; connect-src 'self'; frame-ancestors 'self'; base-uri 'self'; form-action 'self'; object-src 'none'");
+    header('Content-Security-Policy: '.($private?CSP_PRIVATE:CSP_PUBLIC));
     if ($private) { header('X-Robots-Tag: noindex, nofollow, noarchive'); header('Cache-Control: no-store'); }
 }
 function respond(array $value, int $status = 200): never { http_response_code($status); header('Content-Type: application/json; charset=utf-8'); echo json_encode($value, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR); exit; }

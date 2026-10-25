@@ -3,7 +3,9 @@ Options -Indexes
 <IfModule mod_headers.c>
 Header always set X-Content-Type-Options "nosniff"
 Header always set Referrer-Policy "strict-origin-when-cross-origin"
-Header always set Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' https:; connect-src 'self'; frame-ancestors 'self'; base-uri 'self'; form-action 'self'; object-src 'none'"
+# Pagine pubbliche (2.1.44): script e connessioni solo da HTTPS, così Google, Meta, Clarity e gli «Altri codici» possono caricarsi
+# dopo il consenso; gli script in linea restano vietati. L'amministrazione ha la regola stretta in admin/.htaccess e api/.htaccess.
+Header always set Content-Security-Policy "default-src 'self'; script-src 'self' https:; style-src 'self' 'unsafe-inline' https:; font-src 'self' https: data:; img-src 'self' https: data:; connect-src 'self' https:; frame-src https:; frame-ancestors 'self'; base-uri 'self'; form-action 'self'; object-src 'none'"
 </IfModule>
 <FilesMatch "^(Admin|Login)\.dc\.html$">
 <IfModule mod_headers.c>
