@@ -1,6 +1,8 @@
 User-agent: *
 Disallow: /admin/
 Disallow: /api/
+Disallow: /wp-json/
+Disallow: /wp-admin/
 Disallow: /data/
 Disallow: /uploads/clienti/
 Disallow: /pages-src/
