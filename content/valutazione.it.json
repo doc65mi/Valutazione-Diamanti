@@ -36,7 +36,7 @@
     "valutazione-contenuto-014": "Tipo di oggetto",
     "valutazione-contenuto-015": "Hai altri oggetti?",
     "valutazione-contenuto-016": "Più oggetti da valutare",
-    "valutazione-contenuto-017": "Descrivi gli altri oggetti",
+    "valutazione-contenuto-017": "Descrivi gli altri oggetti (facoltativo)",
     "valutazione-contenuto-018": "Dettagli dell’oggetto",
     "valutazione-contenuto-019": "Marca dell’orologio",
     "valutazione-contenuto-020": "Tipo di pietra",
@@ -93,6 +93,11 @@
     "valutazione-ripristino-016": {
       "href": "https://www.google.com/maps/place/?q=place_id:ChIJFR80gkTBhkcRJGjlclhYteg",
       "label": "Leggi le recensioni su Google ↗"
-    }
+    },
+    "valutazione-contenuto-048": "Colore del diamante (facoltativo)",
+    "valutazione-contenuto-049": "Purezza del diamante (facoltativo)",
+    "valutazione-contenuto-050": "Colore e purezza della pietra (facoltativo)",
+    "valutazione-contenuto-051": "Se hai un certificato li trovi lì. Se non li conosci, lascia vuoto.",
+    "valutazione-contenuto-052": "Numero del certificato (facoltativo)"
   }
 }
