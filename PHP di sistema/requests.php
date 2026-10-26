@@ -14,23 +14,28 @@ function submit_request(): never {
     if($id=$q->fetchColumn()) respond(['ok'=>true,'id'=>$id]);
     rate('request',12,3600); verify_recaptcha(); purge_expired_requests();
     $f=[];
-    foreach(['cat'=>40,'multi'=>5,'others'=>1500,'stone'=>30,'brand'=>60,'ct'=>20,'origin'=>20,'cert'=>30,'kit'=>30,'name'=>120,'phone'=>40,'email'=>254,'pref'=>20] as $field=>$max) {
+    foreach(['cat'=>40,'multi'=>5,'others'=>1500,'stone'=>30,'brand'=>60,'ct'=>20,'color'=>10,'clarity'=>10,'gem_quality'=>120,'origin'=>20,'cert'=>30,'cert_no'=>40,'kit'=>30,'name'=>120,'phone'=>40,'email'=>254,'pref'=>20] as $field=>$max) {
         $v=$_POST[$field]??''; if(!is_string($v)||mb_strlen($v)>$max||preg_match('/[\x00-\x08\x0B\x0C\x0E-\x1F]/',$v)) $error('Controlla i campi del modulo.','Please check the form fields.');
         $f[$field]=trim(strip_tags($v));
     }
     if(!in_array($f['cat'],CATEGORIES,true)||!in_array($f['multi'],['yes','no'],true)) $error('Seleziona il tipo di oggetto e indica se ne hai altri.','Select your item type and tell us whether you have other items.');
-    if($f['multi']==='yes'&&$f['others']==='') $error('Descrivi brevemente gli altri oggetti.','Please briefly describe your other items.');
+    // 2.1.55: la descrizione degli altri oggetti è facoltativa.
+    if($f['multi']!=='yes') $f['others']='';
     if($f['cat']==='watch') {
         if(!in_array($f['brand'],BRANDS,true)||!in_array($f['kit'],['full-set','papers','none'],true)) $error('Seleziona un marchio trattato e i documenti disponibili.','Select a watch brand we buy and the documents available.');
-        foreach(['stone','ct','origin','cert'] as $k) $f[$k]='';
+        foreach(['stone','ct','color','clarity','gem_quality','origin','cert','cert_no'] as $k) $f[$k]='';
     } else {
         $gem=$f['cat']==='gemstone';
-        $weights=$gem?['under-1','1-2','2-5','over-5','unknown']:['1-2','2-3','3-5','over-5','unknown'];
-        if(!in_array($f['ct'],$weights,true)) $error('Seleziona un peso valido. Acquistiamo diamanti da 1 carato per pietra.','Select a valid weight. We buy diamonds of one carat or more per stone.');
+        // 2.1.55: stesse fasce di peso per diamanti e pietre preziose; colore, purezza e numero di certificato facoltativi.
+        if(!in_array($f['ct'],['1-2','2-3','3-5','over-5','unknown'],true)) $error('Seleziona un peso valido. Acquistiamo pietre da 1 carato in su.','Select a valid weight. We buy stones of one carat or more.');
+        if($f['color']!==''&&!in_array($f['color'],['D','E','F','G','H','I','J','K','L','M','N-Z','fancy','unknown'],true)) $error('Seleziona un colore valido.','Please select a valid colour.');
+        if($f['clarity']!==''&&!in_array($f['clarity'],['FL','IF','VVS1','VVS2','VS1','VS2','SI1','SI2','I1','I2','I3','unknown'],true)) $error('Seleziona una purezza valida.','Please select a valid clarity grade.');
         if($gem&&!in_array($f['stone'],['ruby','sapphire','emerald','other'],true)) $error('Seleziona il tipo di pietra.','Please select the gemstone type.');
         if(!$gem&&$f['origin']!==''&&!in_array($f['origin'],['natural','unknown'],true)) $error('Valutiamo solo diamanti naturali. Indica l’origine.','We assess natural diamonds only. Please select the origin.');
         if(!in_array($f['cert'],['GIA','HRD','IGI','none'],true)) $error('Seleziona un certificato riconosciuto o “Nessun certificato”.','Select an accepted grading report or “No report”.');
-        $f['brand']=$f['kit']=''; if($gem) $f['origin']=''; else $f['stone']='';
+        if($f['cert']==='none') $f['cert_no']='';
+        if($f['cert_no']!==''&&!preg_match('/^[A-Za-z0-9 .\/-]{1,40}$/',$f['cert_no'])) $error('Il numero del certificato può contenere solo lettere, numeri, spazi, punti, trattini e /.','The report number may only contain letters, digits, spaces, dots, hyphens and /.');
+        $f['brand']=$f['kit']=''; if($gem){$f['origin']=$f['color']=$f['clarity']='';} else $f['stone']=$f['gem_quality']='';
     }
     if(mb_strlen($f['name'])<2||!preg_match('/\p{L}/u',$f['name'])) $error('Inserisci il tuo nome.','Please enter your name.');
     if(!filter_var($f['email'],FILTER_VALIDATE_EMAIL)) $error('Inserisci un indirizzo email valido.','Please enter a valid email address.');

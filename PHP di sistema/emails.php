@@ -23,10 +23,14 @@ function customer_email(array $s,string $lang,array $vars): array {
     $body=trim((string)($s['customer_body_'.$lang]??''))!==''?(string)$s['customer_body_'.$lang]:$d['customer_body_'.$lang];
     return [str_replace(["\r","\n"],' ',email_render($subject,$vars)),str_replace("\r\n","\n",email_render($body,$vars))];
 }
+/** Colore e purezza nel riepilogo al gestore, solo se indicati (2.1.55). */
+function request_quality_lines(array $f): string {
+    $out='';foreach(['color'=>'Colore','clarity'=>'Purezza','gem_quality'=>'Colore e purezza'] as $k=>$label)if(($f[$k]??'')!=='')$out.="$label: {$f[$k]}\n";return $out;
+}
 function queue_request_emails(string $id,array $f,string $lang,int $attachments): void {
     mail_queue_schema();$s=settings();$company=$s['legal_company'];$manager=$s['mail_to']?:$s['legal_email'];
     $admin=rtrim($s['site_url'],'/').'/admin/';
-    $summary="Riferimento: $id\nCliente: {$f['name']}\nEmail: {$f['email']}\nTelefono: {$f['phone']}\nContatto preferito: {$f['pref']}\nOggetto: {$f['cat']}\nMarca: {$f['brand']}\nPietra: {$f['stone']}\nPeso (ct): {$f['ct']}\nCertificato: {$f['cert']}\nCorredo: {$f['kit']}\nAltri oggetti: {$f['others']}\nAllegati: $attachments\n";
+    $summary="Riferimento: $id\nCliente: {$f['name']}\nEmail: {$f['email']}\nTelefono: {$f['phone']}\nContatto preferito: {$f['pref']}\nOggetto: {$f['cat']}\nMarca: {$f['brand']}\nPietra: {$f['stone']}\nPeso (ct): {$f['ct']}\n".request_quality_lines($f)."Certificato: {$f['cert']}\n".(($f['cert_no']??'')!==''?"Numero certificato: {$f['cert_no']}\n":'')."Corredo: {$f['kit']}\nAltri oggetti: {$f['others']}\nAllegati: $attachments\n";
     $managerBody="È arrivata una nuova richiesta di valutazione dal sito.\n\n".$summary."\nAccedi all’area amministrativa per esaminare la richiesta e visualizzare gli allegati: $admin\n\nGli allegati sono disponibili solo dopo l’accesso all’admin.\n";
     [$customerSubject,$customerBody]=customer_email($s,$lang,['nome'=>$f['name'],'riferimento'=>$id,'azienda'=>$company,'indirizzo'=>$s['legal_address']]);
     $q=db()->prepare('INSERT OR IGNORE INTO mail_queue(request_id,kind,recipient,subject,body,reply_to) VALUES(?,?,?,?,?,?)');

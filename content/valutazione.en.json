@@ -36,7 +36,7 @@
     "valutazione-contenuto-014": "Item type",
     "valutazione-contenuto-015": "Do you have other items?",
     "valutazione-contenuto-016": "Other items to be valued",
-    "valutazione-contenuto-017": "Describe your other items",
+    "valutazione-contenuto-017": "Describe your other items (optional)",
     "valutazione-contenuto-018": "Item details",
     "valutazione-contenuto-019": "Watch brand",
     "valutazione-contenuto-020": "Gemstone type",
@@ -93,6 +93,11 @@
     "valutazione-ripristino-016": {
       "href": "https://www.google.com/maps/place/?q=place_id:ChIJFR80gkTBhkcRJGjlclhYteg",
       "label": "Read our Google reviews ↗"
-    }
+    },
+    "valutazione-contenuto-048": "Diamond colour (optional)",
+    "valutazione-contenuto-049": "Diamond clarity (optional)",
+    "valutazione-contenuto-050": "Gemstone colour and clarity (optional)",
+    "valutazione-contenuto-051": "You will find them on the grading report, if you have one. If you are not sure, leave them blank.",
+    "valutazione-contenuto-052": "Report number (optional)"
   }
 }
