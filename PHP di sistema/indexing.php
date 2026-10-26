@@ -36,7 +36,8 @@ function indexing_entries(): array {
     }
     $hidden = hidden_page_slugs();
     foreach (PAGE_SLUGS as $slug) if ($slug !== 'grazie' && !in_array($slug, $hidden, true)) foreach (['it', 'en'] as $lang)
-        $out[$base . '/' . $lang . '/' . ($slug === 'home' ? 'index' : $slug) . '.html'] = substr(hash('sha256', json_encode(content($slug, $lang), JSON_UNESCAPED_UNICODE)), 0, 16);
+        // 2.1.60: nome del file pubblicato (page_name), non lo slug: le pagine EN hanno indirizzi inglesi dal 2.1.52 e i vecchi sono rimandi noindex.
+        $out[$base . '/' . $lang . '/' . page_name($slug, $lang) . '.html'] = substr(hash('sha256', json_encode(content($slug, $lang), JSON_UNESCAPED_UNICODE)), 0, 16);
     return $out;
 }
 
@@ -97,7 +98,7 @@ function indexing_send(string $engine, array $c, array $item, string $token = ''
         $message = mb_substr((string)(json_decode($body, true)['error']['message'] ?? $error), 0, 200);
         if ($http === 200) return ['ok', $item['type'] === 'URL_DELETED' ? 'rimozione segnalata' : 'accettato'];
         if ($http === 429) return ['quota', 'quota giornaliera di Google esaurita'];
-        if ($http === 401 || $http === 403) return ['config', 'Google ha rifiutato l’invio (' . $http . '): ' . ($message ?: 'permesso negato') . '. Aggiungi l’email dell’account di servizio come Proprietario in Search Console e attiva la Web Search Indexing API nel progetto Google Cloud.'];
+        if ($http === 401 || $http === 403) return ['config', 'Google ha rifiutato l’invio (' . $http . '): ' . ($message ?: 'permesso negato') . '. ' . indexing_google_owner_hint($c, $item['url'])];
         if ($item['type'] === 'URL_DELETED' && $http === 404) return ['ok', 'già assente per Google'];
         return ['error', 'codice ' . $http . ($message !== '' ? ': ' . $message : '')];
     }
@@ -107,6 +108,13 @@ function indexing_send(string $engine, array $c, array $item, string $token = ''
     if (stripos($message, 'quota') !== false || $http === 429) return ['quota', 'quota giornaliera di Bing esaurita'];
     if ($http === 401 || $http === 403 || preg_match('/InvalidApiKey|NotAuthorized|not verified|UserBlocked/i', $body)) return ['config', 'Bing ha rifiutato l’invio (' . $http . '): ' . ($message ?: 'chiave API o sito non autorizzati') . '. Controlla la chiave API e che il sito sia verificato in Bing Webmaster Tools con lo stesso indirizzo (' . seo_base() . ').'];
     return ['error', 'codice ' . $http . ($message !== '' ? ': ' . $message : '')];
+}
+
+/** Cosa sistemare in Search Console quando Google nega il permesso: ruolo Proprietario sulla proprietà che contiene l'indirizzo inviato (2.1.60). */
+function indexing_google_owner_hint(array $c, string $url): string {
+    $host = (string)parse_url($url, PHP_URL_HOST); $root = preg_replace('/^www\./i', '', $host);
+    $prefix = parse_url($url, PHP_URL_SCHEME) . '://' . $host . '/';
+    return 'In Search Console apri la proprietà «' . $root . '» (tipo Dominio) oppure «' . $prefix . '» (prefisso URL, con ' . (str_starts_with($host, 'www.') ? 'www' : 'senza www') . ' e https) → Impostazioni → Utenti e autorizzazioni e dai a ' . ($c['google']['client_email'] ?? 'l’email dell’account di servizio') . ' l’autorizzazione «Proprietario»: «Completo» o «Limitato» non bastano, e la proprietà per ' . (str_starts_with($host, 'www.') ? 'il sito senza www' : 'www') . ' non vale. Se il ruolo è già Proprietario, controlla che la Web Search Indexing API sia abilitata nello stesso progetto Google Cloud del file JSON.';
 }
 
 function indexing_log(array &$state, string $engine, string $url, bool $ok, string $message): void {
@@ -211,7 +219,7 @@ function indexing_save(array $input): void {
 /** Prova le credenziali senza consumare la quota: token di Google e quota residua dichiarata da Bing. */
 function indexing_test(): array {
     $c = indexing_config(); $out = [];
-    if (is_array($c['google'])) { try { indexing_google_token($c['google'], true); $out['google'] = ['ok' => true, 'msg' => 'Account di servizio accettato da Google. Il permesso sul sito si verifica al primo invio: serve l’email ' . $c['google']['client_email'] . ' come Proprietario in Search Console.']; } catch (RuntimeException $e) { $out['google'] = ['ok' => false, 'msg' => $e->getMessage()]; } }
+    if (is_array($c['google'])) { try { indexing_google_token($c['google'], true); $out['google'] = ['ok' => true, 'msg' => 'Account di servizio accettato da Google. Il permesso sul sito si verifica al primo invio: serve l’email ' . $c['google']['client_email'] . ' come Proprietario della proprietà Search Console che contiene ' . seo_base() . '/ (Dominio ' . preg_replace('/^www\./i', '', (string)parse_url(seo_base(), PHP_URL_HOST)) . ' oppure prefisso URL ' . seo_base() . '/).']; } catch (RuntimeException $e) { $out['google'] = ['ok' => false, 'msg' => $e->getMessage()]; } }
     if ($c['bing_key'] !== '') {
         [$http, $body, $error] = indexing_http('GET', 'https://ssl.bing.com/webmaster/api.svc/json/GetUrlSubmissionQuota?siteUrl=' . rawurlencode(seo_base()) . '&apikey=' . rawurlencode($c['bing_key']));
         $v = json_decode($body, true);
