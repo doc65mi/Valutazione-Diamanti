@@ -1,7 +1,15 @@
-# Aggiornamento 2.1.56 — Recensioni Google in ordine cronologico
+# Aggiornamento 2.1.56 · Pagina di ringraziamento
 
-- Sul sito compaiono solo le recensioni da 4 e 5 stelle, ordinate dalla più recente alla più vecchia (prima l'ordine era quello "più pertinenti" scelto da Google).
-- Places API (New) fornisce al massimo 5 recensioni scelte da Google. Se sulla stessa chiave è abilitata anche la Places API classica, il sito aggiunge le 5 più recenti (reviews_sort=newest), senza doppioni, fino a 10 schede. Se non è abilitata nulla si rompe: restano le 5 di Places API (New), comunque ordinate per data.
-- Le copie salvate dalle versioni precedenti (senza data) vengono rilette da Google alla prima visita.
+Version: 2.1.56
 
-Dopo il Pull in Plesk: Admin > Privacy e integrazioni > "Prova il collegamento con Google" (rilegge e ripubblica subito home e valutazione).
+- **Pagina «Grazie» (IT) e «Thank you» (EN) rifatta con la grafica della pagina di valutazione**:
+  - stessa intestazione del modulo (logo, Cosa acquistiamo, Chi siamo, FAQ, telefono, ITA/ENG);
+  - riquadro bianco con icona di conferma, scritta «Valutazione gratuita», titolo e numero di riferimento
+    della richiesta evidenziato;
+  - «I prossimi passaggi» nel riquadro scuro numerato 01–03, come «Come funziona» nel modulo;
+  - riquadro «Hai bisogno di aggiungere qualcosa?» con telefono e WhatsApp;
+  - pulsante «Torna al sito» più visibile, a tutta larghezza su smartphone.
+- Corretto il riquadro che prima non aveva margine interno (testo e pulsante attaccati al bordo).
+- I testi restano modificabili dall'editor del sito come prima (stessi campi). L'invio delle email non è cambiato.
+
+Le pagine si rigenerano da sole al primo accesso dopo il Pull.

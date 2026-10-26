@@ -36,7 +36,7 @@ function reviews_fetch_google(string $lang): array {
             'ts'=>(int)strtotime((string)($r['publishTime']??''))];
     }
     // Places API (New) dà solo le 5 recensioni "più pertinenti": se la chiave abilita anche la Places API classica
-    // si aggiungono le 5 più recenti (reviews_sort=newest). Se non è abilitata si resta con le prime (2.1.56).
+    // si aggiungono le 5 più recenti (reviews_sort=newest). Se non è abilitata si resta con le prime (2.1.57).
     foreach(reviews_fetch_newest($lang) as $r){$dup=false;foreach($reviews as $x)if($x['author']===$r['author']&&abs($x['ts']-$r['ts'])<86400){$dup=true;break;}if(!$dup)$reviews[]=$r;}
     $reviews=reviews_sorted($reviews);
     return ['name'=>mb_substr((string)($v['displayName']['text']??''),0,150),'rating'=>round((float)($v['rating']??0),1),'count'=>(int)($v['userRatingCount']??0),'url'=>reviews_url($v['googleMapsUri']??''),
@@ -57,7 +57,7 @@ function reviews_fetch_newest(string $lang): array {
     }
     return $out;
 }
-/** Solo 4 e 5 stelle, dalla più recente alla più vecchia (2.1.56). */
+/** Solo 4 e 5 stelle, dalla più recente alla più vecchia (2.1.57). */
 function reviews_sorted(array $list): array {
     $list=array_values(array_filter($list,fn($r)=>(int)($r['rating']??0)>=REVIEWS_MIN_RATING));
     usort($list,fn($a,$b)=>(int)($b['ts']??0)<=>(int)($a['ts']??0));
