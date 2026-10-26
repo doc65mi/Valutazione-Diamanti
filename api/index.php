@@ -33,7 +33,7 @@ try {
     if(str_starts_with($action,'blog-')){admin_user();require_once __DIR__.'/../PHP di sistema/blog-api.php';blog_api($action,$method,$input);}
     if($action==='settings'&&$method==='GET'){admin_user();$s=settings();$s['recaptcha_secret_set']=$s['recaptcha_secret']!=='';$s['smtp_pass_set']=$s['smtp_pass']!=='';unset($s['recaptcha_secret'],$s['smtp_pass']);$s['indexnow_last']=indexnow_status()['last'];$s['reviews_api_key_set']=$s['reviews_api_key']!=='';unset($s['reviews_api_key']);$s['reviews_status']=reviews_status();foreach(customer_email_defaults() as $k=>$v)if(trim((string)$s[$k])==='')$s[$k]=$v;respond(['settings'=>$s]);}
     if($action==='email-settings'&&$method==='POST'){admin_user();email_settings_save($input);audit('settings','email');respond(['ok'=>true]);}
-    if($action==='email-test'&&$method==='POST'){admin_user();rate('email-test',20,3600);$kind=$input['kind']??'test';if(!in_array($kind,['test','customer_it','customer_en'],true))fail('Tipo di prova non valido.');send_test_email(is_string($input['to']??null)?trim($input['to']):'',$kind);audit('email-test',$kind);respond(['ok'=>true]);}
+    if($action==='email-test'&&$method==='POST'){admin_user();rate('email-test',20,3600);$kind=$input['kind']??'test';if(!in_array($kind,['test','customer_it','customer_en'],true))fail('Tipo di prova non valido.');$r=send_test_email(is_string($input['to']??null)?trim($input['to']):'',$kind);audit('email-test',$kind.($r['ok']?'':' failed'));respond($r);}
     if($action==='settings'&&$method==='POST'){
         admin_user();$lock=fopen(ROOT.'/data/build.lock','c');if(!$lock||!flock($lock,LOCK_EX))throw new RuntimeException('Build occupata.');
         try{

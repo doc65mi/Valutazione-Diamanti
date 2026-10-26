@@ -38,7 +38,7 @@ function queue_request_emails(string $id,array $f,string $lang,int $attachments)
     $q->execute([$id,'customer',$f['email'],$customerSubject,$customerBody,$manager]);
 }
 /** Invia un messaggio con PHP mail() o con SMTP autenticato. Restituisce [esito, errore]. */
-function mail_deliver(array $s,string $to,string $subject,string $body,string $replyTo,?callable $transport=null): array {
+function mail_deliver(array $s,string $to,string $subject,string $body,string $replyTo,?callable $transport=null,?array &$log=null): array {
     $from=$s['mail_from'];
     if(!filter_var($from,FILTER_VALIDATE_EMAIL))return [false,'Indirizzo del mittente mancante o non valido.'];
     if(!filter_var($to,FILTER_VALIDATE_EMAIL)||!filter_var($replyTo,FILTER_VALIDATE_EMAIL))return [false,'Indirizzo del destinatario non valido.'];
@@ -51,23 +51,33 @@ function mail_deliver(array $s,string $to,string $subject,string $body,string $r
     if(($s['mail_transport']??'php')==='smtp'){
         $domain=substr(strrchr($from,'@'),1);
         $headers=['Date'=>date(DATE_RFC2822),'Message-ID'=>'<'.bin2hex(random_bytes(12)).'@'.$domain.'>','To'=>'<'.$to.'>','Subject'=>$encodedSubject]+$headers;
-        try{smtp_send($s,$from,$to,$headers,$encodedBody);return [true,''];}catch(RuntimeException $e){return [false,$e->getMessage()];}
+        try{smtp_send($s,$from,$to,$headers,$encodedBody,$log);return [true,''];}catch(RuntimeException $e){if(is_array($log))$log[]='! '.$e->getMessage();return [false,$e->getMessage()];}
     }
     // Il mittente di busta (-f) allineato al From migliora la consegna (SPF) sui server Plesk.
+    if(is_array($log))$log[]='* Funzione mail di PHP, sendmail_path: '.((string)ini_get('sendmail_path')?:'(non impostato)');
+    error_clear_last();
     $ok=preg_match('/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+$/',$from)?@mail($to,$encodedSubject,$encodedBody,$headers,'-f'.$from):@mail($to,$encodedSubject,$encodedBody,$headers);
+    if(is_array($log))$log[]=$ok?'* mail() ha accettato il messaggio: da qui la consegna dipende dal server di posta (vedi il log di Plesk).':'! mail() ha rifiutato il messaggio'.(($e=error_get_last())?': '.$e['message']:'.');
     return [$ok,$ok?'':'Il server non ha accettato il messaggio (funzione mail di PHP). Prova l’invio SMTP con una casella email del dominio.'];
 }
-function smtp_send(array $s,string $from,string $to,array $headers,string $body): void {
+/** Invio SMTP. Se $log è un array vi annota il dialogo col server (password e contenuto del messaggio esclusi), per il debug dell'email di prova. */
+function smtp_send(array $s,string $from,string $to,array $headers,string $body,?array &$log=null): void {
     $host=$s['smtp_host'];$port=(int)$s['smtp_port'];$secure=$s['smtp_secure'];
     if($host===''||$port<1)throw new RuntimeException('Server SMTP non configurato.');
     $verify=(bool)($s['smtp_verify']??true);
     $ctx=stream_context_create(['ssl'=>['peer_name'=>$host,'verify_peer'=>$verify,'verify_peer_name'=>$verify,'allow_self_signed'=>!$verify]]);
+    $note=function(string $line) use(&$log): void {if(is_array($log))$log[]=$line;};
+    $note('* Server '.$host.':'.$port.', sicurezza '.$secure.', verifica certificato '.($verify?'sì':'no'));
+    if(is_array($log)){$ips=@gethostbynamel($host);$note($ips?'* '.$host.' risolve in '.implode(', ',$ips):'! Il nome '.$host.' non risolve in nessun indirizzo IP (DNS).');}
+    error_clear_last();
     $fp=@stream_socket_client(($secure==='ssl'?'ssl://':'tcp://').$host.':'.$port,$errno,$errstr,10,STREAM_CLIENT_CONNECT,$ctx);
+    if(!$fp&&($e=error_get_last()))$note('! '.preg_replace('/^stream_socket_client\(\): /','',$e['message']));
     if(!$fp)throw new RuntimeException("Connessione al server SMTP $host:$port non riuscita".($errstr?": $errstr":'.').($secure==='ssl'&&!$errstr?' Controlla porta e certificato.':''));
     stream_set_timeout($fp,20);
     $read=function() use($fp): string {$all='';while(($line=fgets($fp,1024))!==false){$all.=$line;if(strlen($line)<4||$line[3]===' ')break;}return $all;};
-    $cmd=function(?string $line,array $codes,string $step) use($fp,$read): string {
-        if($line!==null)fwrite($fp,$line."\r\n");$reply=$read();
+    $cmd=function(?string $line,array $codes,string $step,?string $shown=null) use($fp,$read,$note): string {
+        if($line!==null){fwrite($fp,$line."\r\n");$note('C: '.($shown??$line));}$reply=$read();
+        foreach(preg_split('/\r?\n/',rtrim($reply)) as $r)$note('S: '.($r!==''?$r:'(nessuna risposta)'));
         if(!in_array((int)substr($reply,0,3),$codes,true))throw new RuntimeException("Errore SMTP ($step): ".(trim($reply)!==''?trim(preg_replace('/\s+/',' ',$reply)):'nessuna risposta dal server.'));
         return $reply;
     };
@@ -77,18 +87,21 @@ function smtp_send(array $s,string $from,string $to,array $headers,string $body)
         if($secure==='tls'){
             $cmd('STARTTLS',[220],'STARTTLS');
             $method=STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT|(defined('STREAM_CRYPTO_METHOD_TLSv1_3_CLIENT')?STREAM_CRYPTO_METHOD_TLSv1_3_CLIENT:0);
-            if(!@stream_socket_enable_crypto($fp,true,$method))throw new RuntimeException('Connessione cifrata (STARTTLS) non riuscita: controlla il nome del server o disattiva la verifica del certificato.');
+            error_clear_last();
+            if(!@stream_socket_enable_crypto($fp,true,$method)){if($e=error_get_last())$note('! '.preg_replace('/^stream_socket_enable_crypto\(\): /','',$e['message']));throw new RuntimeException('Connessione cifrata (STARTTLS) non riuscita: controlla il nome del server o disattiva la verifica del certificato.');}
+            $note('* Connessione cifrata attiva ('.(stream_get_meta_data($fp)['crypto']['protocol']??'TLS').')');
             $caps=$cmd($ehlo,[250],'EHLO');
         }
+        if($s['smtp_user']==='')$note('* Nessun utente SMTP: invio senza autenticazione.');
         if($s['smtp_user']!==''){
-            if(preg_match('/AUTH[ =][^\r\n]*\bPLAIN\b/i',$caps))$cmd('AUTH PLAIN '.base64_encode("\0".$s['smtp_user']."\0".$s['smtp_pass']),[235],'autenticazione');
-            else{$cmd('AUTH LOGIN',[334],'autenticazione');$cmd(base64_encode($s['smtp_user']),[334],'autenticazione');$cmd(base64_encode($s['smtp_pass']),[235],'autenticazione: utente o password non corretti');}
+            if(preg_match('/AUTH[ =][^\r\n]*\bPLAIN\b/i',$caps))$cmd('AUTH PLAIN '.base64_encode("\0".$s['smtp_user']."\0".$s['smtp_pass']),[235],'autenticazione','AUTH PLAIN [utente '.$s['smtp_user'].', password nascosta]');
+            else{$cmd('AUTH LOGIN',[334],'autenticazione');$cmd(base64_encode($s['smtp_user']),[334],'autenticazione','[utente '.$s['smtp_user'].']');$cmd(base64_encode($s['smtp_pass']),[235],'autenticazione: utente o password non corretti','[password nascosta]');}
         }
         $cmd('MAIL FROM:<'.$from.'>',[250],'mittente');$cmd('RCPT TO:<'.$to.'>',[250,251],'destinatario');$cmd('DATA',[354],'DATA');
         $message='';foreach($headers as $k=>$v)$message.="$k: $v\r\n";$message.="\r\n".$body;
         $message=preg_replace('/^\./m','..',$message);
-        $cmd(rtrim($message,"\r\n")."\r\n.",[250],'invio del messaggio');
-        @fwrite($fp,"QUIT\r\n");
+        $cmd(rtrim($message,"\r\n")."\r\n.",[250],'invio del messaggio','[intestazioni e testo del messaggio, '.strlen($message).' byte]');
+        @fwrite($fp,"QUIT\r\n");$note('C: QUIT');
     } finally {fclose($fp);}
 }
 function send_queued_emails(?string $requestId=null,?callable $transport=null): void {
@@ -106,7 +119,7 @@ function send_queued_emails(?string $requestId=null,?callable $transport=null): 
     } finally {flock($lock,LOCK_UN);fclose($lock);}
 }
 /** Email di prova dalla scheda Email: verifica la configurazione o mostra il testo di conferma con dati d'esempio. */
-function send_test_email(string $to,string $kind): void {
+function send_test_email(string $to,string $kind): array {
     $s=settings();if(!filter_var($to,FILTER_VALIDATE_EMAIL))fail('Inserisci un indirizzo valido per la prova.');
     $replyTo=$s['mail_to']?:$s['legal_email'];
     if($kind==='customer_it'||$kind==='customer_en'){
@@ -117,6 +130,6 @@ function send_test_email(string $to,string $kind): void {
         $subject='Email di prova — Valutazione Diamanti';
         $body="Questa è un’email di prova inviata dall’area amministrativa del sito.\n\nMittente: {$s['mail_from']}\nMetodo di invio: $how\n\nSe la ricevi (controlla anche la cartella Spam), la configurazione funziona.\n";
     }
-    [$ok,$err]=mail_deliver($s,$to,$subject,$body,$replyTo);
-    if(!$ok)fail('Invio di prova non riuscito. '.$err);
+    $log=[];[$ok,$err]=mail_deliver($s,$to,$subject,$body,$replyTo,null,$log);
+    return ['ok'=>$ok,'error'=>$ok?'':'Invio di prova non riuscito. '.$err,'log'=>$log];
 }
