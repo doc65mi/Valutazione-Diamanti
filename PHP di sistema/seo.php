@@ -37,6 +37,8 @@ function seo_store(): array {
     if(trim($s['legal_company'])!==''&&$s['legal_company']!=='La Diamanteria')$store['legalName']=$s['legal_company'];
     $vat=preg_replace('/\s+/','',$s['legal_vat']);if($vat!=='')$store['vatID']=preg_match('/^\d{11}$/',$vat)?'IT'.$vat:$vat;
     if(filter_var($s['legal_email'],FILTER_VALIDATE_EMAIL))$store['email']=$s['legal_email'];
+    if(preg_match('/^(-?[\d.]+), (-?[\d.]+)$/',(string)($s['store_geo']??''),$g))$store['geo']=['@type'=>'GeoCoordinates','latitude'=>(float)$g[1],'longitude'=>(float)$g[2]];
+    $hours=array_values(array_filter(array_map('store_hours_row',array_filter(array_map('trim',explode(';',(string)($s['store_hours']??'')))))));if($hours)$store['openingHoursSpecification']=$hours;
     return $store;
 }
 /** Immagine per WhatsApp, Facebook e LinkedIn: quella scelta in Privacy e integrazioni, poi uploads/site/og-cover.jpg, poi la prima foto della pagina. */
