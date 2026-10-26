@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-const APP_VERSION = '2.1.53';
+const APP_VERSION = '2.1.54';
 const ROOT = __DIR__ . '/..';
 const PAGE_SLUGS = ['home', 'acquistiamo', 'chisiamo', 'faq', 'valutazione', 'grazie', 'privacy', 'cookie'];
 // Indirizzi inglesi per le pagine EN (2.1.52, audit): /en/sell-diamonds.html ecc. I vecchi nomi italiani restano come rimandi.
@@ -196,7 +196,7 @@ function build_html(string $slug,string $lang,array $c): string {
         $languageNav->setAttribute('class','language-nav header-languages');$container->appendChild($languageNav);
     }
     $toolbar=$doc->createElement('nav');$toolbar->setAttribute('class','mobile-contact-toolbar');$toolbar->setAttribute('aria-label',$lang==='en'?'Quick contact':'Contatti rapidi');
-    $links=[['valutazione.html',$lang==='en'?'Valuation':'Valutazione','◇'],['https://wa.me/393929664987','WhatsApp',''],['mailto:sl@ladiamanteria.com','Email','✉'],['tel:+3902466891',$lang==='en'?'Call':'Telefono','☎']];
+    $links=[['valutazione.html',$lang==='en'?'Valuation':'Valutazione','◇'],['https://wa.me/393929664987','WhatsApp',''],['mailto:'.(trim((string)(settings()['store_email']??''))?:'sl@ladiamanteria.com'),'Email','✉'],['tel:+3902466891',$lang==='en'?'Call':'Telefono','☎']];
     foreach($links as [$href,$label,$icon]){
         $a=$doc->createElement('a');$a->setAttribute('href',$href);
         if(str_starts_with($href,'https:')){$a->setAttribute('target','_blank');$a->setAttribute('rel','noopener');}
