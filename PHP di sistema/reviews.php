@@ -32,10 +32,36 @@ function reviews_fetch_google(string $lang): array {
         $author=$r['authorAttribution']??[];
         $reviews[]=['author'=>mb_substr((string)($author['displayName']??''),0,100),'author_url'=>reviews_url($author['uri']??''),'photo'=>reviews_photo($author['photoUri']??''),'rating'=>max(1,min(5,(int)($r['rating']??0))),
             'time'=>mb_substr((string)($r['relativePublishTimeDescription']??''),0,60),'text'=>mb_substr($text,0,2000),'url'=>reviews_url($r['googleMapsUri']??''),
-            'translated'=>isset($r['originalText']['languageCode'],$r['text']['languageCode'])&&$r['originalText']['languageCode']!==$r['text']['languageCode']];
+            'translated'=>isset($r['originalText']['languageCode'],$r['text']['languageCode'])&&$r['originalText']['languageCode']!==$r['text']['languageCode'],
+            'ts'=>(int)strtotime((string)($r['publishTime']??''))];
     }
+    // Places API (New) dà solo le 5 recensioni "più pertinenti": se la chiave abilita anche la Places API classica
+    // si aggiungono le 5 più recenti (reviews_sort=newest). Se non è abilitata si resta con le prime (2.1.56).
+    foreach(reviews_fetch_newest($lang) as $r){$dup=false;foreach($reviews as $x)if($x['author']===$r['author']&&abs($x['ts']-$r['ts'])<86400){$dup=true;break;}if(!$dup)$reviews[]=$r;}
+    $reviews=reviews_sorted($reviews);
     return ['name'=>mb_substr((string)($v['displayName']['text']??''),0,150),'rating'=>round((float)($v['rating']??0),1),'count'=>(int)($v['userRatingCount']??0),'url'=>reviews_url($v['googleMapsUri']??''),
         'write_url'=>'https://search.google.com/local/writereview?placeid='.rawurlencode($s['reviews_place_id']),'reviews'=>$reviews];
+}
+/** Le 5 recensioni più recenti dalla Places API classica; array vuoto se la chiave non la abilita. */
+function reviews_fetch_newest(string $lang): array {
+    $s=settings();
+    $ch=curl_init('https://maps.googleapis.com/maps/api/place/details/json?'.http_build_query(['place_id'=>$s['reviews_place_id'],'fields'=>'reviews','reviews_sort'=>'newest','language'=>$lang,'key'=>$s['reviews_api_key']]));
+    curl_setopt_array($ch,[CURLOPT_RETURNTRANSFER=>true,CURLOPT_CONNECTTIMEOUT=>5,CURLOPT_TIMEOUT=>10,CURLOPT_PROTOCOLS=>CURLPROTO_HTTPS,CURLOPT_HTTPHEADER=>['Accept: application/json','Referer: '.seo_base().'/']]);
+    $v=json_decode((string)curl_exec($ch),true);curl_close($ch);
+    if(!is_array($v)||($v['status']??'')!=='OK')return [];
+    $out=[];
+    foreach((array)($v['result']['reviews']??[]) as $r){
+        if((int)($r['rating']??0)<REVIEWS_MIN_RATING)continue;
+        $out[]=['author'=>mb_substr((string)($r['author_name']??''),0,100),'author_url'=>reviews_url($r['author_url']??''),'photo'=>reviews_photo($r['profile_photo_url']??''),'rating'=>max(1,min(5,(int)$r['rating'])),
+            'time'=>mb_substr((string)($r['relative_time_description']??''),0,60),'text'=>mb_substr(trim((string)($r['text']??'')),0,2000),'url'=>'','translated'=>!empty($r['translated']),'ts'=>(int)($r['time']??0)];
+    }
+    return $out;
+}
+/** Solo 4 e 5 stelle, dalla più recente alla più vecchia (2.1.56). */
+function reviews_sorted(array $list): array {
+    $list=array_values(array_filter($list,fn($r)=>(int)($r['rating']??0)>=REVIEWS_MIN_RATING));
+    usort($list,fn($a,$b)=>(int)($b['ts']??0)<=>(int)($a['ts']??0));
+    return array_slice($list,0,10);
 }
 /** Solo link https verso Google: tutto il resto viene scartato. */
 function reviews_url(mixed $url): string {
@@ -55,13 +81,14 @@ function reviews_cached(string $lang): ?array {
     return reviews_min($c['data']);
 }
 /** Anche le copie salvate prima della 2.1.36 mostrano solo le recensioni da 4 stelle in su. */
-function reviews_min(array $d): array { $d['reviews']=array_values(array_filter((array)($d['reviews']??[]),fn($r)=>(int)($r['rating']??0)>=REVIEWS_MIN_RATING));return $d; }
+function reviews_min(array $d): array { $d['reviews']=reviews_sorted((array)($d['reviews']??[]));return $d; }
 /** Dati per le pagine pubbliche: copia in cache se recente, altrimenti nuova lettura da Google (una sola alla volta). */
 function reviews_public(string $lang): ?array {
     $s=settings();if(!$s['reviews_enabled'])return null;
     $path=reviews_cache_path($lang);$cache=is_file($path)?json_decode((string)file_get_contents($path),true):null;
     if(!is_array($cache)||($cache['place_id']??'')!==$s['reviews_place_id'])$cache=null;
     $age=$cache?time()-(int)($cache['fetched_at']??0):PHP_INT_MAX;
+    if($cache&&!empty($cache['data']['reviews'])&&!isset($cache['data']['reviews'][0]['ts']))$age=max($age,REVIEWS_TTL+1); // copia senza date: si rilegge subito
     $retry=$cache&&isset($cache['failed_at'])&&time()-(int)$cache['failed_at']<REVIEWS_RETRY;
     if($age>REVIEWS_TTL&&!$retry){
         $lock=fopen(ROOT.'/data/reviews.lock','c');
