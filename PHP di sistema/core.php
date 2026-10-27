@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-const APP_VERSION = '2.1.64';
+const APP_VERSION = '2.1.65';
 const ROOT = __DIR__ . '/..';
 const PAGE_SLUGS = ['home', 'acquistiamo', 'chisiamo', 'faq', 'valutazione', 'grazie', 'privacy', 'cookie'];
 // Indirizzi inglesi per le pagine EN (2.1.52, audit): /en/sell-diamonds.html ecc. I vecchi nomi italiani restano come rimandi.
@@ -325,7 +325,8 @@ function seo_indexes(): void {
     if($base&&!empty($posts)){$llms.="\n## Blog articles\n";foreach(array_slice($posts,0,100) as $post)$llms.='- ['.trim(str_replace(['[',']','(',')',"\r","\n"],' ',(string)$post['title'])).']('.blog_article_url(['base_url'=>$base.'/blog'],$post).")\n";}
     atomic_write(ROOT.'/sitemap.xml',$xml.'</urlset>',0644);atomic_write(ROOT.'/llms.txt',$llms,0644);
     // robots.txt essenziale (2.1.48, audit): le cartelle di sistema rispondono già 403, qui restano solo amministrazione e API.
-    $robots="User-agent: *\nDisallow: /admin/\nDisallow: /api/\nAllow: /\n";
+    // 2.1.65: la prima riga dice chi l'ha scritto, così online si distingue subito da un robots.txt messo dal server (Plesk).
+    $robots="# robots.txt di Valutazione Diamanti, generato dal sito (versione ".APP_VERSION.")\nUser-agent: *\nDisallow: /admin/\nDisallow: /api/\nAllow: /\n";
     if($base)$robots.="\nSitemap: ".$base."/sitemap.xml\n";atomic_write(ROOT.'/robots.txt',$robots,0644);
     seo_verification_files();
     mark_published();
