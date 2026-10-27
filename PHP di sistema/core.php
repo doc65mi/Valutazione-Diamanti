@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-const APP_VERSION = '2.1.65';
+const APP_VERSION = '2.1.66';
 const ROOT = __DIR__ . '/..';
 const PAGE_SLUGS = ['home', 'acquistiamo', 'chisiamo', 'faq', 'valutazione', 'grazie', 'privacy', 'cookie'];
 // Indirizzi inglesi per le pagine EN (2.1.52, audit): /en/sell-diamonds.html ecc. I vecchi nomi italiani restano come rimandi.
@@ -208,6 +208,9 @@ function build_html(string $slug,string $lang,array $c): string {
     if(!$description){$description=$doc->createElement('meta');$description->setAttribute('name','description');$doc->getElementsByTagName('head')->item(0)->appendChild($description);}
     $description->setAttribute('content',$c['meta']['description']);
     foreach($xp->query('//*') as $el) { $remove=[]; foreach($el->attributes as $a) if(str_starts_with($a->name,'data-om-')) $remove[]=$a->name; foreach($remove as $a) $el->removeAttribute($a); }
+    // Valutazione e grazie usano la stessa intestazione delle altre pagine: logo, voci e pulsante come in home (2.1.66).
+    $quoteHeader=$xp->query('//header[contains(@class,"quote-header")]')->item(0);
+    if($quoteHeader)$quoteHeader->parentNode->replaceChild($doc->importNode(site_header($lang),true),$quoteHeader);
     $header=$doc->getElementsByTagName('header')->item(0);
     $languageNav=$xp->query('//*[contains(concat(" ",normalize-space(@class)," ")," language-nav ")]')->item(0);
     if($header&&$languageNav){
@@ -263,6 +266,17 @@ function cookie_services_list(DOMDocument $doc,DOMXPath $xp,string $lang): void 
     $cats=['necessary'=>$en?'Necessary':'Necessari','analytics'=>$en?'Analytics':'Analisi','marketing'=>'Marketing'];
     foreach((array)($s['custom_codes']??[]) as $code)if(!empty($code['enabled'])&&($code['code']??'')!=='')$add($code['name'].' — '.($en?'configured':'configurato').' ('.($cats[$code['category']]??$code['category']).')');
 }
+/** Intestazione della home con i testi pubblicati (voci del menu modificabili dall'editor della home). */
+function site_header(string $lang): DOMElement {
+    $doc=template_doc('home',$lang);$xp=new DOMXPath($doc);$c=content('home',$lang);$header=$doc->getElementsByTagName('header')->item(0);
+    foreach(iterator_to_array($xp->query('.//*[@data-om-slot]',$header)) as $el){
+        $v=$c['slots'][$el->getAttribute('data-om-slot')]??null;$type=$el->getAttribute('data-om-type');
+        if($type==='text'&&is_string($v))$el->textContent=$v;
+        if($type==='button'&&is_array($v)){$el->setAttribute('href',$v['href']);$el->textContent=$v['label'];}
+        foreach(['data-om-slot','data-om-type','data-om-label','data-om-max','data-om-role'] as $attr)$el->removeAttribute($attr);
+    }
+    return $header;
+}
 // Schede della sezione Guide in home (2.1.43): la prima scheda del template fa da modello (data, titolo, testo, «Leggi →»)
 // e viene ripetuta per i 3 articoli pubblicati più recenti nella lingua della pagina, quelli in evidenza per primi.
 // Senza blog attivo o senza articoli restituisce false e la sezione sparisce. Le schede non sono modificabili dall'editor.
@@ -306,7 +320,8 @@ function publish(string $slug,string $lang,array $c): void {
 }
 function seo_indexes(): void {
     // La home mostra gli ultimi articoli (2.1.43): ogni modifica al blog passa di qui e la rigenera.
-    foreach(['it','en'] as $lang)publish('home',$lang,content('home',$lang));
+    // 2.1.66: valutazione e grazie riprendono l'intestazione della home, quindi si rigenerano con lei.
+    foreach(['home','valutazione','grazie'] as $slug)foreach(['it','en'] as $lang)publish($slug,$lang,content($slug,$lang));
     $s=settings();$base=seo_base();$xml='<?xml version="1.0" encoding="UTF-8"?>'."\n".'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">';
     $llms="# Valutazione Diamanti\n\nDirect buying and free valuations of natural diamonds, jewellery and selected watches by La Diamanteria in Milan.\n\n## Pages\n";
     $hiddenPages=hidden_page_slugs();foreach(PAGE_SLUGS as $slug)if($slug!=='grazie'&&!in_array($slug,$hiddenPages,true))foreach(['it','en'] as $lang){$url=$base.'/'.$lang.'/'.page_name($slug,$lang).'.html';$c=content($slug,$lang);if($base)$xml.='<url><loc>'.htmlspecialchars($url,ENT_XML1).'</loc><lastmod>'.page_lastmod($slug,$lang,$c).'</lastmod></url>';$llms.='- ['.$c['meta']['title'].']('.$url.")\n";}
