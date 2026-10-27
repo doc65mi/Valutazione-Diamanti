@@ -35,7 +35,10 @@ function legal_footer_text(string $lang): string {
     if($company!==''&&$company!=='La Diamanteria')$text.=$en?', a brand of '.$company:', marchio di '.$company;
     $parts=[];
     if(legal_has_registered_office())$parts[]=($en?'Registered office: ':'Sede legale: ').trim($s['legal_address']);
-    foreach(['legal_vat'=>$en?'VAT no. ':'P.IVA ','legal_rea'=>'REA ','legal_license'=>$en?'Precious metals licence (art. 127 TULPS) no. ':'Licenza di Pubblica Sicurezza per il commercio di preziosi (art. 127 TULPS) n. '] as $key=>$label)if(trim((string)($s[$key]??''))!=='')$parts[]=$label.trim($s[$key]);
+    foreach(['legal_vat'=>$en?'VAT no. ':'P.IVA ','legal_rea'=>'REA '] as $key=>$label)if(trim((string)($s[$key]??''))!=='')$parts[]=$label.trim($s[$key]);
+    // Licenza di Pubblica Sicurezza (2.1.61): la frase c'è sempre, il numero solo se compilato in Dati del titolare.
+    $license=trim((string)($s['legal_license']??''));
+    $parts[]=($en?'Holders of a Public Security licence, authorised by the Questura (Police Headquarters)':'Titolari di licenza di Pubblica Sicurezza, autorizzati dalla Questura').($license!==''?($en?' (art. 127 TULPS no. ':' (art. 127 TULPS n. ').$license.')':'');
     $parts[]='Via Vincenzo Monti 47, 20123 Milano · +39 02 466 891';
     return rtrim($text,'.').'. '.implode(' · ',$parts);
 }

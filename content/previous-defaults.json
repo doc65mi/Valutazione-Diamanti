@@ -16,6 +16,12 @@
           "label": "+39 02 466891",
           "href": "tel:+3902466891"
         }
+      ],
+      "acquistiamo-contenuto-056": [
+        {
+          "label": "sl@ladiamanteria.com",
+          "href": "mailto:sl@ladiamanteria.com"
+        }
       ]
     },
     "meta": {
@@ -47,6 +53,12 @@
           "label": "+39 02 466891",
           "href": "tel:+3902466891"
         }
+      ],
+      "acquistiamo-contenuto-056": [
+        {
+          "label": "sl@ladiamanteria.com",
+          "href": "mailto:sl@ladiamanteria.com"
+        }
       ]
     },
     "meta": {
@@ -72,6 +84,12 @@
       ],
       "chisiamo-contenuto-024": [
         "Since 2009, we have welcomed clients by appointment at Via Vincenzo Monti 47 in Milan. Here we can examine your item in person and make you an offer directly. If you accept, we pay by bank transfer."
+      ],
+      "chisiamo-contenuto-043": [
+        {
+          "label": "sl@ladiamanteria.com",
+          "href": "mailto:sl@ladiamanteria.com"
+        }
       ]
     },
     "meta": {
@@ -97,6 +115,12 @@
       ],
       "chisiamo-contenuto-024": [
         "Dal 2009 riceviamo su appuntamento in Via Vincenzo Monti 47, Milano. Qui possiamo esaminare il bene di persona e formulare la nostra offerta diretta. Se la accetti, paghiamo con bonifico tracciabile."
+      ],
+      "chisiamo-contenuto-043": [
+        {
+          "label": "sl@ladiamanteria.com",
+          "href": "mailto:sl@ladiamanteria.com"
+        }
       ]
     },
     "meta": {
@@ -159,6 +183,12 @@
           "label": "+39 02 466891",
           "href": "tel:+3902466891"
         }
+      ],
+      "faq-contenuto-040": [
+        {
+          "label": "sl@ladiamanteria.com",
+          "href": "mailto:sl@ladiamanteria.com"
+        }
       ]
     },
     "meta": {
@@ -203,6 +233,12 @@
         {
           "label": "+39 02 466891",
           "href": "tel:+3902466891"
+        }
+      ],
+      "faq-contenuto-040": [
+        {
+          "label": "sl@ladiamanteria.com",
+          "href": "mailto:sl@ladiamanteria.com"
         }
       ]
     },
@@ -263,6 +299,12 @@
       ],
       "home-contenuto-094": [
         "For an immediate valuation, message us on WhatsApp or call +39 02 466891."
+      ],
+      "home-contenuto-132": [
+        {
+          "label": "sl@ladiamanteria.com",
+          "href": "mailto:sl@ladiamanteria.com"
+        }
       ]
     },
     "meta": {
@@ -320,6 +362,12 @@
       ],
       "home-contenuto-073": [
         "Una storia familiare documentata nel commercio dei diamanti."
+      ],
+      "home-contenuto-132": [
+        {
+          "label": "sl@ladiamanteria.com",
+          "href": "mailto:sl@ladiamanteria.com"
+        }
       ]
     },
     "meta": {
@@ -370,6 +418,15 @@
       ],
       "valutazione-contenuto-017": [
         "Describe your other items"
+      ],
+      "valutazione-contenuto-038": [
+        "La Diamanteria uses the contact details and attachments you submit to assess your item and respond to your valuation enquiry. Attachments can only be accessed by authorised administrators. Please do not upload identity documents: these are required only if you decide to sell to us. For information about how your data is used, contact sl@ladiamanteria.com."
+      ],
+      "valutazione-contenuto-044": [
+        {
+          "label": "sl@ladiamanteria.com",
+          "href": "mailto:sl@ladiamanteria.com"
+        }
       ]
     }
   },
@@ -391,6 +448,15 @@
       ],
       "valutazione-contenuto-017": [
         "Descrivi gli altri oggetti"
+      ],
+      "valutazione-contenuto-038": [
+        "La Diamanteria utilizza i contatti e gli allegati che invii per esaminare l’oggetto e rispondere alla richiesta di valutazione. Gli allegati sono accessibili solo agli amministratori autorizzati. Non caricare documenti d’identità: saranno richiesti solo se concludiamo la vendita. Per informazioni sul trattamento dei dati contatta sl@ladiamanteria.com."
+      ],
+      "valutazione-contenuto-044": [
+        {
+          "label": "sl@ladiamanteria.com",
+          "href": "mailto:sl@ladiamanteria.com"
+        }
       ]
     }
   }
