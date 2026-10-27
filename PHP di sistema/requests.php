@@ -27,7 +27,9 @@ function submit_request(): never {
     } else {
         $gem=$f['cat']==='gemstone';
         // 2.1.55: stesse fasce di peso per diamanti e pietre preziose; colore, purezza e numero di certificato facoltativi.
-        if(!in_array($f['ct'],['1-2','2-3','3-5','over-5','unknown'],true)) $error('Seleziona un peso valido. Acquistiamo pietre da 1 carato in su.','Select a valid weight. We buy stones of one carat or more.');
+        // 2.1.67: «pietre piccole, sotto 1 ct» solo per i gioielli con più pietre.
+        $small=in_array($f['cat'],['multi-stone','earrings','necklace','bracelet','brooch','other'],true);
+        if(!in_array($f['ct'],array_merge(['1-2','2-3','3-5','over-5','unknown'],$small?['small']:[]),true)) $error('Seleziona un peso valido. Acquistiamo pietre da 1 carato in su.','Select a valid weight. We buy stones of one carat or more.');
         if($f['color']!==''&&!in_array($f['color'],['D','E','F','G','H','I','J','K','L','M','N-Z','fancy','unknown'],true)) $error('Seleziona un colore valido.','Please select a valid colour.');
         if($f['clarity']!==''&&!in_array($f['clarity'],['FL','IF','VVS1','VVS2','VS1','VS2','SI1','SI2','I1','I2','I3','unknown'],true)) $error('Seleziona una purezza valida.','Please select a valid clarity grade.');
         if($gem&&!in_array($f['stone'],['ruby','sapphire','emerald','other'],true)) $error('Seleziona il tipo di pietra.','Please select the gemstone type.');

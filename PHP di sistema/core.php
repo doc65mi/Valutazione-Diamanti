@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-const APP_VERSION = '2.1.66';
+const APP_VERSION = '2.1.67';
 const ROOT = __DIR__ . '/..';
 const PAGE_SLUGS = ['home', 'acquistiamo', 'chisiamo', 'faq', 'valutazione', 'grazie', 'privacy', 'cookie'];
 // Indirizzi inglesi per le pagine EN (2.1.52, audit): /en/sell-diamonds.html ecc. I vecchi nomi italiani restano come rimandi.
@@ -117,9 +117,14 @@ function phone_text_nodes(DOMXPath $xp): void {
 }
 // Testi rimasti in inglese o promesse diverse nelle pagine già modificate dall'editor (2.1.63, audit): corretti alla pubblicazione.
 // 2.1.64: su scelta del titolare il pagamento promesso è ovunque «bonifico istantaneo e tracciabile».
-const TEXT_FIXES=['it'=>['~^Worldwide$~u'=>'Nel mondo','~\\b([Bb])onifico (?:istantaneo|tracciabile)(?! e tracciabile)~u'=>'$1onifico istantaneo e tracciabile'],
+const TEXT_FIXES=['it'=>['~^Worldwide$~u'=>'Nel mondo','~\\b([Bb])onifico (?:bancario )?(?:istantaneo|tracciabile)(?!,? (?:e )?tracciabile)(?! e istantaneo)~u'=>'$1onifico istantaneo e tracciabile',
+        // 2.1.67: informativa senza dettagli tecnici e con i caratteri ospitati sul server.
+        '~ La pulizia avviene quando si ricevono nuove richieste, si consulta il backend e tramite il comando di manutenzione\\.~u'=>'',
+        '~I caratteri del sito possono essere forniti da Google Fonts, che riceve i dati tecnici della connessione\\.~u'=>'I caratteri del sito sono ospitati sul nostro server: nessun dato viene inviato a Google Fonts.'],
     'en'=>['~\\b([Aa]) (?:instant|traceable) bank transfer~u'=>'$1n instant, traceable bank transfer',
-        '~(?<!instant, )\\b[Tt]raceable bank transfer~u'=>'instant, traceable bank transfer','~\\b[Ii]nstant bank transfer~u'=>'instant, traceable bank transfer','~^instant, traceable bank transfer~u'=>'Instant, traceable bank transfer']];
+        '~(?<!instant, )\\b[Tt]raceable bank transfer~u'=>'instant, traceable bank transfer','~\\b[Ii]nstant bank transfer~u'=>'instant, traceable bank transfer','~^instant, traceable bank transfer~u'=>'Instant, traceable bank transfer',
+        '~ Cleanup runs when new enquiries are received, when the admin inbox is accessed and through the maintenance command\\.~u'=>'',
+        '~Website fonts may be provided by Google Fonts, which receives technical connection data\\.~u'=>'Website fonts are hosted on our own server: no data is sent to Google Fonts.']];
 function text_fix(string $text,string $lang): string { foreach(TEXT_FIXES[$lang]??[] as $from=>$to)$text=preg_replace($from,$to,$text)??$text;return $text; }
 function text_fix_nodes(DOMXPath $xp,string $lang): void {
     foreach($xp->query('//body//text()[not(ancestor::script) and not(ancestor::style)]') as $node){$t=trim($node->nodeValue);$fixed=text_fix($t,$lang);if($fixed!==$t)$node->nodeValue=str_replace($t,$fixed,$node->nodeValue);}

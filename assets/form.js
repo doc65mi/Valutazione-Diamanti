@@ -11,6 +11,8 @@ function update(){
  for(const group of form.querySelectorAll('[data-kind]')){const kind=group.dataset.kind;const on=kind==='watch'?watch:kind==='gemstone'?gem:kind==='diamond'?!watch&&!gem:!watch;group.hidden=!on;for(const f of group.querySelectorAll('input,select'))f.disabled=!on;}
  // 2.1.55: stesse fasce di peso per diamanti e pietre preziose; descrizione degli altri oggetti facoltativa;
  // il numero di certificato compare solo con un certificato GIA, HRD o IGI.
+ // 2.1.67: per i gioielli con più pietre si può indicare «pietre piccole, sotto 1 ct» (percorso indicato nelle FAQ).
+ {const small=['multi-stone','earrings','necklace','bracelet','brooch','other'].includes(cat),o=[...field('ct').options].find(x=>x.value==='small');if(o){o.hidden=!small;o.disabled=!small;if(!small&&field('ct').value==='small')field('ct').value='';}}
  $('#others-field').hidden=field('multi').value!=='yes';field('others').disabled=field('multi').value!=='yes';
  const certNo=!field('cert').disabled&&['GIA','HRD','IGI'].includes(field('cert').value);$('#cert-number-field').hidden=!certNo;field('cert_no').disabled=!certNo;
  field('email').required=true;field('phone').required=['WhatsApp','phone'].includes(field('pref').value);
