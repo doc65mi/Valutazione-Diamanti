@@ -21,7 +21,7 @@ function customer_email(array $s,string $lang,array $vars): array {
     $d=customer_email_defaults();$lang=$lang==='en'?'en':'it';
     $subject=trim((string)($s['customer_subject_'.$lang]??''))?:$d['customer_subject_'.$lang];
     $body=trim((string)($s['customer_body_'.$lang]??''))!==''?(string)$s['customer_body_'.$lang]:$d['customer_body_'.$lang];
-    return [str_replace(["\r","\n"],' ',email_render($subject,$vars)),str_replace("\r\n","\n",email_render($body,$vars))];
+    return [str_replace(["\r","\n"],' ',email_render($subject,$vars)),phone_text(str_replace("\r\n","\n",email_render($body,$vars)))];
 }
 /** Colore e purezza nel riepilogo al gestore, solo se indicati (2.1.55). */
 function request_quality_lines(array $f): string {

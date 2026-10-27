@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-const APP_VERSION = '2.1.60';
+const APP_VERSION = '2.1.61';
 const ROOT = __DIR__ . '/..';
 const PAGE_SLUGS = ['home', 'acquistiamo', 'chisiamo', 'faq', 'valutazione', 'grazie', 'privacy', 'cookie'];
 // Indirizzi inglesi per le pagine EN (2.1.52, audit): /en/sell-diamonds.html ecc. I vecchi nomi italiani restano come rimandi.
@@ -105,6 +105,14 @@ function content_upgrade(array $c,array $default,string $key): array {
     foreach(['title','description'] as $m)if(in_array($c['meta'][$m]??null,$prev['meta'][$m]??[],true))$c['meta'][$m]=$default['meta'][$m];
     return $c;
 }
+// Telefono sempre come «+39 02 466 891» nei testi visibili, anche in quelli salvati dall'editor (2.1.61); i link tel: non cambiano.
+// Anche la vecchia email sl@ladiamanteria.com diventa info@valutazionediamanti.it, nei testi e nei link mailto.
+const OLD_EMAIL='sl@ladiamanteria.com',SITE_EMAIL='info@valutazionediamanti.it';
+function phone_text(string $text): string { return str_ireplace(OLD_EMAIL,SITE_EMAIL,preg_replace('/(?:\+\s?39[\s.]*)?\b0\s?2[\s.]*466[\s.]*891\b/','+39 02 466 891',$text)??$text); }
+function phone_text_nodes(DOMXPath $xp): void {
+    foreach($xp->query('//body//text()[not(ancestor::script) and not(ancestor::style)]') as $node)if(str_contains(preg_replace('/\D/','',$node->nodeValue),'02466891')||stripos($node->nodeValue,OLD_EMAIL)!==false)$node->nodeValue=phone_text($node->nodeValue);
+    foreach($xp->query('//body//a[@href]') as $a)if(stripos($a->getAttribute('href'),OLD_EMAIL)!==false)$a->setAttribute('href',str_ireplace(OLD_EMAIL,SITE_EMAIL,$a->getAttribute('href')));
+}
 function site_image(string $src): bool { return $src==='' || !preg_match('~^([a-z][a-z0-9+.-]*:|//)~i',$src); }
 // tempnam() crea il file con permessi 0600: le pagine pubbliche vanno rese leggibili (0644), altrimenti
 
@@ -196,7 +204,7 @@ function build_html(string $slug,string $lang,array $c): string {
         $languageNav->setAttribute('class','language-nav header-languages');$container->appendChild($languageNav);
     }
     $toolbar=$doc->createElement('nav');$toolbar->setAttribute('class','mobile-contact-toolbar');$toolbar->setAttribute('aria-label',$lang==='en'?'Quick contact':'Contatti rapidi');
-    $links=[['valutazione.html',$lang==='en'?'Valuation':'Valutazione','◇'],['https://wa.me/393929664987','WhatsApp',''],['mailto:'.(trim((string)(settings()['store_email']??''))?:'sl@ladiamanteria.com'),'Email','✉'],['tel:+3902466891',$lang==='en'?'Call':'Telefono','☎']];
+    $links=[['valutazione.html',$lang==='en'?'Valuation':'Valutazione','◇'],['https://wa.me/393929664987','WhatsApp',''],['mailto:'.(trim((string)(settings()['store_email']??''))?:'info@valutazionediamanti.it'),'Email','✉'],['tel:+3902466891',$lang==='en'?'Call':'Telefono','☎']];
     foreach($links as [$href,$label,$icon]){
         $a=$doc->createElement('a');$a->setAttribute('href',$href);
         if(str_starts_with($href,'https:')){$a->setAttribute('target','_blank');$a->setAttribute('rel','noopener');}
@@ -214,6 +222,7 @@ function build_html(string $slug,string $lang,array $c): string {
 
     tidy_footer($doc,$lang);
     seo_verification_meta($doc);
+    phone_text_nodes($xp);
     // Recensioni Google (2.1.33): il riquadro si riempie dal browser; se il servizio è spento il segnaposto sparisce.
     $reviewBoxes=iterator_to_array($xp->query('//*[@data-google-reviews]'));
     if($reviewBoxes&&settings()['reviews_enabled']){$script=$doc->createElement('script');$script->setAttribute('src','../assets/reviews.js');$script->setAttribute('defer','defer');$head->appendChild($script);$data=reviews_cached($lang);if($data)foreach($reviewBoxes as $box)reviews_render($doc,$box,$data,$lang);}
