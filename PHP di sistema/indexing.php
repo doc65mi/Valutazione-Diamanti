@@ -58,7 +58,8 @@ function indexing_sync(?array $entries = null): void {
         }
         foreach ($sent as $url => $ver) if (!isset($entries[$url])) {
             // Solo gli articoli tolti diventano introvabili; le pagine spente dal menu restano raggiungibili.
-            if ($engine === 'google' && str_contains($url, '/blog/articolo/')) { if (!isset($queue[$url])) $queue[$url] = ['url' => $url, 'ver' => null, 'type' => 'URL_DELETED', 'tries' => 0]; }
+            // 2.1.63: i vecchi indirizzi inglesi ?lang=en non sono tolti, rimandano con un 301 a /en/blog/.
+            if ($engine === 'google' && (str_contains($url, '/blog/articolo/') || str_contains($url, '/en/blog/')) && !str_contains($url, 'lang=en')) { if (!isset($queue[$url])) $queue[$url] = ['url' => $url, 'ver' => null, 'type' => 'URL_DELETED', 'tries' => 0]; }
             else unset($state['sent'][$engine][$url]);
         }
         $queue = array_values($queue);

@@ -16,7 +16,7 @@ function seo_markup(DOMDocument $doc,string $lang,string $url,string $title,stri
         $page['mainEntity']=$questions;
     }
     $graph=[$org,['@type'=>'WebSite','@id'=>$base.'/#website','url'=>$base.'/','name'=>'Valutazione Diamanti','inLanguage'=>['it','en'],'publisher'=>['@id'=>$org['@id']]],$page];
-    if($article){$post=['@type'=>'BlogPosting','@id'=>$url.'#article','url'=>$url,'mainEntityOfPage'=>['@id'=>$page['@id']],'headline'=>$article['title'],'description'=>$article['excerpt'],'datePublished'=>(new DateTimeImmutable($article['published_at']))->format(DATE_ATOM),'dateModified'=>(new DateTimeImmutable($article['updated_at']))->format(DATE_ATOM),'inLanguage'=>$lang,'articleSection'=>$article['category'],'author'=>['@id'=>$org['@id']],'publisher'=>['@id'=>$org['@id']]];if($article['image_url'])$post['image']=['@type'=>'ImageObject','url'=>$article['image_url'],'caption'=>$article['image_alt']];
+    if($article){$post=['@type'=>'BlogPosting','@id'=>$url.'#article','url'=>$url,'mainEntityOfPage'=>['@id'=>$page['@id']],'headline'=>$article['title'],'description'=>blog_excerpt((string)$article['excerpt'],300,(string)$article['content']),'datePublished'=>(new DateTimeImmutable($article['published_at']))->format(DATE_ATOM),'dateModified'=>(new DateTimeImmutable($article['updated_at']))->format(DATE_ATOM),'inLanguage'=>$lang,'articleSection'=>$article['category'],'author'=>['@id'=>$org['@id']],'publisher'=>['@id'=>$org['@id']]];if($article['image_url'])$post['image']=['@type'=>'ImageObject','url'=>$article['image_url'],'caption'=>$article['image_alt']];
         if(trim((string)($article['keywords']??''))!=='')$post['keywords']=trim($article['keywords']);
         $post['wordCount']=str_word_count(strip_tags($article['content']));$graph[]=$post;
         $faq=blog_faq_items($article['faq_json']??null);
@@ -28,7 +28,7 @@ function seo_markup(DOMDocument $doc,string $lang,string $url,string $title,stri
 // le recensioni Google non vanno ripetute come dati strutturati del sito.
 function seo_store(): array {
     $s=settings();$base=seo_base();
-    $store=['@type'=>'JewelryStore','@id'=>$base.'/#store','name'=>'Valutazione Diamanti by La Diamanteria','url'=>$base.'/','logo'=>$base.'/assets/logo.svg','image'=>seo_share_image(null)?:$base.'/assets/logo.svg',
+    $store=['@type'=>'JewelryStore','@id'=>$base.'/#store','name'=>'Valutazione Diamanti by La Diamanteria','url'=>$base.'/','logo'=>$base.'/assets/logo.svg','image'=>seo_share_image(null,'home')?:$base.'/assets/logo.svg',
         'description'=>'Acquisto diretto e valutazione gratuita di diamanti, gioielli e orologi da privati a Milano. Sabato su appuntamento.','telephone'=>'+39 02 466 891',
         'address'=>['@type'=>'PostalAddress','streetAddress'=>'Via Vincenzo Monti 47','postalCode'=>'20123','addressLocality'=>'Milano','addressRegion'=>'MI','addressCountry'=>'IT'],
         'priceRange'=>'$$$','areaServed'=>'IT','foundingDate'=>'2009','sameAs'=>['https://www.ladiamanteria.com'],
@@ -42,25 +42,38 @@ function seo_store(): array {
     $hours=array_values(array_filter(array_map('store_hours_row',array_filter(array_map('trim',explode(';',(string)($s['store_hours']??'')))))));if($hours)$store['openingHoursSpecification']=$hours;
     return $store;
 }
-/** Immagine per WhatsApp, Facebook e LinkedIn: quella scelta in Privacy e integrazioni, poi uploads/site/og-cover.jpg, poi la prima foto della pagina. */
-function seo_share_image(?DOMDocument $doc): string {
+/** Immagine per WhatsApp, Facebook e LinkedIn: quella scelta in Privacy e integrazioni, poi l'immagine 1200×630 della pagina
+ *  (assets/og, 2.1.63), poi uploads/site/og-cover.jpg. Le foto della pagina non si usano più: erano verticali o piccole (audit). */
+function seo_share_image(?DOMDocument $doc,string $slug='',string $lang='it'): string {
     $base=seo_base();$s=settings();
     $pick=trim((string)($s['og_image']??''));
+    if($pick===''&&$slug!==''&&is_file(ROOT.'/assets/og/'.$slug.'.'.$lang.'.jpg'))$pick='/assets/og/'.$slug.'.'.$lang.'.jpg?v='.APP_VERSION;
     if($pick===''&&is_file(ROOT.'/uploads/site/og-cover.jpg'))$pick='/uploads/site/og-cover.jpg';
-    if($pick===''&&$doc)foreach((new DOMXPath($doc))->query('//main//img[@src]') as $img){$src=$img->getAttribute('src');if(str_contains($src,'uploads/site/')){$pick=$src;break;}}
+    if($pick===''&&is_file(ROOT.'/assets/og/home.'.$lang.'.jpg'))$pick='/assets/og/home.'.$lang.'.jpg?v='.APP_VERSION;
     if($pick==='')return '';
     if(preg_match('~^https?://~i',$pick))return $pick;
     return $base.'/'.preg_replace('~^(?:\.\./|\./|/)+~','',$pick);
 }
-// Open Graph e Twitter (2.1.48): le pagine condivise su WhatsApp escono con titolo, testo e foto.
-function seo_open_graph(DOMDocument $doc,string $lang,string $url,string $title,string $description): void {
+/** Larghezza e altezza di un'immagine del sito (false se esterna o non leggibile). */
+function seo_image_size(string $image): array|false {
+    if(!str_starts_with($image,seo_base().'/'))return false;
+    $local=ROOT.'/'.rawurldecode((string)parse_url($image,PHP_URL_PATH));return is_file($local)?@getimagesize($local):false;
+}
+/** Meta Open Graph e Twitter. summary_large_image solo con un'immagine orizzontale di almeno 1000 px (2.1.63, audit). */
+function seo_og_meta(DOMDocument $doc,array $og,string $image,string $alt): void {
     $xp=new DOMXPath($doc);$head=$doc->getElementsByTagName('head')->item(0);if(!$head)return;
-    foreach(iterator_to_array($xp->query('//meta[starts-with(@property,"og:") or starts-with(@name,"twitter:")]')) as $n)$n->parentNode->removeChild($n);
-    $image=seo_share_image($doc);
+    foreach(iterator_to_array($xp->query('//meta[starts-with(@property,"og:") or starts-with(@property,"article:") or starts-with(@name,"twitter:")]')) as $n)$n->parentNode->removeChild($n);
+    $size=$image!==''?seo_image_size($image):false;$large=$image!==''&&(!$size||($size[0]>=1000&&$size[0]>=$size[1]*1.6));
+    if($image!==''){$og['og:image']=$image;if($size){$og['og:image:width']=(string)$size[0];$og['og:image:height']=(string)$size[1];}$og['og:image:alt']=$alt;}
+    foreach($og as $property=>$content){$meta=$doc->createElement('meta');$meta->setAttribute('property',$property);$meta->setAttribute('content',(string)$content);$head->appendChild($meta);}
+    $tw=['twitter:card'=>$large?'summary_large_image':'summary','twitter:title'=>$og['og:title'],'twitter:description'=>$og['og:description']];if($image!=='')$tw['twitter:image']=$image;
+    foreach($tw as $name=>$content){$meta=$doc->createElement('meta');$meta->setAttribute('name',$name);$meta->setAttribute('content',(string)$content);$head->appendChild($meta);}
+}
+// Open Graph e Twitter (2.1.48): le pagine condivise su WhatsApp escono con titolo, testo e foto.
+// 2.1.63: og:title uguale al <title> della pagina e immagine 1200×630 dedicata a ogni pagina.
+function seo_open_graph(DOMDocument $doc,string $lang,string $url,string $title,string $description,string $slug=''): void {
     $og=['og:type'=>'website','og:site_name'=>'Valutazione Diamanti by La Diamanteria','og:locale'=>$lang==='en'?'en_GB':'it_IT','og:title'=>$title,'og:description'=>$description,'og:url'=>$url];
-    if($image!==''){$og['og:image']=$image;$local=str_starts_with($image,seo_base().'/')?ROOT.'/'.rawurldecode((string)parse_url($image,PHP_URL_PATH)):'';$size=$local!==''&&is_file($local)?@getimagesize($local):false;if($size){$og['og:image:width']=(string)$size[0];$og['og:image:height']=(string)$size[1];}}
-    foreach($og as $property=>$content){$meta=$doc->createElement('meta');$meta->setAttribute('property',$property);$meta->setAttribute('content',$content);$head->appendChild($meta);}
-    foreach(['twitter:card'=>$image!==''?'summary_large_image':'summary','twitter:title'=>$title,'twitter:description'=>$description] as $name=>$content){$meta=$doc->createElement('meta');$meta->setAttribute('name',$name);$meta->setAttribute('content',$content);$head->appendChild($meta);}
+    seo_og_meta($doc,$og,seo_share_image($doc,$slug,$lang),$title);
 }
 // Collegamento a Google Search Console e Bing Webmaster Tools (2.1.32): meta tag in ogni pagina pubblica,
 // file di verifica nella radice del sito e notifica IndexNow (Bing, Yandex, Seznam) dei contenuti nuovi.

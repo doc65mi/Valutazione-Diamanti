@@ -20,6 +20,12 @@ RewriteCond %{HTTP_HOST} ^valutazionediamanti\.it$ [NC]
 RewriteRule ^(.*)$ https://www.valutazionediamanti.it/$1 [R=301,L,NE]
 RewriteCond %{HTTP_HOST} ^(?:www\.)?comprodiamanti\.it$ [NC]
 RewriteRule ^ https://www.valutazionediamanti.it/it/index.html [R=301,L]
+# Radice del sito (2.1.63, audit): 301 verso la home italiana anche se il server prova index.html prima di index.php.
+RewriteCond %{REQUEST_URI} ^(.*/)$
+RewriteRule ^$ %1it/index.html [R=301,L]
+# Blog inglese con lo schema del sito (2.1.63): /en/blog/ e /en/blog/<slug>; blog/index.php rimanda con un 301 i vecchi ?lang=en.
+RewriteRule ^en/blog/?$ blog/index.php [L,QSA]
+RewriteRule ^en/blog/[a-z0-9-]+/?$ blog/index.php [L,QSA]
 # Pagine inglesi con indirizzi inglesi (2.1.52): 301 dai vecchi nomi italiani.
 RewriteCond %{REQUEST_URI} ^(.*/)en/acquistiamo\.html$ [NC]
 RewriteRule ^ %1en/sell-diamonds.html [R=301,L,QSA]
