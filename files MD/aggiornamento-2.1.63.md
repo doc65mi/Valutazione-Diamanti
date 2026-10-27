@@ -26,7 +26,7 @@ Correzioni dalla verifica del sito del 27/10/2026.
 
 ## Testi e navigazione
 - «Worldwide» nelle pagine italiane diventa «Nel mondo».
-- «Bonifico istantaneo» diventa «bonifico tracciabile», come nel resto del sito (anche nella meta description).
+- (Sostituito nella 2.1.64.)
 - Home: la seconda «Un solo interlocutore, un processo più lineare.» diventa «Nessuna asta e nessun intermediario: tratti direttamente con chi acquista.».
 - Testi alternativi diversi per le tre foto della galleria in home (prima erano uguali a quelle della presentazione).
 - Intestazione di valutazione e grazie: «Vendere un diamante», «Come funziona» e Blog come nella home. Blog anche nel footer, dopo le FAQ (se acceso nel pannello Menu).

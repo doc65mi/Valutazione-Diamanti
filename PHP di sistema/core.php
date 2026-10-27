@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-const APP_VERSION = '2.1.63';
+const APP_VERSION = '2.1.64';
 const ROOT = __DIR__ . '/..';
 const PAGE_SLUGS = ['home', 'acquistiamo', 'chisiamo', 'faq', 'valutazione', 'grazie', 'privacy', 'cookie'];
 // Indirizzi inglesi per le pagine EN (2.1.52, audit): /en/sell-diamonds.html ecc. I vecchi nomi italiani restano come rimandi.
@@ -116,8 +116,10 @@ function phone_text_nodes(DOMXPath $xp): void {
     foreach($xp->query('//body//a[@href]') as $a)if(stripos($a->getAttribute('href'),OLD_EMAIL)!==false)$a->setAttribute('href',str_ireplace(OLD_EMAIL,SITE_EMAIL,$a->getAttribute('href')));
 }
 // Testi rimasti in inglese o promesse diverse nelle pagine già modificate dall'editor (2.1.63, audit): corretti alla pubblicazione.
-const TEXT_FIXES=['it'=>['~^Worldwide$~u'=>'Nel mondo','~bonifico istantaneo~u'=>'bonifico tracciabile','~Bonifico istantaneo~u'=>'Bonifico tracciabile'],
-    'en'=>['~instant bank transfer~u'=>'traceable bank transfer','~Instant bank transfer~u'=>'Traceable bank transfer']];
+// 2.1.64: su scelta del titolare il pagamento promesso è ovunque «bonifico istantaneo e tracciabile».
+const TEXT_FIXES=['it'=>['~^Worldwide$~u'=>'Nel mondo','~\\b([Bb])onifico (?:istantaneo|tracciabile)(?! e tracciabile)~u'=>'$1onifico istantaneo e tracciabile'],
+    'en'=>['~\\b([Aa]) (?:instant|traceable) bank transfer~u'=>'$1n instant, traceable bank transfer',
+        '~(?<!instant, )\\b[Tt]raceable bank transfer~u'=>'instant, traceable bank transfer','~\\b[Ii]nstant bank transfer~u'=>'instant, traceable bank transfer','~^instant, traceable bank transfer~u'=>'Instant, traceable bank transfer']];
 function text_fix(string $text,string $lang): string { foreach(TEXT_FIXES[$lang]??[] as $from=>$to)$text=preg_replace($from,$to,$text)??$text;return $text; }
 function text_fix_nodes(DOMXPath $xp,string $lang): void {
     foreach($xp->query('//body//text()[not(ancestor::script) and not(ancestor::style)]') as $node){$t=trim($node->nodeValue);$fixed=text_fix($t,$lang);if($fixed!==$t)$node->nodeValue=str_replace($t,$fixed,$node->nodeValue);}
