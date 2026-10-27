@@ -1,3 +1,4 @@
+# robots.txt di Valutazione Diamanti, generato dal sito (versione 2.1.65)
 User-agent: *
 Disallow: /admin/
 Disallow: /api/
