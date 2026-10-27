@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-const BLOG_VERSION = '2.1.66';
+const BLOG_VERSION = '2.1.67';
 const PRIVATE_DIR = ROOT . '/data';
 function blog_h($v): string { return htmlspecialchars((string)$v, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); }
 function blog_abort_request(int $code, string $message): void { http_response_code($code); echo blog_h($message); exit; }
@@ -104,7 +104,10 @@ function blog_excerpt(string $text, int $max = 220, string $content = ''): strin
     }
     if (!$cut) return $text;
     if (preg_match('/^(.*\S)\s+\S*$/su', $text, $m) && !preg_match('/\s/u', mb_substr($text, -1))) $text = $m[1];
-    return rtrim($text, " ,;:–—-") . '…';
+    // 2.1.67: niente articoli o preposizioni rimasti in fondo prima dei puntini («… e la…», «… per…»).
+    $text = rtrim($text, " ,;:–—-");
+    while (preg_match('/^(.*\\S)\\s+(?:a|e|i|o|il|lo|la|le|gli|l’|un|una|uno|di|da|in|con|su|per|tra|fra|che|del|della|dei|delle|al|alla|ai|nel|nella|the|an|and|or|of|to|in|for|with|on|by|at)$/iu', $text, $m)) $text = rtrim($m[1], " ,;:–—-");
+    return $text . '…';
 }
 function blog_valid_url(string $v, bool $empty = true): bool { return ($empty && $v === '') || (filter_var($v, FILTER_VALIDATE_URL) !== false && in_array(strtolower((string)parse_url($v, PHP_URL_SCHEME)), ['https','http'], true) && !parse_url($v, PHP_URL_USER) && !parse_url($v, PHP_URL_PASS)); }
 function blog_slugify(string $v): string {

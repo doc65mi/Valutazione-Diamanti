@@ -422,6 +422,12 @@
     "slots": {
       "privacy-contenuto-006": [
         "The data controller is {{legal.company}}, based at {{legal.address}}. VAT / tax identification number: {{legal.vat}}. For information about your personal data or to exercise your rights, contact {{legal.email}}."
+      ],
+      "privacy-contenuto-012": [
+        "Enquiries and their attachments are retained for up to {{legal.retention}} months after submission and then deleted from the system. Cleanup runs when new enquiries are received, when the admin inbox is accessed and through the maintenance command. If a sale is completed, contractual records and statutory obligations are handled separately. Cookie preferences are remembered for six months; an admin session expires after 30 minutes of inactivity. External tools have retention periods determined by their settings and providers’ policies."
+      ],
+      "privacy-contenuto-014": [
+        "Enquiries and attachments are accessible to authorised administrators. Hosting and maintenance providers may process data to operate and protect the service. If enabled by the controller, Google provides reCAPTCHA, Analytics, Ads and Tag Manager; Meta provides the Pixel. Analytics and advertising services are loaded only when the relevant cookie preferences allow them. Website fonts may be provided by Google Fonts, which receives technical connection data. External links, including WhatsApp, lead to services with their own privacy policies."
       ]
     },
     "meta": {
@@ -434,6 +440,12 @@
     "slots": {
       "privacy-contenuto-006": [
         "Il titolare del trattamento è {{legal.company}}, con sede in {{legal.address}}. Partita IVA / identificativo fiscale: {{legal.vat}}. Per informazioni sui dati personali e per esercitare i tuoi diritti scrivi a {{legal.email}}."
+      ],
+      "privacy-contenuto-012": [
+        "Le richieste e i relativi allegati sono conservati per un massimo di {{legal.retention}} mesi dall’invio, poi eliminati dal sistema. La pulizia avviene quando si ricevono nuove richieste, si consulta il backend e tramite il comando di manutenzione. Se si conclude una vendita, gli eventuali documenti contrattuali e gli adempimenti di legge sono gestiti separatamente. Le preferenze cookie vengono ricordate per sei mesi; la sessione amministrativa scade dopo 30 minuti di inattività. I tempi degli strumenti esterni dipendono dalle impostazioni e dalle informative dei fornitori."
+      ],
+      "privacy-contenuto-014": [
+        "Le richieste e gli allegati sono accessibili agli amministratori autorizzati. Possono intervenire fornitori di hosting e manutenzione per erogare e proteggere il servizio. Se abilitati dal titolare, Google fornisce reCAPTCHA, Analytics, Ads e Tag Manager; Meta fornisce il Pixel. I servizi di analisi e pubblicità sono caricati solo con le preferenze cookie appropriate. I caratteri del sito possono essere forniti da Google Fonts, che riceve i dati tecnici della connessione. I link esterni, incluso WhatsApp, portano a servizi con proprie informative."
       ]
     },
     "meta": {
