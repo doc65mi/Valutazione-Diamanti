@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-const APP_VERSION = '2.1.68';
+const APP_VERSION = '2.1.69';
 const ROOT = __DIR__ . '/..';
 const PAGE_SLUGS = ['home', 'acquistiamo', 'chisiamo', 'faq', 'valutazione', 'grazie', 'privacy', 'cookie'];
 // Indirizzi inglesi per le pagine EN (2.1.52, audit): /en/sell-diamonds.html ecc. I vecchi nomi italiani restano come rimandi.
