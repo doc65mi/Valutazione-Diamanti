@@ -20,7 +20,9 @@ function tidy_footer(DOMDocument $doc,string $lang): void {
     $row=$copyright?$copyright->parentNode:$legal;
     // Dati societari (2.1.48, audit): marchio, ragione sociale, sede legale, P.IVA, REA e licenza da Privacy e integrazioni.
     if($row&&!$xp->query('//*[contains(concat(" ",normalize-space(@class)," ")," site-legal-info ")]')->length){
-        $info=$doc->createElement('p',legal_footer_text($lang));$info->setAttribute('class','site-legal-info');
+        // 2.1.62: centrata, su due righe: dati societari con indirizzo, poi la licenza di Pubblica Sicurezza.
+        $info=$doc->createElement('p');$info->setAttribute('class','site-legal-info');$info->setAttribute('style','text-align:center;margin-left:auto;margin-right:auto');
+        foreach(legal_footer_lines($lang) as $i=>$line){if($i)$info->appendChild($doc->createElement('br'));$info->appendChild($doc->createTextNode($line));}
         $row->parentNode->insertBefore($info,$row->nextSibling);
     }
     if($row&&!$xp->query('.//*[contains(concat(" ",normalize-space(@class)," ")," site-credits ")]',$row)->length){
@@ -29,18 +31,18 @@ function tidy_footer(DOMDocument $doc,string $lang): void {
     }
 }
 /** Riga dei dati societari nel footer: compare solo quello che è compilato in Dati del titolare. */
-function legal_footer_text(string $lang): string {
+function legal_footer_lines(string $lang): array {
     $s=settings();$en=$lang==='en';$company=trim($s['legal_company']);
     $text=$en?'Valutazione Diamanti is a service of La Diamanteria':'Valutazione Diamanti è un servizio di La Diamanteria';
     if($company!==''&&$company!=='La Diamanteria')$text.=$en?', a brand of '.$company:', marchio di '.$company;
     $parts=[];
     if(legal_has_registered_office())$parts[]=($en?'Registered office: ':'Sede legale: ').trim($s['legal_address']);
     foreach(['legal_vat'=>$en?'VAT no. ':'P.IVA ','legal_rea'=>'REA '] as $key=>$label)if(trim((string)($s[$key]??''))!=='')$parts[]=$label.trim($s[$key]);
-    // Licenza di Pubblica Sicurezza (2.1.61): la frase c'è sempre, il numero solo se compilato in Dati del titolare.
-    $license=trim((string)($s['legal_license']??''));
-    $parts[]=($en?'Holders of a Public Security licence, authorised by the Questura (Police Headquarters)':'Titolari di licenza di Pubblica Sicurezza, autorizzati dalla Questura').($license!==''?($en?' (art. 127 TULPS no. ':' (art. 127 TULPS n. ').$license.')':'');
     $parts[]='Via Vincenzo Monti 47, 20123 Milano · +39 02 466 891';
-    return rtrim($text,'.').'. '.implode(' · ',$parts);
+    // Licenza di Pubblica Sicurezza (2.1.61), sulla seconda riga: la frase c'è sempre, il numero solo se compilato in Dati del titolare.
+    $license=trim((string)($s['legal_license']??''));
+    $licenseLine=($en?'Holders of a Public Security licence, authorised by the Questura (Police Headquarters)':'Titolari di licenza di Pubblica Sicurezza, autorizzati dalla Questura').($license!==''?($en?' (art. 127 TULPS no. ':' (art. 127 TULPS n. ').$license.')':'');
+    return [rtrim($text,'.').'. '.implode(' · ',$parts),$licenseLine];
 }
 /** Vero quando l'indirizzo dei Dati del titolare è una sede legale diversa dallo showroom di Via Vincenzo Monti 47. */
 function legal_has_registered_office(): bool { $a=trim(settings()['legal_address']);return $a!==''&&!preg_match('/vincenzo\s+monti\s*,?\s*47/i',$a); }
