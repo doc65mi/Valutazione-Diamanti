@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-const APP_VERSION = '2.1.62';
+const APP_VERSION = '2.1.63';
 const ROOT = __DIR__ . '/..';
 const PAGE_SLUGS = ['home', 'acquistiamo', 'chisiamo', 'faq', 'valutazione', 'grazie', 'privacy', 'cookie'];
 // Indirizzi inglesi per le pagine EN (2.1.52, audit): /en/sell-diamonds.html ecc. I vecchi nomi italiani restano come rimandi.
@@ -102,6 +102,8 @@ function content(string $slug,string $lang): array {
 function content_upgrade(array $c,array $default,string $key): array {
     static $old;$old??=json_decode((string)@file_get_contents(ROOT.'/content/previous-defaults.json'),true)?:[];$prev=$old[$key]??[];
     foreach($default['slots'] as $id=>$v)if(!array_key_exists($id,$c['slots'])||in_array($c['slots'][$id],$prev['slots'][$id]??[],true))$c['slots'][$id]=$v;
+    // 2.1.63: per le immagini già caricate cambia solo il testo alternativo rimasto quello di partenza (alt doppi segnalati dall'audit).
+    foreach($default['slots'] as $id=>$v)if(is_array($v)&&isset($v['alt'])&&is_array($c['slots'][$id]??null)&&in_array($c['slots'][$id]['alt']??null,array_column(array_filter($prev['slots'][$id]??[],'is_array'),'alt'),true))$c['slots'][$id]['alt']=$v['alt'];
     foreach(['title','description'] as $m)if(in_array($c['meta'][$m]??null,$prev['meta'][$m]??[],true))$c['meta'][$m]=$default['meta'][$m];
     return $c;
 }
@@ -112,6 +114,13 @@ function phone_text(string $text): string { return str_ireplace(OLD_EMAIL,SITE_E
 function phone_text_nodes(DOMXPath $xp): void {
     foreach($xp->query('//body//text()[not(ancestor::script) and not(ancestor::style)]') as $node)if(str_contains(preg_replace('/\D/','',$node->nodeValue),'02466891')||stripos($node->nodeValue,OLD_EMAIL)!==false)$node->nodeValue=phone_text($node->nodeValue);
     foreach($xp->query('//body//a[@href]') as $a)if(stripos($a->getAttribute('href'),OLD_EMAIL)!==false)$a->setAttribute('href',str_ireplace(OLD_EMAIL,SITE_EMAIL,$a->getAttribute('href')));
+}
+// Testi rimasti in inglese o promesse diverse nelle pagine già modificate dall'editor (2.1.63, audit): corretti alla pubblicazione.
+const TEXT_FIXES=['it'=>['~^Worldwide$~u'=>'Nel mondo','~bonifico istantaneo~u'=>'bonifico tracciabile','~Bonifico istantaneo~u'=>'Bonifico tracciabile'],
+    'en'=>['~instant bank transfer~u'=>'traceable bank transfer','~Instant bank transfer~u'=>'Traceable bank transfer']];
+function text_fix(string $text,string $lang): string { foreach(TEXT_FIXES[$lang]??[] as $from=>$to)$text=preg_replace($from,$to,$text)??$text;return $text; }
+function text_fix_nodes(DOMXPath $xp,string $lang): void {
+    foreach($xp->query('//body//text()[not(ancestor::script) and not(ancestor::style)]') as $node){$t=trim($node->nodeValue);$fixed=text_fix($t,$lang);if($fixed!==$t)$node->nodeValue=str_replace($t,$fixed,$node->nodeValue);}
 }
 function site_image(string $src): bool { return $src==='' || !preg_match('~^([a-z][a-z0-9+.-]*:|//)~i',$src); }
 // tempnam() crea il file con permessi 0600: le pagine pubbliche vanno rese leggibili (0644), altrimenti
@@ -181,7 +190,7 @@ function build_html(string $slug,string $lang,array $c): string {
     $guidesOn=(bool)settings()['home_guides_enabled'];
     foreach(iterator_to_array($xp->query('//*[@data-om-section="guide"]')) as $section){
         if(!$guidesOn||!home_guide_cards($xp,$section,$lang)){$section->parentNode->removeChild($section);continue;}
-        foreach($xp->query('.//a',$section) as $a)if(str_contains($a->getAttribute('href'),'lovable.app')){$a->setAttribute('href',$lang==='en'?'../blog/?lang=en':'../blog/');$a->removeAttribute('target');}
+        foreach($xp->query('.//a',$section) as $a)if(str_contains($a->getAttribute('href'),'lovable.app')){$a->setAttribute('href',$lang==='en'?'blog/':'../blog/');$a->removeAttribute('target');}
     }
     $legal=settings();
     $replacements=[];foreach(['company','address','vat','email'] as $key)$replacements['{{legal.'.$key.'}}']=$legal['legal_'.$key];$replacements['{{legal.retention}}']=(string)$legal['retention_months'];$replacements['{{legal.controller}}']=legal_controller($lang);
@@ -216,22 +225,41 @@ function build_html(string $slug,string $lang,array $c): string {
     $css=$doc->createElement('link');$css->setAttribute('rel','stylesheet');$css->setAttribute('href','../assets/frontend-ui.css');$head->appendChild($css);
     foreach(['frontend-ui.js','frontend-editor.js'] as $file){$script=$doc->createElement('script');$script->setAttribute('src','../assets/'.$file);$script->setAttribute('defer','defer');$head->appendChild($script);}
     $mainNav=$xp->query('//header//nav[not(contains(@class,"language-nav"))]')->item(0);
-    if($mainNav&&menu_enabled('blog')){$blogLink=$doc->createElement('a','Blog');$blogLink->setAttribute('href','../blog/');$blogLink->setAttribute('class','site-blog-link');if($lang==='en')$blogLink->setAttribute('href','../blog/?lang=en');$mainNav->appendChild($blogLink);}
+    // Blog anche nell'intestazione di valutazione e grazie (2.1.63, audit); in inglese /en/blog/.
+    $blogHref=$lang==='en'?'blog/':'../blog/';
+    $quotePhone=$mainNav?null:$xp->query('//header[contains(@class,"quote-header")]/a[contains(@class,"quote-phone")]')->item(0);
+    if(($mainNav||$quotePhone)&&menu_enabled('blog')){$blogLink=$doc->createElement('a','Blog');$blogLink->setAttribute('href',$blogHref);$blogLink->setAttribute('class','site-blog-link');if($mainNav)$mainNav->appendChild($blogLink);else $quotePhone->parentNode->insertBefore($blogLink,$quotePhone);}
+    if($lang==='en')foreach($xp->query('//a[@href="../blog/?lang=en" or @href="../blog/"]') as $a)$a->setAttribute('href','blog/');
     hide_menu_items($xp);
     localize_links($xp,$lang);
 
     tidy_footer($doc,$lang);
+    // Link al Blog nel footer, dopo le FAQ (2.1.63, audit).
+    if(menu_enabled('blog'))foreach($xp->query('//footer//a[@href="faq.html"]') as $faq){$a=$faq->cloneNode(false);$a->setAttribute('href',$blogHref);$a->removeAttribute('data-cd-slot');$a->textContent='Blog';$faq->parentNode->insertBefore($a,$faq->nextSibling);$faq->parentNode->insertBefore($doc->createTextNode("\n"),$a);break;}
+    if($slug==='cookie')cookie_services_list($doc,$xp,$lang);
+    text_fix_nodes($xp,$lang);
+    foreach($xp->query('//meta[@name="description"]') as $m)$m->setAttribute('content',phone_text(text_fix($m->getAttribute('content'),$lang)));
     seo_verification_meta($doc);
     phone_text_nodes($xp);
     // Recensioni Google (2.1.33): il riquadro si riempie dal browser; se il servizio è spento il segnaposto sparisce.
     $reviewBoxes=iterator_to_array($xp->query('//*[@data-google-reviews]'));
-    if($reviewBoxes&&settings()['reviews_enabled']){$script=$doc->createElement('script');$script->setAttribute('src','../assets/reviews.js');$script->setAttribute('defer','defer');$head->appendChild($script);$data=reviews_cached($lang);if($data)foreach($reviewBoxes as $box)reviews_render($doc,$box,$data,$lang);}
+    if($reviewBoxes&&settings()['reviews_enabled']){$script=$doc->createElement('script');$script->setAttribute('src','../assets/reviews.js?v='.APP_VERSION);$script->setAttribute('defer','defer');$head->appendChild($script);$data=reviews_cached($lang);if($data)foreach($reviewBoxes as $box)reviews_render($doc,$box,$data,$lang);}
     else foreach($reviewBoxes as $box)$box->parentNode->removeChild($box);
     $url=seo_base().'/'.$lang.'/'.page_name($slug,$lang).'.html';
-    seo_open_graph($doc,$lang,$url,$c['meta']['title'],$c['meta']['description']);
-    seo_markup($doc,$lang,$url,$c['meta']['title'],$c['meta']['description'],$slug==='faq'?'FAQPage':($slug==='chisiamo'?'AboutPage':'WebPage'));
+    seo_open_graph($doc,$lang,$url,$c['meta']['title'],phone_text(text_fix($c['meta']['description'],$lang)),$slug);
+    seo_markup($doc,$lang,$url,$c['meta']['title'],phone_text(text_fix($c['meta']['description'],$lang)),$slug==='faq'?'FAQPage':($slug==='chisiamo'?'AboutPage':'WebPage'));
     if($slug==='grazie'||in_array($slug,hidden_page_slugs(),true)){$meta=$doc->createElement('meta');$meta->setAttribute('name','robots');$meta->setAttribute('content','noindex,follow');$head->appendChild($meta);}
     return str_replace('../../assets/', '../assets/', $doc->saveHTML());
+}
+/** Elenco «Servizi configurati» della cookie policy scritto nella pagina (2.1.63, audit): visibile anche senza JavaScript. */
+function cookie_services_list(DOMDocument $doc,DOMXPath $xp,string $lang): void {
+    $list=$xp->query('//*[@id="configured-services"]')->item(0);if(!$list)return;$s=settings();$en=$lang==='en';
+    while($list->firstChild)$list->removeChild($list->firstChild);
+    $add=function(string $text)use($doc,$list){$li=$doc->createElement('li');$li->textContent=$text;$list->appendChild($li);};
+    foreach(['recaptcha'=>'reCAPTCHA v3','analytics'=>'Google Analytics','ads'=>'Google Ads','meta'=>'Meta Pixel','gtm'=>'Google Tag Manager','clarity'=>'Microsoft Clarity'] as $key=>$label)
+        $add($label.' — '.(!empty($s[$key.'_enabled'])?($en?'configured':'configurato'):($en?'disabled':'disattivato')));
+    $cats=['necessary'=>$en?'Necessary':'Necessari','analytics'=>$en?'Analytics':'Analisi','marketing'=>'Marketing'];
+    foreach((array)($s['custom_codes']??[]) as $code)if(!empty($code['enabled'])&&($code['code']??'')!=='')$add($code['name'].' — '.($en?'configured':'configurato').' ('.($cats[$code['category']]??$code['category']).')');
 }
 // Schede della sezione Guide in home (2.1.43): la prima scheda del template fa da modello (data, titolo, testo, «Leggi →»)
 // e viene ripetuta per i 3 articoli pubblicati più recenti nella lingua della pagina, quelli in evidenza per primi.
@@ -240,7 +268,7 @@ function home_guide_cards(DOMXPath $xp,DOMElement $section,string $lang): bool {
     if(!menu_enabled('blog'))return false;
     $cards=iterator_to_array($xp->query('.//a[span]',$section));if(!$cards)return false;
     require_once __DIR__.'/blog.php';
-    try{$posts=blog_rows(blog_db(),"SELECT slug,title,excerpt,published_at FROM blog_articles WHERE status='published' AND language=? ORDER BY featured DESC,published_at DESC,id DESC LIMIT 3",[$lang]);}
+    try{$posts=blog_rows(blog_db(),"SELECT slug,title,excerpt,content,published_at FROM blog_articles WHERE status='published' AND language=? ORDER BY featured DESC,published_at DESC,id DESC LIMIT 3",[$lang]);}
     catch(Throwable $e){error_log('Guide in home: blog non leggibile: '.$e->getMessage());return false;}
     if(!$posts)return false;
     $model=$cards[0];$grid=$model->parentNode;foreach($cards as $card)$card->parentNode->removeChild($card);
@@ -248,9 +276,9 @@ function home_guide_cards(DOMXPath $xp,DOMElement $section,string $lang): bool {
     $months=$lang==='en'?['January','February','March','April','May','June','July','August','September','October','November','December']:['gennaio','febbraio','marzo','aprile','maggio','giugno','luglio','agosto','settembre','ottobre','novembre','dicembre'];
     foreach($posts as $p){
         $card=$model->cloneNode(true);$spans=iterator_to_array($xp->query('./span',$card));
-        $card->setAttribute('href','../blog/articolo/'.rawurlencode($p['slug']).($lang==='en'?'?lang=en':''));$card->removeAttribute('target');
+        $card->setAttribute('href',($lang==='en'?'blog/':'../blog/articolo/').rawurlencode($p['slug']));$card->removeAttribute('target');
         $d=DateTimeImmutable::createFromFormat('!Y-m-d',substr((string)$p['published_at'],0,10));
-        $excerpt=trim((string)$p['excerpt']);if(mb_strlen($excerpt)>200)$excerpt=rtrim(mb_substr($excerpt,0,197)).'…';
+        $excerpt=blog_excerpt((string)$p['excerpt'],200,(string)$p['content']);
         foreach([$d?$d->format('j').' '.$months[(int)$d->format('n')-1].' '.$d->format('Y'):'',(string)$p['title'],$excerpt] as $i=>$text)if(isset($spans[$i]))$spans[$i]->textContent=$text;
         if(isset($spans[2])&&$excerpt==='')$card->removeChild($spans[2]);
         foreach(iterator_to_array($xp->query('.//*[@data-om-slot]',$card)) as $el)foreach(['data-om-slot','data-om-type','data-om-label','data-om-max','data-cd-slot'] as $attr)$el->removeAttribute($attr);
@@ -283,7 +311,7 @@ function seo_indexes(): void {
     require_once __DIR__.'/blog.php';
     $blogOn=menu_enabled('blog');$posts=[];
     if($base&&$blogOn){$posts=blog_seo_entries();$blogDay=max(array_map(fn($p)=>substr((string)$p['updated_at'],0,10),$posts)?:[gmdate('Y-m-d')]);
-        $xml.='<url><loc>'.htmlspecialchars($base.'/blog/',ENT_XML1).'</loc><lastmod>'.$blogDay.'</lastmod></url><url><loc>'.htmlspecialchars($base.'/blog/?lang=en',ENT_XML1).'</loc><lastmod>'.$blogDay.'</lastmod></url>';
+        $xml.='<url><loc>'.htmlspecialchars($base.'/blog/',ENT_XML1).'</loc><lastmod>'.$blogDay.'</lastmod></url><url><loc>'.htmlspecialchars($base.'/en/blog/',ENT_XML1).'</loc><lastmod>'.$blogDay.'</lastmod></url>';
         foreach($posts as $post){
             $xml.='<url><loc>'.htmlspecialchars(blog_article_url(['base_url'=>$base.'/blog'],$post),ENT_XML1).'</loc>';
             if(preg_match('/^\d{4}-\d{2}-\d{2}/',(string)$post['updated_at'],$day))$xml.='<lastmod>'.$day[0].'</lastmod>';

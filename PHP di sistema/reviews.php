@@ -140,7 +140,8 @@ function reviews_render(DOMDocument $doc,DOMElement $box,array $d,string $lang):
     }else{
         $row=$el('div','gr-summary');$row->appendChild($el('strong','gr-score',$num((float)$d['rating'])));$row->appendChild($stars((float)$d['rating']));$row->appendChild($link((string)($d['url']??''),'gr-count',$plural((int)$d['count'])));$box->appendChild($row);
     }
-    $box->appendChild($el('p','gr-source',$en?'Reviews from Google Maps':'Recensioni da Google Maps'));
+    // 2.1.63 (audit, trasparenza): si dice che le recensioni mostrate sono una selezione da 4 e 5 stelle.
+    $box->appendChild($el('p','gr-source',$en?'Reviews from Google Maps. A selection of 4 and 5-star reviews is shown here; the average and total include every review.':'Recensioni da Google Maps. Qui una selezione da 4 e 5 stelle; media e totale comprendono tutte le recensioni.'));
     $box->removeAttribute('hidden');
 }
 /** Dopo una nuova lettura da Google aggiorna le pagine statiche con il riquadro recensioni (se la build è libera). */

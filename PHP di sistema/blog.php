@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-const BLOG_VERSION = '2.1.62';
+const BLOG_VERSION = '2.1.63';
 const PRIVATE_DIR = ROOT . '/data';
 function blog_h($v): string { return htmlspecialchars((string)$v, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); }
 function blog_abort_request(int $code, string $message): void { http_response_code($code); echo blog_h($message); exit; }
@@ -51,6 +51,8 @@ const BLOG_EXTRA_COLUMNS = [
     'faq_json' => 'TEXT',
     'role' => "VARCHAR(12) NOT NULL DEFAULT ''",
     'pillar_slug' => "VARCHAR(180) NOT NULL DEFAULT ''",
+    // Slug precedenti separati da spazio (2.1.63): cambiando lo slug il vecchio indirizzo risponde con un 301.
+    'old_slugs' => 'TEXT',
 ];
 function blog_columns(PDO $pdo): array {
     $mysql = $pdo->getAttribute(PDO::ATTR_DRIVER_NAME) === 'mysql';
@@ -83,7 +85,27 @@ function blog_rows(PDO $db, string $sql, array $params = []): array { $s = $db->
 function blog_one(PDO $db, string $sql, array $params = []): ?array { return blog_rows($db, $sql, $params)[0] ?? null; }
 function blog_base(array $c): string { return rtrim($c['base_url'], '/'); }
 function blog_url(array $c, string $path = ''): string { return blog_base($c) . $path; }
-function blog_article_url(array $c, array $a): string { return blog_url($c, '/articolo/' . rawurlencode($a['slug'])) . (($a['language'] ?? 'it') === 'en' ? '?lang=en' : ''); }
+// Blog inglese con lo stesso schema del sito (2.1.63, audit): /en/blog/ e /en/blog/<slug>. I vecchi indirizzi
+// /blog/?lang=en e /blog/articolo/<slug>?lang=en rispondono con un 301 (blog/index.php).
+function blog_home_url(array $c, string $lang): string { return $lang === 'en' ? preg_replace('~/blog$~', '', blog_base($c)) . '/en/blog/' : blog_url($c, '/'); }
+function blog_article_url(array $c, array $a): string { return ($a['language'] ?? 'it') === 'en' ? blog_home_url($c, 'en') . rawurlencode($a['slug']) : blog_url($c, '/articolo/' . rawurlencode($a['slug'])); }
+/** Estratto senza parole tagliate (2.1.63): taglia all'ultima parola intera entro $max caratteri e aggiunge «…».
+ *  Anche gli estratti già salvati tronchi a metà parola (es. «da solo a stabi») perdono il pezzo di parola. */
+function blog_excerpt(string $text, int $max = 220, string $content = ''): string {
+    $text = trim((string)preg_replace('/\s+/u', ' ', $text));
+    if ($text === '' && $content !== '') $text = trim((string)preg_replace('/\s+/u', ' ', html_entity_decode(strip_tags($content), ENT_QUOTES | ENT_HTML5, 'UTF-8')));
+    $cut = false;
+    if (mb_strlen($text) > $max) { $text = mb_substr($text, 0, $max + 1); $cut = true; }
+    elseif ($content !== '' && !preg_match('/[.!?…»"”)]$/u', $text)) {
+        // Estratto salvato tronco: il testo dell'articolo prosegue subito dopo, senza spazio, nella stessa parola.
+        $plain = trim((string)preg_replace('/\s+/u', ' ', html_entity_decode(strip_tags($content), ENT_QUOTES | ENT_HTML5, 'UTF-8')));
+        $at = $text !== '' ? mb_strpos($plain, $text) : false;
+        if ($at !== false && mb_strlen($plain) > $at + mb_strlen($text)) { $text .= mb_substr($plain, $at + mb_strlen($text), 1); $cut = true; }
+    }
+    if (!$cut) return $text;
+    if (preg_match('/^(.*\S)\s+\S*$/su', $text, $m) && !preg_match('/\s/u', mb_substr($text, -1))) $text = $m[1];
+    return rtrim($text, " ,;:–—-") . '…';
+}
 function blog_valid_url(string $v, bool $empty = true): bool { return ($empty && $v === '') || (filter_var($v, FILTER_VALIDATE_URL) !== false && in_array(strtolower((string)parse_url($v, PHP_URL_SCHEME)), ['https','http'], true) && !parse_url($v, PHP_URL_USER) && !parse_url($v, PHP_URL_PASS)); }
 function blog_slugify(string $v): string {
     $ascii = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $v);
@@ -134,7 +156,7 @@ function blog_article_data(array $in, bool $webhook, array $c): array {
     if ($published !== '' && (!preg_match('/^\d{4}-\d{2}-\d{2}$/D', $published) || !($d = DateTimeImmutable::createFromFormat('!Y-m-d', $published)) || $d->format('Y-m-d') !== $published || $published > gmdate('Y-m-d'))) throw new InvalidArgumentException('Data non valida o futura. Per programmare una pubblicazione mantenere la bozza.');
     return [
         'language' => (($in['language'] ?? 'it') === 'en' ? 'en' : 'it'), 'source_id' => $source, 'slug' => $slug, 'title' => $title,
-        'excerpt' => mb_substr(trim(strip_tags((string)($in['excerpt'] ?? mb_substr(strip_tags($content), 0, 180)))), 0, 400),
+        'excerpt' => trim(strip_tags((string)($in['excerpt'] ?? ''))) !== '' ? blog_excerpt(strip_tags((string)$in['excerpt']), 400) : blog_excerpt('', 180, $content),
         'content' => $content, 'category' => mb_substr(trim(strip_tags((string)($in['category'] ?? 'Approfondimenti'))), 0, 80),
         'image_url' => $image, 'image_alt' => mb_substr(trim(strip_tags((string)($in['image_alt'] ?? $title))), 0, 240),
         'status' => $webhook ? (!empty($c['auto_publish']) ? 'published' : 'draft') : (($in['status'] ?? '') === 'published' ? 'published' : 'draft'),
@@ -144,6 +166,11 @@ function blog_article_data(array $in, bool $webhook, array $c): array {
 }
 function blog_persist_article(PDO $db, array $a, ?int $id = null): int {
     if ($id !== null) {
+        $was = blog_one($db, 'SELECT slug, old_slugs FROM blog_articles WHERE id = ?', [$id]);
+        if ($was && isset($a['slug']) && $was['slug'] !== $a['slug']) {
+            $list = array_values(array_diff(array_filter(preg_split('/\s+/', trim((string)$was['old_slugs'] . ' ' . $was['slug']))), [$a['slug']]));
+            $a['old_slugs'] = implode(' ', array_slice(array_unique($list), -20));
+        }
         $sets = implode(',', array_map(fn($k) => "$k = ?", array_keys($a)));
         $s = $db->prepare("UPDATE blog_articles SET $sets WHERE id = ?"); $s->execute([...array_values($a), $id]); return $id;
     }

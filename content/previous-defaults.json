@@ -305,6 +305,27 @@
           "label": "sl@ladiamanteria.com",
           "href": "mailto:sl@ladiamanteria.com"
         }
+      ],
+      "home-contenuto-069": [
+        "One point of contact for a straightforward process."
+      ],
+      "home-contenuto-082": [
+        {
+          "src": "",
+          "alt": "Display cabinets and chandelier at La Diamanteria"
+        }
+      ],
+      "home-contenuto-083": [
+        {
+          "src": "",
+          "alt": "Entrance and window display at La Diamanteria"
+        }
+      ],
+      "home-contenuto-084": [
+        {
+          "src": "",
+          "alt": "Interior and display cabinets at the La Diamanteria showroom"
+        }
       ]
     },
     "meta": {
@@ -368,6 +389,27 @@
           "label": "sl@ladiamanteria.com",
           "href": "mailto:sl@ladiamanteria.com"
         }
+      ],
+      "home-contenuto-069": [
+        "Un solo interlocutore, un processo più lineare."
+      ],
+      "home-contenuto-082": [
+        {
+          "src": "",
+          "alt": "Vetrine e lampadario della sede La Diamanteria"
+        }
+      ],
+      "home-contenuto-083": [
+        {
+          "src": "",
+          "alt": "Ingresso e vetrina della sede La Diamanteria"
+        }
+      ],
+      "home-contenuto-084": [
+        {
+          "src": "",
+          "alt": "Ambiente interno e vetrine dello showroom La Diamanteria"
+        }
       ]
     },
     "meta": {
@@ -427,6 +469,12 @@
           "label": "sl@ladiamanteria.com",
           "href": "mailto:sl@ladiamanteria.com"
         }
+      ],
+      "valutazione-contenuto-002": [
+        {
+          "label": "What we buy",
+          "href": "acquistiamo.html"
+        }
       ]
     }
   },
@@ -456,6 +504,12 @@
         {
           "label": "sl@ladiamanteria.com",
           "href": "mailto:sl@ladiamanteria.com"
+        }
+      ],
+      "valutazione-contenuto-002": [
+        {
+          "label": "Cosa acquistiamo",
+          "href": "acquistiamo.html"
         }
       ]
     }
