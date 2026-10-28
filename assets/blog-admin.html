@@ -1,7 +1,7 @@
 <section id="blog" hidden>
 <h1>Blog e articoli</h1><p>Gestisci il blog integrato nel sito. L’accesso usa questo account amministratore.</p>
 <div class="actions"><button id="blog-new" type="button">Nuovo articolo</button><button id="blog-refresh" type="button">Aggiorna elenco</button><a href="../blog/" target="_blank" rel="noopener">Apri blog ↗</a></div>
-<div id="blog-list" class="panel"></div><p class="hint">Tutti gli articoli, con il pulsante «In evidenza», sono nella scheda <a href="#" id="blog-all-link">Elenco articoli</a>.</p>
+<div id="blog-list" class="panel"></div><form id="blog-display" class="panel"><h2>Aspetto del blog</h2><label><input type="checkbox" name="show_images">Mostra lo spazio immagine (copertina) nell’elenco e negli articoli</label><p class="hint">Disattivato: le schede e gli articoli del blog compaiono senza riquadro immagine. L’immagine resta salvata nell’articolo e viene ancora usata per la condivisione sui social.</p><div class="actions"><button>Salva aspetto</button></div></form><p class="hint">Tutti gli articoli, con il pulsante «In evidenza», sono nella scheda <a href="#" id="blog-all-link">Elenco articoli</a>.</p>
 <form id="blog-editor" class="panel" hidden>
 <h2 id="blog-editor-title">Articolo</h2><input name="id" type="hidden"><input name="base_version" type="hidden">
 <label>Titolo<input name="title" maxlength="240" required></label>
