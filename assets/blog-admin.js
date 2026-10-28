@@ -17,7 +17,7 @@ async function loadBlog(){
  const box=$('#blog-list');box.replaceChildren();blogOffNotice(list,box);const last=list.articles.reduce((m,a)=>!m||Number(a.id)>Number(m.id)?a:m,null);
  if(!last)box.append(el('p','Nessun articolo: crea il primo oppure collega ContentAI o Frase.'));else{box.append(el('h2','Ultimo articolo caricato'));box.append(blogRow(last,loadBlog));}
  const settings=await settingsLoad;
- const c=settings.config;$('#blog-integration').elements.auto_publish.checked=c.auto_publish;
+ const c=settings.config;$('#blog-integration').elements.auto_publish.checked=c.auto_publish;$('#blog-display').elements.show_images.checked=!!c.show_images;
  $('#blog-webhook-url').textContent=c.base_url+'/webhook.php';$('#blog-contentai-url').textContent=c.base_url+'/contentai.php';blogContentaiLog=settings.contentai_log||[];keyState($('#blog-token-state'),c.token_set,c.token_set?'Token salvato (non mostrato): ricezione attiva.':'Ricezione disattivata: genera un token.');
  loadFraseStatus().catch(()=>{});
  $('#blog-db-state').textContent='Database attivo: '+(c.db.driver==='sqlite'?'SQLite locale':('MariaDB · '+c.db.database));
@@ -28,6 +28,7 @@ async function openBlogArticle(id=0){
 }
 $('#blog-new').onclick=()=>openBlogArticle().catch(e=>message(e.message));$('#blog-refresh').onclick=()=>loadBlog().catch(e=>message(e.message));$('#blog-cancel').onclick=()=>{$('#blog-editor').hidden=true;blogEditing=null;};
 $('#blog-editor').onsubmit=async e=>{e.preventDefault();const f=e.target,d=Object.fromEntries(new FormData(f));d.featured=f.elements.featured.checked?1:0;e.submitter.disabled=true;try{await api('blog-save',d);f.hidden=true;await loadBlog();message('Articolo salvato.');}catch(err){message(err.message);}finally{e.submitter.disabled=false;}};
+$('#blog-display').onsubmit=async e=>{e.preventDefault();const f=e.target;e.submitter.disabled=true;try{await api('blog-display',{show_images:f.elements.show_images.checked});message(f.elements.show_images.checked?'Spazio immagine visibile nel blog.':'Spazio immagine nascosto nel blog.');}catch(err){message(err.message);}finally{e.submitter.disabled=false;}};
 $('#blog-integration').onsubmit=async e=>{e.preventDefault();const f=e.target;e.submitter.disabled=true;try{await api('blog-config',{auto_publish:f.elements.auto_publish.checked,current_password:f.elements.current_password.value});f.elements.current_password.value='';await loadBlog();message('Preferenza salvata.');}catch(err){message(err.message);}finally{e.submitter.disabled=false;}};
 $('#blog-token').onclick=async()=>{const f=$('#blog-integration');try{const d=await api('blog-token',{current_password:f.elements.current_password.value});f.elements.current_password.value='';$('#blog-token-once').textContent='Copia il token ora, non verrà mostrato di nuovo: '+d.token;await loadBlog();message('Token generato: il precedente è revocato.');}catch(err){message(err.message);}};
 $('#blog-database').onsubmit=async e=>{e.preventDefault();const d=Object.fromEntries(new FormData(e.target));d.port=Number(d.port);e.submitter.disabled=true;try{await api('blog-database',d);e.target.reset();await loadBlog();message('Articoli copiati e verificati. Nuovo database attivo.');}catch(err){message(err.message);}finally{e.submitter.disabled=false;}};

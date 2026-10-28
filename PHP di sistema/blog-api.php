@@ -67,6 +67,10 @@ function blog_api(string $action,string $method,array $input): never {
             $visible=$c;unset($visible['webhook_hash'],$visible['db']['password'],$visible['frase_api_key'],$visible['frase_webhook_secret'],$visible['wp_password_hash']);$visible['token_set']=$c['webhook_hash']!=='';
             respond(['config'=>$visible,'contentai_log'=>contentai_log_lines()]);
         }
+        // Spazio immagine nel blog pubblico (2.1.70): solo aspetto, nessuna password richiesta.
+        if($action==='blog-display'&&$method==='POST'){
+            if(!is_bool($input['show_images']??null))fail('Selezione non valida.');$c['show_images']=$input['show_images'];blog_save_config($c);audit('blog-display',$input['show_images']?'images-on':'images-off');respond(['ok'=>true]);
+        }
         if(in_array($action,['blog-config','blog-token','blog-database'],true)&&$method==='POST')blog_reauthenticate($input);
         if($action==='blog-config'&&$method==='POST'){
             if(!is_bool($input['auto_publish']??null))fail('Selezione non valida.');$c['auto_publish']=$input['auto_publish'];blog_save_config($c);audit('blog-config','publication');respond(['ok'=>true]);
