@@ -28,11 +28,12 @@ function reviews_fetch_google(string $lang): array {
     $reviews=[];
     foreach(array_slice((array)($v['reviews']??[]),0,5) as $r){
         if((int)($r['rating']??0)<REVIEWS_MIN_RATING)continue;
-        $text=trim((string)($r['text']['text']??''));
+        // Testo originale dell'autore (2.1.71, checklist di lancio): niente traduzioni automatiche né «Tradotta da Google».
+        $text=trim((string)($r['originalText']['text']??$r['text']['text']??''));
         $author=$r['authorAttribution']??[];
         $reviews[]=['author'=>mb_substr((string)($author['displayName']??''),0,100),'author_url'=>reviews_url($author['uri']??''),'photo'=>reviews_photo($author['photoUri']??''),'rating'=>max(1,min(5,(int)($r['rating']??0))),
             'time'=>mb_substr((string)($r['relativePublishTimeDescription']??''),0,60),'text'=>mb_substr($text,0,2000),'url'=>reviews_url($r['googleMapsUri']??''),
-            'translated'=>isset($r['originalText']['languageCode'],$r['text']['languageCode'])&&$r['originalText']['languageCode']!==$r['text']['languageCode'],
+            'translated'=>false,
             'ts'=>(int)strtotime((string)($r['publishTime']??''))];
     }
     // Places API (New) dà solo le 5 recensioni "più pertinenti": se la chiave abilita anche la Places API classica
@@ -45,7 +46,7 @@ function reviews_fetch_google(string $lang): array {
 /** Le 5 recensioni più recenti dalla Places API classica; array vuoto se la chiave non la abilita. */
 function reviews_fetch_newest(string $lang): array {
     $s=settings();
-    $ch=curl_init('https://maps.googleapis.com/maps/api/place/details/json?'.http_build_query(['place_id'=>$s['reviews_place_id'],'fields'=>'reviews','reviews_sort'=>'newest','language'=>$lang,'key'=>$s['reviews_api_key']]));
+    $ch=curl_init('https://maps.googleapis.com/maps/api/place/details/json?'.http_build_query(['place_id'=>$s['reviews_place_id'],'fields'=>'reviews','reviews_sort'=>'newest','reviews_no_translations'=>'true','language'=>$lang,'key'=>$s['reviews_api_key']]));
     curl_setopt_array($ch,[CURLOPT_RETURNTRANSFER=>true,CURLOPT_CONNECTTIMEOUT=>5,CURLOPT_TIMEOUT=>10,CURLOPT_PROTOCOLS=>CURLPROTO_HTTPS,CURLOPT_HTTPHEADER=>['Accept: application/json','Referer: '.seo_base().'/']]);
     $v=json_decode((string)curl_exec($ch),true);curl_close($ch);
     if(!is_array($v)||($v['status']??'')!=='OK')return [];
@@ -53,7 +54,7 @@ function reviews_fetch_newest(string $lang): array {
     foreach((array)($v['result']['reviews']??[]) as $r){
         if((int)($r['rating']??0)<REVIEWS_MIN_RATING)continue;
         $out[]=['author'=>mb_substr((string)($r['author_name']??''),0,100),'author_url'=>reviews_url($r['author_url']??''),'photo'=>reviews_photo($r['profile_photo_url']??''),'rating'=>max(1,min(5,(int)$r['rating'])),
-            'time'=>mb_substr((string)($r['relative_time_description']??''),0,60),'text'=>mb_substr(trim((string)($r['text']??'')),0,2000),'url'=>'','translated'=>!empty($r['translated']),'ts'=>(int)($r['time']??0)];
+            'time'=>mb_substr((string)($r['relative_time_description']??''),0,60),'text'=>mb_substr(trim((string)($r['text']??'')),0,2000),'url'=>'','translated'=>false,'ts'=>(int)($r['time']??0)];
     }
     return $out;
 }
@@ -112,7 +113,8 @@ function reviews_render(DOMDocument $doc,DOMElement $box,array $d,string $lang):
     $link=function(string $href,string $cls,string $text)use($el):DOMElement{$a=$el($href!==''?'a':'span',$cls,$text);if($href!==''){$a->setAttribute('href',$href);$a->setAttribute('target','_blank');$a->setAttribute('rel','noopener nofollow');}return $a;};
     $g=function(string $cls='')use($doc,$el):DOMElement{$s=$el('span','gr-g'.($cls!==''?' '.$cls:''));$f=$doc->createDocumentFragment();$f->appendXML(REVIEWS_G_SVG);$s->appendChild($f);return $s;};
     $num=fn(float $v)=>$en?number_format($v,1,'.',''):number_format($v,1,',','');
-    $stars=function(float $v,string $cls='')use($el,$num,$en):DOMElement{$s=$el('span','gr-stars'.($cls!==''?' '.$cls:''));$s->setAttribute('role','img');$s->setAttribute('aria-label',$num($v).($en?' out of 5 stars':' stelle su 5'));$s->appendChild($el('span','gr-stars-base','★★★★★'));$f=$el('span','gr-stars-fill','★★★★★');$f->setAttribute('style','width:'.max(0,min(100,round($v/5*100))).'%');$s->appendChild($f);return $s;};
+    // Stelle disegnate dal CSS (2.1.71): nel testo della pagina non compaiono «★★★★★★★★★★» (10 stelle per chi legge il testo).
+    $stars=function(float $v,string $cls='')use($el,$num,$en):DOMElement{$s=$el('span','gr-stars'.($cls!==''?' '.$cls:''));$s->setAttribute('role','img');$s->setAttribute('aria-label',$num($v).($en?' out of 5 stars':' stelle su 5'));$b=$el('span','gr-stars-base');$b->setAttribute('aria-hidden','true');$s->appendChild($b);$f=$el('span','gr-stars-fill');$f->setAttribute('aria-hidden','true');$f->setAttribute('style','width:'.max(0,min(100,round($v/5*100))).'%');$s->appendChild($f);return $s;};
     $plural=fn(int $n)=>$en?($n===1?'1 review':$n.' reviews'):($n===1?'1 recensione':$n.' recensioni');
     while($box->firstChild)$box->removeChild($box->firstChild);
     if($box->getAttribute('data-google-reviews')==='full'){
@@ -131,7 +133,6 @@ function reviews_render(DOMDocument $doc,DOMElement $box,array $d,string $lang):
                 $who=$el('div','gr-who');$who->appendChild($link((string)($rv['author_url']??''),'gr-author',(string)($rv['author']?:'Google')));$who->appendChild($el('span','gr-time',(string)$rv['time']));$head->appendChild($who);$head->appendChild($g('gr-card-g'));
                 $c->appendChild($head);$c->appendChild($stars((float)$rv['rating'],'gr-stars-card'));
                 if(($rv['text']??'')!==''){$c->appendChild($el('p','gr-text'.(mb_strlen($rv['text'])>180?' gr-clamp':''),$rv['text']));}
-                if(!empty($rv['translated']))$c->appendChild($el('span','gr-note',$en?'Translated by Google':'Tradotta da Google'));
                 $track->appendChild($c);
             }
             $car->appendChild($track);$main->appendChild($car);$inner->appendChild($main);

@@ -11,6 +11,11 @@
  function loadScript(src){return new Promise((resolve,reject)=>{const s=element('script');s.src=src;s.async=true;s.onload=resolve;s.onerror=()=>{s.remove();reject(Error(t('Servizio esterno non disponibile. Riprova.','The external service is unavailable. Please try again.')));};document.head.append(s);});}
  const configPromise=fetch(new URL('../api/index.php?action=config',scriptUrl).href).then(async r=>{if(!r.ok)throw Error(t('Impossibile caricare le impostazioni del sito.','Unable to load website settings.'));const c=await r.json();config=c;if(preference&&preference.version!==c.consent_version){preference=null;showBanner();}if(preference)activate(c);return c;});
  configPromise.catch(()=>{});
+ // 2.1.71 (checklist D12): a invio riuscito la pagina di ringraziamento mette subito nel dataLayer l'evento «valuation_submitted»
+ // (una volta per richiesta). Resta nel browser: lo leggono GTM o gtag solo se vengono caricati, cioè dopo il consenso.
+ if(document.body?.dataset.page==='grazie'){let receipt='';try{receipt=sessionStorage.getItem('cd_receipt')||'';}catch{}
+  if(/^R-[A-F0-9]{12}$/.test(receipt)){const mark='cd_datalayer_'+receipt;let done=false;try{done=sessionStorage.getItem(mark)==='1';}catch{}
+   if(!done){window.dataLayer.push({event:'valuation_submitted',form_id:'valutazione',lead_id:receipt,language:en?'en':'it'});try{sessionStorage.setItem(mark,'1');}catch{}}}}
  // Altri codici di tracciamento (2.1.44): l'HTML incollato in Amministrazione, inserito solo con il consenso della sua categoria.
  // Gli script in linea arrivano dall'API come file, perché la CSP del sito non permette script in linea.
  const JS_TYPE=/^(|text\/javascript|application\/javascript|module)$/i,customLoaded=new Set();
@@ -29,11 +34,13 @@
   if(c.clarity_enabled&&p.analytics){window.clarity=window.clarity||function(){(window.clarity.q=window.clarity.q||[]).push(arguments);};clarity('consentv2',{ad_Storage:p.marketing?'granted':'denied',analytics_Storage:'granted'});loadScript('https://www.clarity.ms/tag/'+encodeURIComponent(c.clarity_id)).catch(()=>{});}
   customCodes(c,cat=>cat==='analytics'?p.analytics:cat==='marketing'?p.marketing:false);
   if(c.meta_enabled&&p.marketing){if(!window.fbq){const f=function(){f.callMethod?f.callMethod.apply(f,arguments):f.queue.push(arguments);};f.queue=[];f.loaded=true;f.version='2.0';f.push=f;window.fbq=f;window._fbq=f;}fbq('set','autoConfig',false,c.meta_id);fbq('init',c.meta_id);fbq('track','PageView');loadScript('https://connect.facebook.net/en_US/fbevents.js').catch(()=>{});}
+  // GA4 (2.1.71): evento consigliato «generate_lead» per segnare l'invio come evento chiave.
+  if(document.body.dataset.page==='grazie'&&ga){let receipt='';try{receipt=sessionStorage.getItem('cd_receipt')||'';}catch{}const mark='cd_conversion_ga_'+receipt;let done=false;try{done=sessionStorage.getItem(mark)==='1';}catch{}if(/^R-[A-F0-9]{12}$/.test(receipt)&&!done){gtag('event','generate_lead',{form_id:'valutazione'});try{sessionStorage.setItem(mark,'1');}catch{}}}
   // Only a real successful submission produces a conversion; revisiting does not duplicate it.
   if(document.body.dataset.page==='grazie'&&p.marketing){let receipt='';try{receipt=sessionStorage.getItem('cd_receipt')||'';}catch{}
    if(/^R-[A-F0-9]{12}$/.test(receipt)){
-    for(const service of ['ads','meta','gtm']){if(!c[service+'_enabled']||(service==='ads'&&!c.ads_label)||(service==='gtm'&&!p.analytics))continue;const mark='cd_conversion_'+service+'_'+receipt;let done=false;try{done=sessionStorage.getItem(mark)==='1';}catch{}if(done)continue;
-     if(service==='ads')gtag('event','conversion',{send_to:c.ads_id+'/'+c.ads_label});if(service==='meta'&&window.fbq)fbq('track','Lead');if(service==='gtm')dataLayer.push({event:'valuation_submitted'});try{sessionStorage.setItem(mark,'1');}catch{}
+    for(const service of ['ads','meta']){if(!c[service+'_enabled']||(service==='ads'&&!c.ads_label)||(service==='gtm'&&!p.analytics))continue;const mark='cd_conversion_'+service+'_'+receipt;let done=false;try{done=sessionStorage.getItem(mark)==='1';}catch{}if(done)continue;
+     if(service==='ads')gtag('event','conversion',{send_to:c.ads_id+'/'+c.ads_label});if(service==='meta'&&window.fbq)fbq('track','Lead');try{sessionStorage.setItem(mark,'1');}catch{}
     }
    }
   }
