@@ -38,18 +38,25 @@ function reviews_fetch_google(string $lang): array {
     }
     // Places API (New) dà solo le 5 recensioni "più pertinenti": se la chiave abilita anche la Places API classica
     // si aggiungono le 5 più recenti (reviews_sort=newest). Se non è abilitata si resta con le prime (2.1.57).
-    foreach(reviews_fetch_newest($lang) as $r){$dup=false;foreach($reviews as $x)if($x['author']===$r['author']&&abs($x['ts']-$r['ts'])<86400){$dup=true;break;}if(!$dup)$reviews[]=$r;}
+    $newest_error=null;
+    foreach(reviews_fetch_newest($lang,$newest_error) as $r){$dup=false;foreach($reviews as $x)if($x['author']===$r['author']&&abs($x['ts']-$r['ts'])<86400){$dup=true;break;}if(!$dup)$reviews[]=$r;}
     $reviews=reviews_sorted($reviews);
     return ['name'=>mb_substr((string)($v['displayName']['text']??''),0,150),'rating'=>round((float)($v['rating']??0),1),'count'=>(int)($v['userRatingCount']??0),'url'=>reviews_url($v['googleMapsUri']??''),
-        'write_url'=>'https://search.google.com/local/writereview?placeid='.rawurlencode($s['reviews_place_id']),'reviews'=>$reviews];
+        'write_url'=>'https://search.google.com/local/writereview?placeid='.rawurlencode($s['reviews_place_id']),'reviews'=>$reviews,
+        // 2.1.72: esito della lettura «più recenti», mostrato in Admin (senza, Google sceglie lui 5 recensioni anche di anni fa).
+        'newest_error'=>$newest_error];
 }
-/** Le 5 recensioni più recenti dalla Places API classica; array vuoto se la chiave non la abilita. */
-function reviews_fetch_newest(string $lang): array {
+/** Le 5 recensioni più recenti dalla Places API classica; array vuoto (e motivo in $error) se la chiave non la abilita. */
+function reviews_fetch_newest(string $lang,?string &$error=null): array {
     $s=settings();
     $ch=curl_init('https://maps.googleapis.com/maps/api/place/details/json?'.http_build_query(['place_id'=>$s['reviews_place_id'],'fields'=>'reviews','reviews_sort'=>'newest','reviews_no_translations'=>'true','language'=>$lang,'key'=>$s['reviews_api_key']]));
     curl_setopt_array($ch,[CURLOPT_RETURNTRANSFER=>true,CURLOPT_CONNECTTIMEOUT=>5,CURLOPT_TIMEOUT=>10,CURLOPT_PROTOCOLS=>CURLPROTO_HTTPS,CURLOPT_HTTPHEADER=>['Accept: application/json','Referer: '.seo_base().'/']]);
-    $v=json_decode((string)curl_exec($ch),true);curl_close($ch);
-    if(!is_array($v)||($v['status']??'')!=='OK')return [];
+    $body=curl_exec($ch);$curl_error=curl_error($ch);curl_close($ch);$v=json_decode((string)$body,true);
+    if(!is_array($v)||($v['status']??'')!=='OK'){
+        $error=$body===false?'Google non raggiungibile: '.$curl_error:'Google ha risposto '.(is_array($v)?(string)($v['status']??'?'):'in modo non valido').(is_array($v)&&!empty($v['error_message'])?': '.mb_substr((string)$v['error_message'],0,300):'.');
+        error_log('Recensioni Google più recenti: '.$error);
+        return [];
+    }
     $out=[];
     foreach((array)($v['result']['reviews']??[]) as $r){
         if((int)($r['rating']??0)<REVIEWS_MIN_RATING)continue;
@@ -82,7 +89,7 @@ function reviews_cached(string $lang): ?array {
     return reviews_min($c['data']);
 }
 /** Anche le copie salvate prima della 2.1.36 mostrano solo le recensioni da 4 stelle in su. */
-function reviews_min(array $d): array { $d['reviews']=reviews_sorted((array)($d['reviews']??[]));return $d; }
+function reviews_min(array $d): array { $d['reviews']=reviews_sorted((array)($d['reviews']??[]));unset($d['newest_error']);return $d; }
 /** Dati per le pagine pubbliche: copia in cache se recente, altrimenti nuova lettura da Google (una sola alla volta). */
 function reviews_public(string $lang): ?array {
     $s=settings();if(!$s['reviews_enabled'])return null;
@@ -160,11 +167,12 @@ function reviews_test(): array {
         $out[$lang]=$data;
     }
     foreach(['it','en'] as $lang)reviews_republish($lang);
-    return ['rating'=>$out['it']['rating'],'count'=>$out['it']['count'],'shown'=>count($out['it']['reviews'])];
+    return ['rating'=>$out['it']['rating'],'count'=>$out['it']['count'],'shown'=>count($out['it']['reviews']),'newest_error'=>$out['it']['newest_error']];
 }
 /** Stato per l'admin: ultima lettura riuscita ed eventuale errore. */
 function reviews_status(): array {
     $c=is_file(reviews_cache_path('it'))?json_decode((string)file_get_contents(reviews_cache_path('it')),true):null;
-    if(!is_array($c))return ['fetched_at'=>null,'error'=>null,'rating'=>null,'count'=>null];
-    return ['fetched_at'=>!empty($c['fetched_at'])?gmdate('c',(int)$c['fetched_at']):null,'error'=>$c['error']??null,'rating'=>$c['data']['rating']??null,'count'=>$c['data']['count']??null];
+    if(!is_array($c))return ['fetched_at'=>null,'error'=>null,'rating'=>null,'count'=>null,'shown'=>null,'newest_error'=>null];
+    return ['fetched_at'=>!empty($c['fetched_at'])?gmdate('c',(int)$c['fetched_at']):null,'error'=>$c['error']??null,'rating'=>$c['data']['rating']??null,'count'=>$c['data']['count']??null,
+        'shown'=>isset($c['data']['reviews'])?count(reviews_sorted((array)$c['data']['reviews'])):null,'newest_error'=>is_array($c['data']??null)?($c['data']['newest_error']??(array_key_exists('newest_error',$c['data'])?null:'non ancora verificato: premi «Prova il collegamento con Google»')):null];
 }
