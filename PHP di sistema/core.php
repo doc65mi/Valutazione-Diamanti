@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-const APP_VERSION = '2.1.70';
+const APP_VERSION = '2.1.71';
 const ROOT = __DIR__ . '/..';
 const PAGE_SLUGS = ['home', 'acquistiamo', 'chisiamo', 'faq', 'valutazione', 'grazie', 'privacy', 'cookie'];
 // Indirizzi inglesi per le pagine EN (2.1.52, audit): /en/sell-diamonds.html ecc. I vecchi nomi italiani restano come rimandi.
@@ -232,7 +232,7 @@ function build_html(string $slug,string $lang,array $c): string {
     $doc->getElementsByTagName('body')->item(0)->appendChild($toolbar);
     $head=$doc->getElementsByTagName('head')->item(0);
     $icon=$doc->createElement('link');$icon->setAttribute('rel','icon');$icon->setAttribute('type','image/svg+xml');$icon->setAttribute('href','../assets/logo.svg');$head->appendChild($icon);
-    $css=$doc->createElement('link');$css->setAttribute('rel','stylesheet');$css->setAttribute('href','../assets/frontend-ui.css');$head->appendChild($css);
+    $css=$doc->createElement('link');$css->setAttribute('rel','stylesheet');$css->setAttribute('href','../assets/frontend-ui.css?v='.APP_VERSION);$head->appendChild($css);
     foreach(['frontend-ui.js','frontend-editor.js'] as $file){$script=$doc->createElement('script');$script->setAttribute('src','../assets/'.$file);$script->setAttribute('defer','defer');$head->appendChild($script);}
     $mainNav=$xp->query('//header//nav[not(contains(@class,"language-nav"))]')->item(0);
     // Blog anche nell'intestazione di valutazione e grazie (2.1.63, audit); in inglese /en/blog/.
@@ -247,6 +247,8 @@ function build_html(string $slug,string $lang,array $c): string {
     // Link al Blog nel footer, dopo le FAQ (2.1.63, audit).
     if(menu_enabled('blog'))foreach($xp->query('//footer//a[@href="faq.html"]') as $faq){$a=$faq->cloneNode(false);$a->setAttribute('href',$blogHref);$a->removeAttribute('data-cd-slot');$a->textContent='Blog';$faq->parentNode->insertBefore($a,$faq->nextSibling);$faq->parentNode->insertBefore($doc->createTextNode("\n"),$a);break;}
     if($slug==='cookie')cookie_services_list($doc,$xp,$lang);
+    if($slug==='privacy')privacy_services_block($doc,$xp,$lang);
+    launch_checklist_fixes($doc,$xp,$lang,$slug);
     text_fix_nodes($xp,$lang);
     foreach($xp->query('//meta[@name="description"]') as $m)$m->setAttribute('content',phone_text(text_fix($m->getAttribute('content'),$lang)));
     seo_verification_meta($doc);
@@ -270,6 +272,41 @@ function cookie_services_list(DOMDocument $doc,DOMXPath $xp,string $lang): void 
         $add($label.' — '.(!empty($s[$key.'_enabled'])?($en?'configured':'configurato'):($en?'disabled':'disattivato')));
     $cats=['necessary'=>$en?'Necessary':'Necessari','analytics'=>$en?'Analytics':'Analisi','marketing'=>'Marketing'];
     foreach((array)($s['custom_codes']??[]) as $code)if(!empty($code['enabled'])&&($code['code']??'')!=='')$add($code['name'].' — '.($en?'configured':'configurato').' ('.($cats[$code['category']]??$code['category']).')');
+}
+/** Informativa privacy (2.1.71, checklist di lancio D17): servizi davvero attivi, gestione del modulo, hosting e durata dei log,
+ *  scritti dopo il paragrafo «Accesso ai dati e fornitori» con i valori di Privacy e integrazioni. */
+function privacy_services_block(DOMDocument $doc,DOMXPath $xp,string $lang): void {
+    $anchor=$xp->query('//*[@data-cd-slot="privacy-contenuto-014"]')->item(0);if(!$anchor)return;$s=settings();$en=$lang==='en';
+    $active=[];foreach(['recaptcha'=>'Google reCAPTCHA v3','analytics'=>'Google Analytics 4','ads'=>'Google Ads','gtm'=>'Google Tag Manager','meta'=>'Meta Pixel','clarity'=>'Microsoft Clarity'] as $k=>$label)if(!empty($s[$k.'_enabled']))$active[]=$label;
+    if(!empty($s['reviews_enabled']))$active[]=$en?'Google Places API (reviews, requested by our server: no visitor data is sent)':'Google Places API (recensioni, lette dal nostro server: nessun dato dei visitatori viene inviato)';
+    foreach((array)($s['custom_codes']??[]) as $code)if(!empty($code['enabled'])&&($code['code']??'')!=='')$active[]=(string)$code['name'];
+    $hosting=trim((string)($s['legal_hosting']??''));$days=(int)($s['log_retention_days']??30);
+    $box=$doc->createElement('div');$box->setAttribute('class','privacy-services');
+    $p=function(string $text)use($doc,$box){$e=$doc->createElement('p');$e->textContent=$text;$box->appendChild($e);};
+    $p($en?'Services active on this website today:':'Servizi attivi oggi su questo sito:');
+    $ul=$doc->createElement('ul');$ul->setAttribute('id','privacy-active-services');
+    foreach($active?:[$en?'No analytics, advertising or tracking service is active.':'Nessun servizio di analisi, pubblicità o tracciamento è attivo.'] as $label){$li=$doc->createElement('li');$li->textContent=$label;$ul->appendChild($li);}
+    $box->appendChild($ul);
+    if($active)$p($en?'Services not listed above (for example Google Analytics, Google Ads, Tag Manager or Meta Pixel when not listed) are not used.':'I servizi non elencati qui sopra (ad esempio Google Analytics, Google Ads, Tag Manager o Meta Pixel, se assenti dall’elenco) non sono utilizzati.');
+    $p($en?'The valuation form is managed directly by this website on our own server: no external form provider is used. Notification emails are sent from our mail server.':'Il modulo di valutazione è gestito direttamente da questo sito, sul nostro server: non usiamo fornitori esterni di moduli. Le email di notifica partono dal nostro server di posta.');
+    $p(($en?'Hosting: ':'Hosting: ').($hosting!==''?$hosting:($en?'the website’s hosting provider, acting as data processor':'il fornitore di hosting del sito, nominato responsabile del trattamento')).'.');
+    $p($en?'Technical logs (IP address, date, requested page, browser) are kept by the web server for up to '.$days.' days for security purposes and then deleted; anti-abuse counters linked to the IP address are deleted within 24 hours.':'I log tecnici (indirizzo IP, data, pagina richiesta, browser) sono conservati dal server web per al massimo '.$days.' giorni a fini di sicurezza e poi cancellati; i contatori anti-abuso legati all’indirizzo IP sono cancellati entro 24 ore.');
+    $anchor->parentNode->insertBefore($box,$anchor->nextSibling);
+}
+/** Correzioni della checklist di lancio (2.1.71) applicate a ogni pubblicazione, anche alle pagine già modificate dall'editor. */
+function launch_checklist_fixes(DOMDocument $doc,DOMXPath $xp,string $lang,string $slug): void {
+    // D15: link solo icona (pulsante WhatsApp fisso): testo nascosto alla vista, così chi legge la pagina non vede l'URL in chiaro.
+    foreach($xp->query('//body//a[@aria-label and @href]') as $a)if(trim($a->textContent)===''){$t=$doc->createElement('span');$t->setAttribute('class','sr-only');$t->textContent=$a->getAttribute('aria-label');$a->appendChild($t);}
+    // D15: il segno «−/+» delle FAQ è solo grafico; senza JavaScript la risposta resta visibile.
+    foreach($xp->query('//button[@data-faq-toggle]/*[last()]') as $sign)if(in_array(trim($sign->textContent),['−','+','-'],true))$sign->setAttribute('aria-hidden','true');
+    // D8: la prima immagine della pagina (in alto) si carica subito, le altre restano «lazy».
+    $first=$xp->query('//main//img[@loading="lazy"][1]')->item(0);if($first&&$slug==='home'){$first->setAttribute('loading','eager');$first->setAttribute('fetchpriority','high');}
+    if($slug==='valutazione'){
+        // D9: campo anti-spam senza etichetta visibile a chi legge il testo della pagina.
+        foreach($xp->query('//*[contains(concat(" ",normalize-space(@class)," ")," hp ")]') as $hp){foreach(iterator_to_array($xp->query('.//span',$hp)) as $span)$span->parentNode->removeChild($span);foreach($xp->query('.//input',$hp) as $in){$in->setAttribute('aria-hidden','true');$in->setAttribute('aria-label','Website');}}
+        // D10: i campi di orologi e pietre preziose partono nascosti: si mostrano solo dopo la scelta del tipo di oggetto.
+        foreach($xp->query('//*[@data-kind="watch" or @data-kind="gemstone"]') as $g)$g->setAttribute('hidden','hidden');
+    }
 }
 /** Intestazione della home con i testi pubblicati (voci del menu modificabili dall'editor della home). */
 function site_header(string $lang): DOMElement {

@@ -29,7 +29,8 @@ function upload_site_image(array $u): never {
     $info=@getimagesize($file['tmp_name']);if(!$info||$info[0]*$info[1]>16000000)fail('Immagine non valida: massimo 16 megapixel.');
     if(upload_ini_bytes('memory_limit')>0&&upload_ini_bytes('memory_limit')<268435456)@ini_set('memory_limit','256M');
     $img=@imagecreatefromstring(file_get_contents($file['tmp_name']));if(!$img)fail('Immagine non leggibile.');
-    if(imagesx($img)>2000){$scaled=imagescale($img,2000,-1,IMG_BICUBIC);imagedestroy($img);if(!$scaled)fail('Immagine non leggibile.');$img=$scaled;}
+    // 2.1.71 (velocità, checklist D8): larghezza massima 1600 px, sufficiente anche per gli schermi retina a tutta pagina.
+    if(imagesx($img)>1600){$scaled=imagescale($img,1600,-1,IMG_BICUBIC);imagedestroy($img);if(!$scaled)fail('Immagine non leggibile.');$img=$scaled;}
     imagepalettetotruecolor($img);imagealphablending($img,false);imagesavealpha($img,true);
     $dir=ROOT.'/uploads/site';if(!is_dir($dir)&&!mkdir($dir,0755,true))fail('Cartella uploads non scrivibile.',500);@chmod($dir,0755);
     $webp=function_exists('imagewebp');$name=bin2hex(random_bytes(16)).($webp?'.webp':'.png');$tmp=$dir.'/.tmp-'.bin2hex(random_bytes(8));

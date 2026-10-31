@@ -16,6 +16,11 @@ Header always set X-Robots-Tag "noindex, nofollow, noarchive"
 RewriteEngine On
 # Un solo indirizzo per Google (2.1.48, audit): valutazionediamanti.it senza www e comprodiamanti.it vanno con un 301 su www.
 # Vale per le pagine passate ad Apache; per i file serviti direttamente da nginx serve anche il «Dominio preferito» di Plesk.
+# HTTPS sempre (2.1.71, checklist D6): un solo 301 verso https://www. anche da http://www.; Plesk passa ad Apache le richieste HTTPS con HTTPS=on.
+RewriteCond %{HTTPS} !=on
+RewriteCond %{HTTP:X-Forwarded-Proto} !=https
+RewriteCond %{HTTP_HOST} ^www\.valutazionediamanti\.it$ [NC]
+RewriteRule ^(.*)$ https://www.valutazionediamanti.it/$1 [R=301,L,NE]
 RewriteCond %{HTTP_HOST} ^valutazionediamanti\.it$ [NC]
 RewriteRule ^(.*)$ https://www.valutazionediamanti.it/$1 [R=301,L,NE]
 RewriteCond %{HTTP_HOST} ^(?:www\.)?comprodiamanti\.it$ [NC]
