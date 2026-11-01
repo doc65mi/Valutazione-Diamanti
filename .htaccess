@@ -28,6 +28,9 @@ RewriteRule ^ https://www.valutazionediamanti.it/it/index.html [R=301,L]
 # Radice del sito (2.1.63, audit): 301 verso la home italiana anche se il server prova index.html prima di index.php.
 RewriteCond %{REQUEST_URI} ^(.*/)$
 RewriteRule ^$ %1it/index.html [R=301,L]
+# 2.1.74 (audit «canonical non corrispondente»): anche /index.html, la vecchia pagina di rimando, va con un 301 alla home italiana.
+RewriteCond %{REQUEST_URI} ^(.*/)index\.html$
+RewriteRule ^index\.html$ %1it/index.html [R=301,L]
 # Blog inglese con lo schema del sito (2.1.63): /en/blog/ e /en/blog/<slug>; blog/index.php rimanda con un 301 i vecchi ?lang=en.
 RewriteRule ^en/blog/?$ blog/index.php [L,QSA]
 RewriteRule ^en/blog/[a-z0-9-]+/?$ blog/index.php [L,QSA]

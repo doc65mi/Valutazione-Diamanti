@@ -178,12 +178,17 @@ function wpb_save_post(PDO $db, array $in, ?array $old): array {
     $c = blog_config(); $terms = wpb_terms(); $media = wpb_media();
     $title = wpb_text($in['title'] ?? ($old['title'] ?? ''), 240);
     $html = array_key_exists('content', $in) ? wpb_raw($in['content']) : (string)($old['content'] ?? '');
+    // 2.1.74: il titolo H1 all'inizio del testo è già il titolo della pagina (come nell'import da Frase via API).
+    $html = (string)preg_replace('~^\s*<h1\b[^>]*>.*?</h1>~is', '', $html, 1);
     $status = (string)($in['status'] ?? ($old ? ($old['status'] === 'published' ? 'publish' : 'draft') : 'draft'));
     $slug = $old && $old['status'] === 'published' ? $old['slug'] : (wpb_text($in['slug'] ?? '', 180) ?: ($old['slug'] ?? ''));
     $date = substr((string)($in['date'] ?? $in['date_gmt'] ?? ''), 0, 10);
     if ($date !== '' && (!preg_match('/^\d{4}-\d{2}-\d{2}$/D', $date) || $date > gmdate('Y-m-d'))) $date = '';
     if ($date === '' && $old) $date = (string)$old['published_at'];
-    $lang = (string)($in['lang'] ?? $in['language'] ?? ($old['language'] ?? 'it')) === 'en' ? 'en' : 'it';
+    // 2.1.74: Frase pubblica con i campi standard di WordPress, senza lingua. Per un articolo nuovo la si riconosce
+    // dal testo (prima tutti finivano nel blog italiano e /en/blog/ restava vuoto); dopo vale quella salvata nel sito.
+    $declared = strtolower(trim((string)($in['lang'] ?? $in['language'] ?? $in['locale'] ?? '')));
+    $lang = $declared !== '' ? (str_starts_with($declared, 'en') ? 'en' : 'it') : ($old['language'] ?? blog_detect_language($title . ' ' . $html));
 
     $category = $old['category'] ?? ($lang === 'en' ? 'Insights' : 'Approfondimenti');
     if (isset($in['categories'])) {

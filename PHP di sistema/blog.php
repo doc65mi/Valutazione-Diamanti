@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-const BLOG_VERSION = '2.1.73';
+const BLOG_VERSION = '2.1.74';
 const PRIVATE_DIR = ROOT . '/data';
 function blog_h($v): string { return htmlspecialchars((string)$v, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); }
 function blog_abort_request(int $code, string $message): void { http_response_code($code); echo blog_h($message); exit; }
@@ -209,6 +209,55 @@ function blog_faq_items(?string $json): array {
         if ($q !== '' && $a !== '') $items[] = ['question' => mb_substr($q, 0, 240), 'answer' => mb_substr($a, 0, 900)];
     }
     return $items;
+}
+/** Domande frequenti scritte nel testo dell'articolo (2.1.74, audit): la sezione inizia con un titolo «Domande frequenti»,
+ *  «FAQ» o «Frequently asked questions»; le domande sono i titoli di livello inferiore oppure i paragrafi in grassetto,
+ *  le risposte i paragrafi ed elenchi che seguono. Serve per i dati strutturati FAQPage degli articoli arrivati da Frase. */
+function blog_faq_from_html(string $html): array {
+    if (trim($html) === '' || !preg_match('/domande frequenti|domande e risposte|\bFAQ\b|frequently asked/iu', $html)) return [];
+    $doc = new DOMDocument('1.0', 'UTF-8'); $old = libxml_use_internal_errors(true);
+    $doc->loadHTML('<?xml encoding="UTF-8"><html><body>' . $html . '</body></html>', LIBXML_NONET);
+    libxml_clear_errors(); libxml_use_internal_errors($old);
+    $body = $doc->getElementsByTagName('body')->item(0); if (!$body) return [];
+    $text = fn(DOMNode $n): string => trim((string)preg_replace('/\s+/u', ' ', $n->textContent));
+    $level = fn(DOMNode $n): int => $n instanceof DOMElement && preg_match('/^h([1-6])$/i', $n->tagName, $m) ? (int)$m[1] : 0;
+    $items = []; $start = null;
+    foreach ($body->childNodes as $node) if ($level($node) && preg_match('/domande frequenti|domande e risposte|\bFAQ\b|frequently asked/iu', $text($node))) { $start = $node; break; }
+    if (!$start) return [];
+    $top = $level($start); $q = ''; $answer = [];
+    $flush = function () use (&$items, &$q, &$answer): void {
+        $a = trim(implode("\n", array_filter($answer, fn($t) => $t !== '')));
+        if ($q !== '' && $a !== '') $items[] = ['question' => mb_substr($q, 0, 240), 'answer' => mb_substr($a, 0, 900)];
+        $q = ''; $answer = [];
+    };
+    for ($node = $start->nextSibling; $node; $node = $node->nextSibling) {
+        if (!$node instanceof DOMElement) continue;
+        $l = $level($node);
+        if ($l && $l <= $top) break; // fine della sezione
+        if ($l) { $flush(); $q = $text($node); continue; }
+        $tag = strtolower($node->tagName);
+        // Paragrafo che inizia con una domanda in grassetto: «<p><strong>Domanda?</strong> risposta</p>» o «<p><strong>Domanda?</strong></p>».
+        $first = null; foreach ($node->childNodes as $child) { if ($child instanceof DOMText && trim($child->nodeValue) === '') continue; $first = $child; break; }
+        if ($tag === 'p' && $first instanceof DOMElement && in_array(strtolower($first->tagName), ['strong', 'b'], true) && str_ends_with($text($first), '?')) {
+            $flush(); $q = $text($first); $rest = trim(mb_substr($text($node), mb_strlen($q)));
+            if ($rest !== '') $answer[] = $rest;
+            continue;
+        }
+        if ($q !== '' && in_array($tag, ['p', 'ul', 'ol', 'blockquote', 'table'], true)) $answer[] = $text($node);
+    }
+    $flush();
+    return array_slice($items, 0, 10);
+}
+/** Lingua di un testo senza indicazione esplicita (2.1.74): conta le parole più comuni di italiano e inglese.
+ *  Restituisce 'en' solo se l'inglese prevale nettamente, altrimenti $fallback. */
+function blog_detect_language(string $text, string $fallback = 'it'): string {
+    $words = preg_split('/[^\p{L}\']+/u', mb_strtolower(strip_tags(html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8'))), -1, PREG_SPLIT_NO_EMPTY);
+    $en = array_flip(['the', 'and', 'of', 'to', 'is', 'for', 'with', 'your', 'you', 'are', 'that', 'this', 'how', 'what', 'from', 'can', 'will', 'be', 'it', 'or', 'an', 'which', 'when', 'our', 'we']);
+    $it = array_flip(['il', 'lo', 'la', 'gli', 'le', 'di', 'che', 'per', 'con', 'una', 'del', 'della', 'dei', 'delle', 'non', 'sono', 'come', 'nel', 'nella', 'al', 'alla', 'si', 'è', 'più', 'da', 'anche', 'questo', 'quando']);
+    $ne = 0; $ni = 0; foreach ($words as $w) { if (isset($en[$w])) $ne++; if (isset($it[$w])) $ni++; }
+    if ($ne >= 8 && $ne > $ni * 2) return 'en';
+    if ($ni >= 8 && $ni > $ne * 2) return 'it';
+    return $fallback;
 }
 
 function blog_db(): PDO { $db=blog_connection(blog_config()['db']); blog_schema($db); return $db; }

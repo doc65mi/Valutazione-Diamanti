@@ -69,7 +69,8 @@ function blog_render_site(PDO $db,array $c,string $lang,?array $article,int $sta
     $title=$article?$article['title']:($lang==='en'?'Blog: guides to selling diamonds and jewellery':'Blog: guide per vendere diamanti e gioielli');if($status===404)$title=$lang==='en'?'Article not found':'Articolo non trovato';
     $pageTitle=($article&&trim((string)($article['meta_title']??''))!=='')?trim($article['meta_title']):$title;
     // 2.1.63 (audit): lo stesso titolo completo per <title>, og:title e twitter:title.
-    $fullTitle=stripos($pageTitle,'Valutazione Diamanti')!==false?$pageTitle:$pageTitle.' | Valutazione Diamanti';
+    // 2.1.74 (audit): il suffisso « | Valutazione Diamanti» si aggiunge solo se il titolo resta entro 60 caratteri.
+    $fullTitle=seo_title($pageTitle,true);
     $doc->getElementsByTagName('title')->item(0)->textContent=$fullTitle;
     $description=$article?(trim((string)($article['meta_description']??''))!==''?trim($article['meta_description']):blog_excerpt((string)$article['excerpt'],160,(string)$article['content'])):($lang==='en'?'Practical guides for selling a diamond: certificates, the 4Cs, realisable value, inheritance and how to prepare for the appointment.':'Guide pratiche per chi vuole vendere un diamante: certificati, 4C, valore di realizzo, eredità e come prepararsi all\'appuntamento.');
     foreach($xp->query('//meta[@name="description"]') as $node)$node->setAttribute('content',$description);

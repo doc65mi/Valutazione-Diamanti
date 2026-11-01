@@ -6,22 +6,43 @@ function seo_markup(DOMDocument $doc,string $lang,string $url,string $title,stri
     foreach(iterator_to_array($xp->query('//script[@type="application/ld+json"]')) as $n)$n->parentNode->removeChild($n);
     $base=seo_base();$org=seo_store();
     $page=['@type'=>$type,'@id'=>$url.'#page','url'=>$url,'name'=>$title,'description'=>$description,'inLanguage'=>$lang,'isPartOf'=>['@id'=>$base.'/#website']];
-    if($type==='FAQPage'){
-        $questions=[];
-        foreach($xp->query('//main//button[@data-faq-toggle]') as $button){
-            $question=trim($xp->evaluate('string(.//span[1])',$button));$answers=[];
-            foreach($button->parentNode->childNodes as $node)if($node instanceof DOMElement&&$node->tagName!=='button')$answers[]=trim($node->textContent);
-            $answer=trim(implode("\n",$answers));if($question!==''&&$answer!=='')$questions[]=['@type'=>'Question','name'=>$question,'acceptedAnswer'=>['@type'=>'Answer','text'=>$answer]];
-        }
-        $page['mainEntity']=$questions;
-    }
+    $questions=$article?[]:seo_faq_questions($xp);
+    if($type==='FAQPage')$page['mainEntity']=$questions;
     $graph=[$org,['@type'=>'WebSite','@id'=>$base.'/#website','url'=>$base.'/','name'=>'Valutazione Diamanti','inLanguage'=>['it','en'],'publisher'=>['@id'=>$org['@id']]],$page];
+    // 2.1.74 (audit): le domande frequenti visibili nelle altre pagine (home) diventano anche dati strutturati FAQPage.
+    if($type!=='FAQPage'&&$questions)$graph[]=['@type'=>'FAQPage','@id'=>$url.'#faq','url'=>$url,'inLanguage'=>$lang,'isPartOf'=>['@id'=>$page['@id']],'mainEntity'=>$questions];
     if($article){$post=['@type'=>'BlogPosting','@id'=>$url.'#article','url'=>$url,'mainEntityOfPage'=>['@id'=>$page['@id']],'headline'=>$article['title'],'description'=>blog_excerpt((string)$article['excerpt'],300,(string)$article['content']),'datePublished'=>(new DateTimeImmutable($article['published_at']))->format(DATE_ATOM),'dateModified'=>(new DateTimeImmutable($article['updated_at']))->format(DATE_ATOM),'inLanguage'=>$lang,'articleSection'=>$article['category'],'author'=>['@id'=>$org['@id']],'publisher'=>['@id'=>$org['@id']]];if($article['image_url'])$post['image']=['@type'=>'ImageObject','url'=>$article['image_url'],'caption'=>$article['image_alt']];
         if(trim((string)($article['keywords']??''))!=='')$post['keywords']=trim($article['keywords']);
         $post['wordCount']=str_word_count(strip_tags($article['content']));$graph[]=$post;
-        $faq=blog_faq_items($article['faq_json']??null);
+        // 2.1.74 (audit): gli articoli di Frase hanno le FAQ solo nel testo; se il campo FAQ è vuoto si leggono da lì.
+        $faq=blog_faq_items($article['faq_json']??null)?:blog_faq_from_html((string)$article['content']);
         if($faq)$graph[]=['@type'=>'FAQPage','@id'=>$url.'#faq','url'=>$url,'inLanguage'=>$lang,'isPartOf'=>['@id'=>$page['@id']],'mainEntity'=>array_map(fn($item)=>['@type'=>'Question','name'=>$item['question'],'acceptedAnswer'=>['@type'=>'Answer','text'=>$item['answer']]],$faq)];}
     $script=$doc->createElement('script');$script->setAttribute('type','application/ld+json');$script->appendChild($doc->createTextNode(json_encode(['@context'=>'https://schema.org','@graph'=>$graph],JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS|JSON_HEX_QUOT|JSON_THROW_ON_ERROR)));$head->appendChild($script);
+}
+/** Domande e risposte delle sezioni FAQ a fisarmonica della pagina (pulsanti data-faq-toggle). */
+function seo_faq_questions(DOMXPath $xp): array {
+    $questions=[];
+    foreach($xp->query('//main//button[@data-faq-toggle]') as $button){
+        $question=trim($xp->evaluate('string(.//span[1])',$button));$answers=[];
+        foreach($button->parentNode->childNodes as $node)if($node instanceof DOMElement&&$node->tagName!=='button')$answers[]=trim($node->textContent);
+        $answer=trim(implode("\n",$answers));if($question!==''&&$answer!=='')$questions[]=['@type'=>'Question','name'=>$question,'acceptedAnswer'=>['@type'=>'Answer','text'=>$answer]];
+    }
+    return $questions;
+}
+/** Titolo della pagina entro 60 caratteri (2.1.74, audit): il suffisso « | Valutazione Diamanti» resta solo se ci sta.
+ *  Il marchio è comunque in og:site_name e nei dati strutturati. */
+const SEO_TITLE_SUFFIX=' | Valutazione Diamanti';
+function seo_title(string $title,bool $addSuffix=false): string {
+    $title=trim($title);
+    if(str_ends_with($title,SEO_TITLE_SUFFIX)){$core=trim(substr($title,0,-strlen(SEO_TITLE_SUFFIX)));return mb_strlen($title)>60&&$core!==''?$core:$title;}
+    if(!$addSuffix||stripos($title,'Valutazione Diamanti')!==false)return $title;
+    return mb_strlen($title.SEO_TITLE_SUFFIX)<=60?$title.SEO_TITLE_SUFFIX:$title;
+}
+/** Meta description pubblicata (2.1.74, audit): con le correzioni automatiche dei testi, ma se queste la portano oltre
+ *  160 caratteri resta il testo salvato, che Google non taglia. */
+function seo_description(string $text,string $lang): string {
+    $fixed=phone_text(text_fix($text,$lang));
+    return mb_strlen($fixed)>160&&mb_strlen(phone_text($text))<=160?phone_text($text):$fixed;
 }
 // Attività locale (2.1.48, audit SEO): JewelryStore con sede, telefono e mappa al posto dell'Organization generica.
 // Ragione sociale, P.IVA ed email arrivano da Privacy e integrazioni > Dati del titolare. Niente aggregateRating:
