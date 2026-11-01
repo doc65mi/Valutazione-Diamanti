@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-const APP_VERSION = '2.1.73';
+const APP_VERSION = '2.1.74';
 const ROOT = __DIR__ . '/..';
 const PAGE_SLUGS = ['home', 'acquistiamo', 'chisiamo', 'faq', 'valutazione', 'grazie', 'privacy', 'cookie'];
 // Indirizzi inglesi per le pagine EN (2.1.52, audit): /en/sell-diamonds.html ecc. I vecchi nomi italiani restano come rimandi.
@@ -210,7 +210,9 @@ function build_html(string $slug,string $lang,array $c): string {
         $link=$doc->createElement('link');$link->setAttribute('rel','canonical');$link->setAttribute('href',rtrim($legal['site_url'],'/').'/'.$lang.'/'.page_name($slug,$lang).'.html');$head->appendChild($link);
         foreach($xp->query('//link[@rel="alternate"]') as $alt){$l=$alt->getAttribute('hreflang')==='en'?'en':'it';$alt->setAttribute('href',rtrim($legal['site_url'],'/').'/'.$l.'/'.page_name($slug,$l).'.html');}
     }
-    $doc->getElementsByTagName('title')->item(0)->textContent=$c['meta']['title'];
+    // 2.1.74 (audit): titolo entro 60 caratteri e description entro 160 anche dopo le correzioni automatiche.
+    $pageTitle=seo_title($c['meta']['title']);$pageDescription=seo_description($c['meta']['description'],$lang);
+    $doc->getElementsByTagName('title')->item(0)->textContent=$pageTitle;
     $description=$xp->query('//meta[@name="description"]')->item(0);
     if(!$description){$description=$doc->createElement('meta');$description->setAttribute('name','description');$doc->getElementsByTagName('head')->item(0)->appendChild($description);}
     $description->setAttribute('content',$c['meta']['description']);
@@ -252,7 +254,7 @@ function build_html(string $slug,string $lang,array $c): string {
     if($slug==='privacy')privacy_services_block($doc,$xp,$lang);
     launch_checklist_fixes($doc,$xp,$lang,$slug);
     text_fix_nodes($xp,$lang);
-    foreach($xp->query('//meta[@name="description"]') as $m)$m->setAttribute('content',phone_text(text_fix($m->getAttribute('content'),$lang)));
+    foreach($xp->query('//meta[@name="description"]') as $m)$m->setAttribute('content',seo_description($m->getAttribute('content'),$lang));
     seo_verification_meta($doc);
     phone_text_nodes($xp);
     // Recensioni Google (2.1.33): il riquadro si riempie dal browser; se il servizio è spento il segnaposto sparisce.
@@ -260,8 +262,8 @@ function build_html(string $slug,string $lang,array $c): string {
     if($reviewBoxes&&settings()['reviews_enabled']){$script=$doc->createElement('script');$script->setAttribute('src','../assets/reviews.js?v='.APP_VERSION);$script->setAttribute('defer','defer');$head->appendChild($script);$data=reviews_cached($lang);if($data)foreach($reviewBoxes as $box)reviews_render($doc,$box,$data,$lang);}
     else foreach($reviewBoxes as $box)$box->parentNode->removeChild($box);
     $url=seo_base().'/'.$lang.'/'.page_name($slug,$lang).'.html';
-    seo_open_graph($doc,$lang,$url,$c['meta']['title'],phone_text(text_fix($c['meta']['description'],$lang)),$slug);
-    seo_markup($doc,$lang,$url,$c['meta']['title'],phone_text(text_fix($c['meta']['description'],$lang)),$slug==='faq'?'FAQPage':($slug==='chisiamo'?'AboutPage':'WebPage'));
+    seo_open_graph($doc,$lang,$url,$pageTitle,$pageDescription,$slug);
+    seo_markup($doc,$lang,$url,$pageTitle,$pageDescription,$slug==='faq'?'FAQPage':($slug==='chisiamo'?'AboutPage':'WebPage'));
     if($slug==='grazie'||in_array($slug,hidden_page_slugs(),true)){$meta=$doc->createElement('meta');$meta->setAttribute('name','robots');$meta->setAttribute('content','noindex,follow');$head->appendChild($meta);}
     return str_replace('../../assets/', '../assets/', $doc->saveHTML());
 }

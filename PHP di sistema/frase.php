@@ -135,7 +135,9 @@ function frase_import(string $contentId, string $origin): array {
     }
     $html = frase_body_html($body);
     $title = frase_plain($item['title'] ?? '', 240);
-    $lang = strtolower(substr((string)($item['language'] ?? $item['lang'] ?? 'it'), 0, 2)) === 'en' ? 'en' : 'it';
+    // 2.1.74: senza lingua indicata da Frase la si riconosce dal testo, così gli articoli inglesi vanno nel blog inglese.
+    $declared = strtolower(trim((string)($item['language'] ?? $item['lang'] ?? $item['locale'] ?? '')));
+    $lang = $declared !== '' ? (str_starts_with($declared, 'en') ? 'en' : 'it') : blog_detect_language($title . ' ' . $html);
     $keywords = [];
     foreach (array_slice(is_array($item['target_keywords'] ?? null) ? $item['target_keywords'] : [], 0, 12) as $k) if (($t = frase_plain($k, 60)) !== '') $keywords[] = $t;
 
@@ -143,9 +145,11 @@ function frase_import(string $contentId, string $origin): array {
     $db = blog_db();
     $source = 'frase-' . $contentId;
     $old = blog_one($db, 'SELECT * FROM blog_articles WHERE source_id=?', [$source]);
+    // 2.1.74: la versione in un'altra lingua dello stesso documento Frase diventa un articolo a parte, non sovrascrive l'altro.
+    if ($old && $old['language'] !== $lang) { $source .= '-' . $lang; $old = blog_one($db, 'SELECT * FROM blog_articles WHERE source_id=?', [$source]); }
     // Lo stesso articolo può essere già arrivato dal connettore WordPress di Frase (2.1.39): si aggiorna quello, senza doppioni.
     if (!$old && is_string($item['slug'] ?? null) && $item['slug'] !== '') {
-        $old = blog_one($db, "SELECT * FROM blog_articles WHERE slug=? AND source_id LIKE 'frase-%'", [blog_slugify($item['slug'])]);
+        $old = blog_one($db, "SELECT * FROM blog_articles WHERE slug=? AND language=? AND source_id LIKE 'frase-%'", [blog_slugify($item['slug']), $lang]);
         if ($old) $source = (string)$old['source_id'];
     }
     $flat = ['id' => $source, 'title' => $title, 'slug' => (string)($item['slug'] ?? ''), 'language' => $lang, 'content' => $html, 'published_at' => '',
@@ -158,8 +162,9 @@ function frase_import(string $contentId, string $origin): array {
         $base = $a['slug']; $n = 2;
         while (blog_one($db, 'SELECT id FROM blog_articles WHERE slug=?', [$a['slug']])) $a['slug'] = substr($base, 0, 170) . '-' . $n++;
     }
-    $a['meta_title'] = frase_plain($item['meta_title'] ?? '', 160);
-    $a['meta_description'] = frase_plain($item['meta_description'] ?? '', 400);
+    // 2.1.74: se Frase non manda titolo SEO o meta description restano quelli scritti nel sito.
+    $a['meta_title'] = frase_plain($item['meta_title'] ?? '', 160) ?: (string)($old['meta_title'] ?? '');
+    $a['meta_description'] = frase_plain($item['meta_description'] ?? '', 400) ?: (string)($old['meta_description'] ?? '');
     $a['keywords'] = mb_substr(implode(', ', $keywords), 0, 400);
 
     $cover = is_string($item['featured_image'] ?? null) ? trim($item['featured_image']) : '';
