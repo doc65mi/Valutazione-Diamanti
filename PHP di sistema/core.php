@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-const APP_VERSION = '2.1.74';
+const APP_VERSION = '2.1.75';
 const ROOT = __DIR__ . '/..';
 const PAGE_SLUGS = ['home', 'acquistiamo', 'chisiamo', 'faq', 'valutazione', 'grazie', 'privacy', 'cookie'];
 // Indirizzi inglesi per le pagine EN (2.1.52, audit): /en/sell-diamonds.html ecc. I vecchi nomi italiani restano come rimandi.
@@ -220,6 +220,11 @@ function build_html(string $slug,string $lang,array $c): string {
     // Valutazione e grazie usano la stessa intestazione delle altre pagine: logo, voci e pulsante come in home (2.1.66).
     $quoteHeader=$xp->query('//header[contains(@class,"quote-header")]')->item(0);
     if($quoteHeader)$quoteHeader->parentNode->replaceChild($doc->importNode(site_header($lang),true),$quoteHeader);
+    // 2.1.75: anche il footer di valutazione e grazie è quello della home (contatti, voci del sito, copyright e dati legali).
+    if(in_array($slug,['valutazione','grazie'],true)){
+        $quoteFooter=$xp->query('//footer[not(@class) and not(@style)]')->item(0);
+        if($quoteFooter)$quoteFooter->parentNode->replaceChild($doc->importNode(site_footer($lang),true),$quoteFooter);
+    }
     $header=$doc->getElementsByTagName('header')->item(0);
     $languageNav=$xp->query('//*[contains(concat(" ",normalize-space(@class)," ")," language-nav ")]')->item(0);
     if($header&&$languageNav){
@@ -315,8 +320,12 @@ function launch_checklist_fixes(DOMDocument $doc,DOMXPath $xp,string $lang,strin
     }
 }
 /** Intestazione della home con i testi pubblicati (voci del menu modificabili dall'editor della home). */
-function site_header(string $lang): DOMElement {
-    $doc=template_doc('home',$lang);$xp=new DOMXPath($doc);$c=content('home',$lang);$header=$doc->getElementsByTagName('header')->item(0);
+function site_header(string $lang): DOMElement { return home_part($lang,'header'); }
+/** Footer della home con i testi pubblicati (2.1.75): usato anche da valutazione e grazie. */
+function site_footer(string $lang): DOMElement { return home_part($lang,'footer'); }
+/** Primo elemento <$tag> della home con i testi salvati dall'editor della home. */
+function home_part(string $lang,string $tag): DOMElement {
+    $doc=template_doc('home',$lang);$xp=new DOMXPath($doc);$c=content('home',$lang);$header=$doc->getElementsByTagName($tag)->item(0);
     foreach(iterator_to_array($xp->query('.//*[@data-om-slot]',$header)) as $el){
         $v=$c['slots'][$el->getAttribute('data-om-slot')]??null;$type=$el->getAttribute('data-om-type');
         if($type==='text'&&is_string($v))$el->textContent=$v;
