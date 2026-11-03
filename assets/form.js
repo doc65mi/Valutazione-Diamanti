@@ -8,8 +8,10 @@ const steps=[t('Oggetto','Item'),t('Altri oggetti','Other items'),t('Dettagli','
 function error(s){const box=$('#form-error');box.textContent=s;if(s)box.scrollIntoView({block:'nearest',behavior:'smooth'});}
 const fieldName=f=>(f.closest('label')?.querySelector('span')?.textContent||f.name).replace(/\s*\*$/,'').trim();
 function update(){
- const cat=field('cat').value,watch=cat==='watch',gem=cat==='gemstone';
- for(const group of form.querySelectorAll('[data-kind]')){const kind=group.dataset.kind;const on=kind==='watch'?watch:kind==='gemstone'?gem:kind==='diamond'?!watch&&!gem:!watch;group.hidden=!on;for(const f of group.querySelectorAll('input,select'))f.disabled=!on;}
+ // 2.1.76: zaffiro, rubino e smeraldo sono voci a sé: seguono il percorso delle pietre preziose ma al passo 3 chiedono solo il peso
+ // (tipo di pietra già noto, niente colore e purezza). «gemstone» resta solo per i link e le richieste precedenti.
+ const cat=field('cat').value,watch=cat==='watch',gemPick=['sapphire','ruby','emerald'].includes(cat),gem=gemPick||cat==='gemstone';
+ for(const group of form.querySelectorAll('[data-kind]')){const kind=group.dataset.kind;const on=kind==='watch'?watch:kind==='gemstone'?cat==='gemstone':kind==='diamond'?!watch&&!gem:!watch;group.hidden=!on;for(const f of group.querySelectorAll('input,select'))f.disabled=!on;}
  // 2.1.55: stesse fasce di peso per diamanti e pietre preziose; descrizione degli altri oggetti facoltativa;
  // il numero di certificato compare solo con un certificato GIA, HRD o IGI.
  // 2.1.67: per i gioielli con più pietre si può indicare «pietre piccole, sotto 1 ct» (percorso indicato nelle FAQ).
@@ -36,7 +38,7 @@ form.onsubmit=async e=>{e.preventDefault();if(busy)return;error('');if(!validate
  finally{busy=false;$('#next').disabled=false;$('#back').disabled=false;show();}
 };
 // Le card delle categorie aprono il modulo con il tipo già scelto: ?tipo=diamanti|gioielli|pietre|vintage|orologi (2.1.49; ?cat= resta valido).
-const query=new URLSearchParams(location.search);const urlCat=query.get('tipo')||query.get('cat');const aliases={diamanti:'loose-diamond',gioielli:'solitaire',pietre:'gemstone',vintage:'other',orologi:'watch',solitario:'solitaire'};
+const query=new URLSearchParams(location.search);const urlCat=query.get('tipo')||query.get('cat');const aliases={diamanti:'loose-diamond',diamante:'loose-diamond',gioielli:'solitaire',zaffiro:'sapphire',rubino:'ruby',smeraldo:'emerald',orologi:'watch',solitario:'solitaire'};
 if(urlCat){const value=aliases[urlCat]||urlCat;if([...field('cat').options].some(o=>o.value===value)){field('cat').value=value;field('cat').dispatchEvent(new Event('change',{bubbles:true}));}}
 form.querySelectorAll('[data-choice-for]').forEach(group=>{group.addEventListener('click',e=>{const button=e.target.closest('button[data-value]');if(!button||button.disabled)return;field(group.dataset.choiceFor).value=button.dataset.value;field(group.dataset.choiceFor).dispatchEvent(new Event('change',{bubbles:true}));});});
 // 2.1.71 (checklist D11): nota sui campi obbligatori, segnati con l'asterisco dal CSS.

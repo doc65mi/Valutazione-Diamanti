@@ -1,6 +1,9 @@
 <?php
 declare(strict_types=1);
-const CATEGORIES=['solitaire','multi-stone','earrings','necklace','bracelet','brooch','loose-diamond','gemstone','watch','other'];
+// 2.1.76: il modulo propone diamante, solitario, zaffiro, rubino, smeraldo, spilla, orecchini, collana, bracciale e orologio;
+// 'multi-stone', 'gemstone' e 'other' restano validi per i link e le richieste precedenti.
+const CATEGORIES=['loose-diamond','solitaire','sapphire','ruby','emerald','brooch','earrings','necklace','bracelet','watch','multi-stone','gemstone','other'];
+const GEM_CATEGORIES=['sapphire','ruby','emerald'];
 const BRANDS=['Rolex','Patek Philippe','Audemars Piguet','Cartier','Vacheron Constantin','Richard Mille','Piaget','Jacob & Co'];
 function submit_request(): never {
     $lang=$_POST['language']??'it'; if(!in_array($lang,['it','en'],true)) $lang='it';
@@ -25,7 +28,9 @@ function submit_request(): never {
         if(!in_array($f['brand'],BRANDS,true)||!in_array($f['kit'],['full-set','papers','none'],true)) $error('Seleziona un marchio trattato e i documenti disponibili.','Select a watch brand we buy and the documents available.');
         foreach(['stone','ct','color','clarity','gem_quality','origin','cert','cert_no'] as $k) $f[$k]='';
     } else {
-        $gem=$f['cat']==='gemstone';
+        $gem=$f['cat']==='gemstone'||in_array($f['cat'],GEM_CATEGORIES,true);
+        // 2.1.76: per zaffiro, rubino e smeraldo la pietra è la voce scelta e al passo 3 si chiede solo il peso.
+        if(in_array($f['cat'],GEM_CATEGORIES,true)){$f['stone']=$f['cat'];$f['gem_quality']='';}
         // 2.1.55: stesse fasce di peso per diamanti e pietre preziose; colore, purezza e numero di certificato facoltativi.
         // 2.1.67: «pietre piccole, sotto 1 ct» solo per i gioielli con più pietre.
         $small=in_array($f['cat'],['multi-stone','earrings','necklace','bracelet','brooch','other'],true);

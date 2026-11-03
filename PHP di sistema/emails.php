@@ -27,10 +27,14 @@ function customer_email(array $s,string $lang,array $vars): array {
 function request_quality_lines(array $f): string {
     $out='';foreach(['color'=>'Colore','clarity'=>'Purezza','gem_quality'=>'Colore e purezza'] as $k=>$label)if(($f[$k]??'')!=='')$out.="$label: {$f[$k]}\n";return $out;
 }
+/** Nome leggibile dell'oggetto e della pietra nell'email al gestore (2.1.76). */
+function request_value_label(string $v): string {
+    return ['loose-diamond'=>'Diamante','solitaire'=>'Anello solitario con diamante','sapphire'=>'Zaffiro','ruby'=>'Rubino','emerald'=>'Smeraldo','brooch'=>'Spilla','earrings'=>'Orecchini','necklace'=>'Collana / pendente','bracelet'=>'Bracciale','watch'=>'Orologio','multi-stone'=>'Anello con più pietre','gemstone'=>'Pietra preziosa','other'=>'Altro'][$v]??$v;
+}
 function queue_request_emails(string $id,array $f,string $lang,int $attachments): void {
     mail_queue_schema();$s=settings();$company=$s['legal_company'];$manager=$s['mail_to']?:$s['legal_email'];
     $admin=rtrim($s['site_url'],'/').'/admin/';
-    $summary="Riferimento: $id\nCliente: {$f['name']}\nEmail: {$f['email']}\nTelefono: {$f['phone']}\nContatto preferito: {$f['pref']}\nOggetto: {$f['cat']}\nMarca: {$f['brand']}\nPietra: {$f['stone']}\nPeso (ct): {$f['ct']}\n".request_quality_lines($f)."Certificato: {$f['cert']}\n".(($f['cert_no']??'')!==''?"Numero certificato: {$f['cert_no']}\n":'')."Corredo: {$f['kit']}\nAltri oggetti: {$f['others']}\nAllegati: $attachments\n";
+    $summary="Riferimento: $id\nCliente: {$f['name']}\nEmail: {$f['email']}\nTelefono: {$f['phone']}\nContatto preferito: {$f['pref']}\nOggetto: ".request_value_label($f['cat'])."\nMarca: {$f['brand']}\nPietra: ".request_value_label($f['stone'])."\nPeso (ct): {$f['ct']}\n".request_quality_lines($f)."Certificato: {$f['cert']}\n".(($f['cert_no']??'')!==''?"Numero certificato: {$f['cert_no']}\n":'')."Corredo: {$f['kit']}\nAltri oggetti: {$f['others']}\nAllegati: $attachments\n";
     $managerBody="È arrivata una nuova richiesta di valutazione dal sito.\n\n".$summary."\nAccedi all’area amministrativa per esaminare la richiesta e visualizzare gli allegati: $admin\n\nGli allegati sono disponibili solo dopo l’accesso all’admin.\n";
     [$customerSubject,$customerBody]=customer_email($s,$lang,['nome'=>$f['name'],'riferimento'=>$id,'azienda'=>$company,'indirizzo'=>$s['legal_address']]);
     $q=db()->prepare('INSERT OR IGNORE INTO mail_queue(request_id,kind,recipient,subject,body,reply_to) VALUES(?,?,?,?,?,?)');
