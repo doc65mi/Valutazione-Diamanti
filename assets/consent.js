@@ -6,10 +6,19 @@
  try{const saved=JSON.parse(localStorage.getItem(STORAGE)||'null');if(saved&&typeof saved.analytics==='boolean'&&typeof saved.marketing==='boolean'&&saved.expires>Date.now())preference=saved;}catch{}
  window.dataLayer=window.dataLayer||[];
  window.gtag=window.gtag||function(){window.dataLayer.push(arguments);};
- gtag('consent','default',{ad_storage:'denied',analytics_storage:'denied',ad_user_data:'denied',ad_personalization:'denied'});
+ // 2.1.77: Consent Mode v2. Lo stato iniziale parte subito dalla scelta già salvata (negato se non c'è scelta);
+ // con la modalità «avanzata» i tag Google si caricano anche prima del consenso e inviano solo ping senza cookie,
+ // così Google Ads rileva il tag e può stimare le conversioni di chi rifiuta. ads_data_redaction toglie gli ID pubblicitari
+ // dai ping finché il marketing è negato; url_passthrough conserva il gclid tra le pagine senza cookie.
+ function consentState(p){p=p||{};return {analytics_storage:p.analytics?'granted':'denied',ad_storage:p.marketing?'granted':'denied',ad_user_data:p.marketing?'granted':'denied',ad_personalization:p.marketing?'granted':'denied'};}
+ gtag('consent','default',Object.assign(consentState(preference),{wait_for_update:500}));
+ gtag('set','ads_data_redaction',true);gtag('set','url_passthrough',true);
+ // page_location senza dati del modulo, ma con i parametri delle campagne (gclid, gbraid, wbraid, utm_…): senza questi Google Ads non attribuisce il clic.
+ const CAMPAIGN=/^(gclid|gbraid|wbraid|dclid|gclsrc|gad_source|gad_campaignid|_gl|utm_[a-z_]+)$/i;
+ function pageLocation(){const q=new URLSearchParams();try{for(const [k,v] of new URL(location.href).searchParams)if(CAMPAIGN.test(k))q.append(k,v);}catch{}const s=q.toString();return location.origin+location.pathname+(s?'?'+s:'');}
  function element(tag,text){const e=document.createElement(tag);if(text!==undefined)e.textContent=text;return e;}
  function loadScript(src){return new Promise((resolve,reject)=>{const s=element('script');s.src=src;s.async=true;s.onload=resolve;s.onerror=()=>{s.remove();reject(Error(t('Servizio esterno non disponibile. Riprova.','The external service is unavailable. Please try again.')));};document.head.append(s);});}
- const configPromise=fetch(new URL('../api/index.php?action=config',scriptUrl).href).then(async r=>{if(!r.ok)throw Error(t('Impossibile caricare le impostazioni del sito.','Unable to load website settings.'));const c=await r.json();config=c;if(preference&&preference.version!==c.consent_version){preference=null;showBanner();}if(preference)activate(c);return c;});
+ const configPromise=fetch(new URL('../api/index.php?action=config',scriptUrl).href).then(async r=>{if(!r.ok)throw Error(t('Impossibile caricare le impostazioni del sito.','Unable to load website settings.'));const c=await r.json();config=c;if(preference&&preference.version!==c.consent_version){preference=null;consentUpdate();showBanner();}googleTags(c);if(preference)activate(c);return c;});
  configPromise.catch(()=>{});
  // 2.1.71 (checklist D12): a invio riuscito la pagina di ringraziamento mette subito nel dataLayer l'evento «valuation_submitted»
  // (una volta per richiesta). Resta nel browser: lo leggono GTM o gtag solo se vengono caricati, cioè dopo il consenso.
@@ -29,25 +38,33 @@
  function services(cat){const i=info();return i?i.services.filter(s=>s.category===cat||(s.category==='both'&&cat!=='necessary')):[];}
  const CATS={necessary:t('Necessari','Necessary'),analytics:t('Analisi','Analytics'),marketing:'Marketing',both:t('Analisi e Marketing','Analytics and Marketing')};
  function bannerServices(){const p=document.querySelector('#cookie-banner-services'),i=info();if(!p||!i)return;p.hidden=!i.banner_services;const list=i.services.map(s=>s.name+' ('+CATS[s.category]+')');p.textContent=list.length?t('Servizi attivi su questo sito: ','Services active on this website: ')+list.join(', ')+'.':t('Su questo sito non è attivo alcun servizio di analisi o marketing: usiamo solo strumenti necessari.','No analytics or marketing service is active on this website: we only use necessary tools.');}
- function consentUpdate(){const p=preference||{};gtag('consent','update',{analytics_storage:p.analytics?'granted':'denied',ad_storage:p.marketing?'granted':'denied',ad_user_data:p.marketing?'granted':'denied',ad_personalization:p.marketing?'granted':'denied'});}
+ function consentUpdate(){gtag('consent','update',consentState(preference));}
+ // Tag Google (GA4 e Google Ads) con un solo gtag.js. Modalità avanzata (predefinita): caricati sempre, con il consenso che decide
+ // se usare i cookie. Modalità di base: caricati solo dopo il consenso della loro categoria.
+ const googleDone=new Set();
+ function receiptId(){let r='';try{r=sessionStorage.getItem('cd_receipt')||'';}catch{}return /^R-[A-F0-9]{12}$/.test(r)?r:'';}
+ function once(key,fn){const mark='cd_conversion_'+key;let done=false;try{done=sessionStorage.getItem(mark)==='1';}catch{}if(done)return;fn();try{sessionStorage.setItem(mark,'1');}catch{}}
+ function googleTags(c){const p=preference||{},adv=c.consent_mode!=='basic';
+  const ga=!!(c.analytics_enabled&&c.analytics_id&&(adv||p.analytics)),ads=!!(c.ads_enabled&&c.ads_id&&(adv||p.marketing));
+  if(!ga&&!ads)return;const first=!googleDone.size;if(first){googleDone.add('js');gtag('js',new Date());}
+  if(ga&&!googleDone.has('ga')){googleDone.add('ga');gtag('config',c.analytics_id,{cookie_expires:15552000,allow_google_signals:false,allow_ad_personalization_signals:false,page_location:pageLocation()});}
+  if(ads&&!googleDone.has('ads')){googleDone.add('ads');gtag('config',c.ads_id,{page_location:pageLocation()});}
+  if(first)loadScript('https://www.googletagmanager.com/gtag/js?id='+encodeURIComponent(ga?c.analytics_id:c.ads_id)).catch(()=>{});
+  // Solo un invio riuscito produce una conversione, una volta per richiesta (transaction_id evita i doppioni anche lato Google).
+  const receipt=document.body.dataset.page==='grazie'?receiptId():'';if(!receipt)return;
+  if(ga)once('ga_'+receipt,()=>gtag('event','generate_lead',{form_id:'valutazione'}));
+  if(ads&&c.ads_label)once('ads_'+receipt,()=>gtag('event','conversion',{send_to:c.ads_id+'/'+c.ads_label,transaction_id:receipt}));
+ }
  async function activate(c){
   if(!preference||loaded)return;loaded=true;consentUpdate();const p=preference;
-  const ga=c.analytics_enabled&&p.analytics,ads=c.ads_enabled&&p.marketing;
-  if(ga||ads){gtag('js',new Date());if(ga)gtag('config',c.analytics_id,{cookie_expires:15552000,allow_google_signals:false,allow_ad_personalization_signals:false,page_location:location.origin+location.pathname});if(ads)gtag('config',c.ads_id,{allow_ad_personalization_signals:p.marketing,page_location:location.origin+location.pathname});loadScript('https://www.googletagmanager.com/gtag/js?id='+encodeURIComponent(ga?c.analytics_id:c.ads_id)).catch(()=>{});}
+  googleTags(c);
   if(c.gtm_enabled&&p.analytics&&p.marketing){dataLayer.push({'gtm.start':Date.now(),event:'gtm.js'});loadScript('https://www.googletagmanager.com/gtm.js?id='+encodeURIComponent(c.gtm_id)).catch(()=>{});}
   if(c.clarity_enabled&&p.analytics){window.clarity=window.clarity||function(){(window.clarity.q=window.clarity.q||[]).push(arguments);};clarity('consentv2',{ad_Storage:p.marketing?'granted':'denied',analytics_Storage:'granted'});loadScript('https://www.clarity.ms/tag/'+encodeURIComponent(c.clarity_id)).catch(()=>{});}
   customCodes(c,cat=>cat==='analytics'?p.analytics:cat==='marketing'?p.marketing:false);
   if(c.meta_enabled&&p.marketing){if(!window.fbq){const f=function(){f.callMethod?f.callMethod.apply(f,arguments):f.queue.push(arguments);};f.queue=[];f.loaded=true;f.version='2.0';f.push=f;window.fbq=f;window._fbq=f;}fbq('set','autoConfig',false,c.meta_id);fbq('init',c.meta_id);fbq('track','PageView');loadScript('https://connect.facebook.net/en_US/fbevents.js').catch(()=>{});}
-  // GA4 (2.1.71): evento consigliato «generate_lead» per segnare l'invio come evento chiave.
-  if(document.body.dataset.page==='grazie'&&ga){let receipt='';try{receipt=sessionStorage.getItem('cd_receipt')||'';}catch{}const mark='cd_conversion_ga_'+receipt;let done=false;try{done=sessionStorage.getItem(mark)==='1';}catch{}if(/^R-[A-F0-9]{12}$/.test(receipt)&&!done){gtag('event','generate_lead',{form_id:'valutazione'});try{sessionStorage.setItem(mark,'1');}catch{}}}
-  // Only a real successful submission produces a conversion; revisiting does not duplicate it.
-  if(document.body.dataset.page==='grazie'&&p.marketing){let receipt='';try{receipt=sessionStorage.getItem('cd_receipt')||'';}catch{}
-   if(/^R-[A-F0-9]{12}$/.test(receipt)){
-    for(const service of ['ads','meta']){if(!c[service+'_enabled']||(service==='ads'&&!c.ads_label)||(service==='gtm'&&!p.analytics))continue;const mark='cd_conversion_'+service+'_'+receipt;let done=false;try{done=sessionStorage.getItem(mark)==='1';}catch{}if(done)continue;
-     if(service==='ads')gtag('event','conversion',{send_to:c.ads_id+'/'+c.ads_label});if(service==='meta'&&window.fbq)fbq('track','Lead');try{sessionStorage.setItem(mark,'1');}catch{}
-    }
-   }
-  }
+  // Meta Pixel: evento Lead solo dopo un invio riuscito e con il consenso Marketing.
+  const receipt=document.body.dataset.page==='grazie'&&p.marketing?receiptId():'';
+  if(receipt&&c.meta_enabled&&window.fbq)once('meta_'+receipt,()=>fbq('track','Lead'));
  }
  function clearCookies(){const names=document.cookie.split(';').map(c=>c.trim().split('=')[0]).filter(n=>/^(_ga|_gid|_gat|_gcl_|_fbp|_fbc|_clck|_clsk)/.test(n));const parts=location.hostname.split('.');const domains=['',location.hostname];for(let i=0;i<parts.length-1;i++)domains.push('.'+parts.slice(i).join('.'));for(const name of names)for(const domain of domains)for(const path of ['/','/public/','/public/it/','/public/en/','/it/','/en/'])document.cookie=name+'=; Max-Age=0; path='+path+(domain?'; domain='+domain:'')+'; SameSite=Lax';}
  async function save(analytics,marketing){const old=preference;const c=await configPromise;const expiry=new Date();expiry.setMonth(expiry.getMonth()+6);preference={analytics,marketing,version:c.consent_version,updated_at:new Date().toISOString(),expires:expiry.getTime()};try{localStorage.setItem(STORAGE,JSON.stringify(preference));}catch{}
