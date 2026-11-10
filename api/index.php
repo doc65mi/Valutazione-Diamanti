@@ -44,6 +44,8 @@ try {
     // IndexNow (2.1.32): invio manuale di tutti gli indirizzi della sitemap.
     if($action==='indexnow-submit'&&$method==='POST'){admin_user();rate('indexnow',10,3600);if(!settings()['indexnow_enabled'])fail('Attiva IndexNow e salva le impostazioni prima dell’invio.');$r=indexnow_submit(sitemap_entries(),false);if(!$r)fail('Nessun indirizzo da inviare: controlla l’URL pubblico del sito.');if(!$r['ok'])fail('IndexNow ha risposto con codice '.$r['http'].'. Riprova tra qualche minuto.');audit('indexnow','site');respond(['ok'=>true,'last'=>$r]);}
     // Invio diretto a Google (Indexing API) e Bing (SubmitUrl) con limite giornaliero (2.1.42). Le credenziali non tornano mai al browser.
+    // 2.1.79: controllo del robots.txt consegnato online (WordPress messo dal server o quello del sito).
+    if($action==='robots-check'&&$method==='POST'){admin_user();rate('robots-check',30,3600);audit('robots-check','site');respond(['ok'=>true,'check'=>robots_check()]);}
     if($action==='indexing'&&$method==='GET'){admin_user();respond(['indexing'=>indexing_public()]);}
     if($action==='indexing-save'&&$method==='POST'){admin_user();indexing_save($input);audit('indexing','save');respond(['ok'=>true,'indexing'=>indexing_public()]);}
     if($action==='indexing-test'&&$method==='POST'){admin_user();rate('indexing-test',20,3600);$r=indexing_test();audit('indexing','test');respond(['ok'=>true,'results'=>$r]);}

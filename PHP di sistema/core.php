@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-const APP_VERSION = '2.1.78';
+const APP_VERSION = '2.1.79';
 const ROOT = __DIR__ . '/..';
 const PAGE_SLUGS = ['home', 'acquistiamo', 'chisiamo', 'faq', 'valutazione', 'grazie', 'privacy', 'cookie'];
 // Indirizzi inglesi per le pagine EN (2.1.52, audit): /en/sell-diamonds.html ecc. I vecchi nomi italiani restano come rimandi.
@@ -398,12 +398,33 @@ function seo_indexes(): void {
     atomic_write(ROOT.'/sitemap.xml',$xml.'</urlset>',0644);atomic_write(ROOT.'/llms.txt',$llms,0644);
     // robots.txt essenziale (2.1.48, audit): le cartelle di sistema rispondono già 403, qui restano solo amministrazione e API.
     // 2.1.65: la prima riga dice chi l'ha scritto, così online si distingue subito da un robots.txt messo dal server (Plesk).
-    $robots="# robots.txt di Valutazione Diamanti, generato dal sito (versione ".APP_VERSION.")\nUser-agent: *\nDisallow: /admin/\nDisallow: /api/\nAllow: /\n";
-    if($base)$robots.="\nSitemap: ".$base."/sitemap.xml\n";atomic_write(ROOT.'/robots.txt',$robots,0644);
+    atomic_write(ROOT.'/robots.txt',robots_text(),0644);
     seo_verification_files();
     mark_published();
     try{indexnow_submit(sitemap_entries());}catch(Throwable $e){error_log('IndexNow non raggiunto: '.$e->getMessage());}
     try{indexing_sync();}catch(Throwable $e){error_log('Coda Google/Bing non aggiornata: '.$e->getMessage());}
+}
+/** Testo del robots.txt del sito (2.1.79: lo usano sia il file su disco sia robots.php, che risponde anche se il file viene sovrascritto). */
+function robots_text(): string {
+    $base=seo_base();
+    $robots="# robots.txt di Valutazione Diamanti, generato dal sito (versione ".APP_VERSION.")\nUser-agent: *\nDisallow: /admin/\nDisallow: /api/\nAllow: /\n";
+    return $base?$robots."\nSitemap: ".$base."/sitemap.xml\n":$robots;
+}
+/** Controllo robots.txt per l'amministrazione (2.1.79): confronta il file su disco con quello che il server consegna davvero online. */
+function robots_check(): array {
+    $expected=robots_text(); $disk=(string)@file_get_contents(ROOT.'/robots.txt');
+    $r=['disk_ok'=>$disk===$expected,'disk_first'=>strtok($disk!==''?$disk:"(file assente)","\n"),'disk_mtime'=>@filemtime(ROOT.'/robots.txt')?gmdate('c',(int)filemtime(ROOT.'/robots.txt')):null,'served_ok'=>null,'served_by_php'=>false,'served_text'=>'','http'=>0,'wordpress'=>false];
+    if(!$r['disk_ok'])atomic_write(ROOT.'/robots.txt',$expected,0644);
+    if(!function_exists('curl_init'))return $r+['error'=>'Estensione PHP cURL non disponibile: impossibile leggere il robots.txt online.'];
+    $hdr=[];$ch=curl_init(seo_base().'/robots.txt?check='.time());
+    curl_setopt_array($ch,[CURLOPT_RETURNTRANSFER=>true,CURLOPT_TIMEOUT=>10,CURLOPT_FOLLOWLOCATION=>true,CURLOPT_MAXREDIRS=>3,CURLOPT_HEADERFUNCTION=>function($c,$h)use(&$hdr){$hdr[]=trim($h);return strlen($h);}]);
+    $body=curl_exec($ch);$r['http']=(int)curl_getinfo($ch,CURLINFO_RESPONSE_CODE);$err=curl_error($ch);curl_close($ch);
+    if($body===false)return $r+['error'=>'Il server non è riuscito a leggere il proprio robots.txt: '.$err];
+    $r['served_text']=mb_substr((string)$body,0,3000);
+    $r['served_ok']=str_contains((string)$body,'generato dal sito')&&!preg_match('~wp-admin|wp-content|wp-includes~i',(string)$body);
+    $r['wordpress']=(bool)preg_match('~wp-admin|wp-content|wp-includes~i',(string)$body);
+    foreach($hdr as $h)if(stripos($h,'X-Robots-Source:')===0)$r['served_by_php']=true;
+    return $r;
 }
 // Dopo un Pull le pagine in it/ en/ e sitemap, robots, llms tornano alla versione del repository: al primo accesso
 // all'API (ogni pagina pubblica la chiama) si rigenerano dai testi in data/content (2.1.29).
