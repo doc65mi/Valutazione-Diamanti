@@ -47,8 +47,8 @@
     "valutazione-contenuto-025": "Certificato disponibile",
     "valutazione-contenuto-026": "Non acquistiamo diamanti con certificati AIG, GRA, GWLAB o ALGT.",
     "valutazione-contenuto-027": "Corredo disponibile",
-    "valutazione-contenuto-028": "Foto e certificati",
-    "valutazione-contenuto-029": "Facoltativo: allega foto nitide dell’oggetto e gli eventuali certificati.",
+    "valutazione-contenuto-028": "Foto, video e certificati",
+    "valutazione-contenuto-029": "Facoltativo: allega foto nitide dell’oggetto, gli eventuali certificati e un breve video.",
     "valutazione-contenuto-030": "Scatta o carica una foto",
     "valutazione-contenuto-031": "JPG, PNG, WebP o PDF. Massimo 6 file, 5 MB ciascuno e 20 MB complessivi.",
     "valutazione-contenuto-032": "Come possiamo contattarti?",
@@ -57,7 +57,7 @@
     "valutazione-contenuto-035": "Telefono",
     "valutazione-contenuto-036": "Email",
     "valutazione-contenuto-037": "Come utilizziamo i tuoi dati",
-    "valutazione-contenuto-038": "La Diamanteria utilizza i contatti e gli allegati che invii per esaminare l’oggetto e rispondere alla richiesta di valutazione. Gli allegati sono accessibili solo agli amministratori autorizzati. Non caricare documenti d’identità: saranno richiesti solo se concludiamo la vendita. Per informazioni sul trattamento dei dati contatta info@valutazionediamanti.it.",
+    "valutazione-contenuto-038": "La Diamanteria utilizza i contatti e gli allegati che invii per esaminare l’oggetto e rispondere alla richiesta di valutazione. Gli allegati sono accessibili solo agli amministratori autorizzati. I video vengono cancellati automaticamente dopo 15 giorni. Non caricare documenti d’identità: saranno richiesti solo se concludiamo la vendita. Per informazioni sul trattamento dei dati contatta info@valutazionediamanti.it.",
     "valutazione-contenuto-039": "Ho letto le informazioni sul trattamento dei dati per questa richiesta.",
     "valutazione-contenuto-040": "Riepilogo",
     "valutazione-contenuto-041": "Indietro",
@@ -72,6 +72,25 @@
     "valutazione-contenuto-047": {
       "label": "+39 02 466 891",
       "href": "tel:+3902466891"
+    },
+    "valutazione-contenuto-048": "Colore del diamante (facoltativo)",
+    "valutazione-contenuto-049": "Purezza del diamante (facoltativo)",
+    "valutazione-contenuto-050": "Colore e purezza della pietra (facoltativo)",
+    "valutazione-contenuto-051": "Se hai un certificato li trovi lì. Se non li conosci, lascia vuoto.",
+    "valutazione-contenuto-052": "Numero del certificato",
+    "valutazione-contenuto-053": "Forma del diamante (facoltativo)",
+    "valutazione-contenuto-054": "Carati esatti (facoltativo)",
+    "valutazione-contenuto-055": "Titolo dell’oro",
+    "valutazione-contenuto-056": "Peso approssimativo in grammi (facoltativo)",
+    "valutazione-contenuto-057": "Il titolo è inciso all’interno dell’oggetto (es. 750 o 18K). Se non lo trovi, scegli «Non lo so».",
+    "valutazione-contenuto-058": "Nome del laboratorio",
+    "valutazione-contenuto-059": "Per diamanti e anelli solitari con certificato GIA, IGI o HRD indica il numero del certificato oppure carica la foto o il PDF del certificato.",
+    "valutazione-contenuto-060": "Foto o PDF del certificato",
+    "valutazione-contenuto-061": "Video breve (facoltativo)",
+    "valutazione-contenuto-062": "MP4 o MOV, un solo video fino a 100 MB (circa 30–60 secondi). Riprendi solo l’oggetto. I video vengono cancellati automaticamente dopo 15 giorni.",
+    "valutazione-contenuto-063": {
+      "label": "In alternativa invia il video su WhatsApp",
+      "href": "https://wa.me/393929664987?text=Buongiorno%2C%20vi%20invio%20un%20video%20per%20la%20richiesta%20di%20valutazione."
     },
     "valutazione-ripristino-001": "Come funziona",
     "valutazione-ripristino-002": "Richiedi la valutazione.",
@@ -93,11 +112,6 @@
     "valutazione-ripristino-016": {
       "href": "https://www.google.com/maps/place/?q=place_id:ChIJFR80gkTBhkcRJGjlclhYteg",
       "label": "Leggi le recensioni su Google ↗"
-    },
-    "valutazione-contenuto-048": "Colore del diamante (facoltativo)",
-    "valutazione-contenuto-049": "Purezza del diamante (facoltativo)",
-    "valutazione-contenuto-050": "Colore e purezza della pietra (facoltativo)",
-    "valutazione-contenuto-051": "Se hai un certificato li trovi lì. Se non li conosci, lascia vuoto.",
-    "valutazione-contenuto-052": "Numero del certificato (facoltativo)"
+    }
   }
 }

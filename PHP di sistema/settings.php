@@ -209,7 +209,28 @@ function delete_request(string $id): bool {
     db()->beginTransaction();try{db()->prepare('DELETE FROM attachments WHERE request_id=?')->execute([$id]);$q=db()->prepare('DELETE FROM requests WHERE id=?');$q->execute([$id]);$found=$q->rowCount()>0;db()->commit();}catch(Throwable $e){db()->rollBack();throw $e;}
     foreach($files as $f)foreach(['','-thumb.png'] as $suffix){$p=ROOT.'/uploads/clienti/'.$f['path'].$suffix;if(is_file($p))unlink($p);}return $found;
 }
+// 2.1.80: video allegati alle richieste, al massimo 100 MB, cancellati dopo 15 giorni (la richiesta e le foto restano).
+const VIDEO_MAX=100*1024*1024,VIDEO_RETENTION_DAYS=15;
+/** Byte di un valore php.ini come «100M». */
+function ini_bytes(string $v): int {
+    $v=trim($v); if($v==='') return 0; $n=(int)$v; $u=strtolower(substr($v,-1));
+    return match($u){'g'=>$n*1073741824,'m'=>$n*1048576,'k'=>$n*1024,default=>$n};
+}
+/** Limiti di caricamento del server (upload_max_filesize e post_max_size), per il modulo e per l'admin. */
+function upload_limits(): array {
+    $file=ini_bytes((string)ini_get('upload_max_filesize'));$post=ini_bytes((string)ini_get('post_max_size'));
+    return ['file'=>$file,'post'=>$post,'video'=>min(VIDEO_MAX,$file>0?$file:VIDEO_MAX)];
+}
+/** Cancella i video delle richieste inviate più di 15 giorni fa (righe e file). Restituisce quanti ne ha cancellati. */
+function purge_expired_videos(): int {
+    $cutoff=(new DateTimeImmutable('now',new DateTimeZone('UTC')))->modify('-'.VIDEO_RETENTION_DAYS.' days')->format('c');
+    $q=db()->prepare("SELECT id,path FROM attachments WHERE mime LIKE 'video/%' AND request_id IN(SELECT id FROM requests WHERE created_at < ?)");$q->execute([$cutoff]);$files=$q->fetchAll();
+    if(!$files)return 0;
+    $d=db()->prepare('DELETE FROM attachments WHERE id=?');foreach($files as $f){$d->execute([$f['id']]);$p=ROOT.'/uploads/clienti/'.$f['path'];if(is_file($p))unlink($p);}
+    return count($files);
+}
 function purge_expired_requests(): int {
+    purge_expired_videos();
     $cutoff=(new DateTimeImmutable('now',new DateTimeZone('UTC')))->modify('-'.settings()['retention_months'].' months')->format('c');
     $q=db()->prepare('SELECT id,path FROM attachments WHERE request_id IN(SELECT id FROM requests WHERE created_at < ?)');$q->execute([$cutoff]);$files=$q->fetchAll();
     db()->beginTransaction();try{db()->prepare('DELETE FROM attachments WHERE request_id IN(SELECT id FROM requests WHERE created_at < ?)')->execute([$cutoff]);$q=db()->prepare('DELETE FROM requests WHERE created_at < ?');$q->execute([$cutoff]);$count=$q->rowCount();db()->commit();}catch(Throwable $e){db()->rollBack();throw $e;}
