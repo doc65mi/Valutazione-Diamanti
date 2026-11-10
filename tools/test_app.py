@@ -43,10 +43,11 @@ try:
     admin=Client();h=admin.login('admin',password);check('HttpOnly' in h and 'SameSite=Strict' in h,'server login uses protected session cookie')
     s,d,h=admin.call('me');check(d['user']['role']=='admin' and 'noindex, nofollow' in h,'admin noindex HTTP header')
     s,c,_=anonymous.call('config');check('recaptcha_secret' not in c and not c['analytics_enabled'],'public config excludes secret and defaults tracking off')
-    data={'language':'en','request_key':uuid.uuid4().hex,'cat':'solitaire','multi':'no','ct':'1-2','cert':'GIA','name':'Integration Test','phone':'+39 333 1234567','email':'test@example.invalid','pref':'email','consent':'1'}
+    data={'language':'en','request_key':uuid.uuid4().hex,'cat':'solitaire','multi':'no','ct':'1-2','cert':'GIA','cert_no':'2141234567','name':'Integration Test','phone':'+39 333 1234567','email':'test@example.invalid','pref':'email','consent':'1'}
     bad={**data,'email':'not-an-email'};s,d,_=anonymous.call('request',multipart=(bad,[]));check(s==422,'invalid email rejected on server')
     bad={**data,'pref':'WhatsApp','phone':''};s,d,_=anonymous.call('request',multipart=(bad,[]));check(s==422,'preferred contact must have matching contact details')
     bad={**data,'cert':'AIG'};s,d,_=anonymous.call('request',multipart=(bad,[]));check(s==422,'ineligible certificate rejected')
+    bad={**data,'cert_no':''};s,d,_=anonymous.call('request',multipart=(bad,[]));check(s==422,'GIA solitaire needs report number or file (2.1.80)')
     bad={**data,'origin':'lab-grown'};s,d,_=anonymous.call('request',multipart=(bad,[]));check(s==422,'laboratory-grown diamond rejected')
     s,d,_=anonymous.call('request',multipart=(data,[('evil.php','image/jpeg',b'<?php echo "bad";')]));check(s==422,'spoofed upload MIME rejected')
     def chunk(kind,data):return struct.pack('>I',len(data))+kind+data+struct.pack('>I',zlib.crc32(kind+data)&0xffffffff)

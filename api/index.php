@@ -11,7 +11,7 @@ try {
         $raw=file_get_contents('php://input',false,null,0,1048577); if(strlen($raw)>1048576) fail('Richiesta troppo grande.',413);
         $input=json_decode($raw,true,64,JSON_THROW_ON_ERROR); if(!is_array($input)) fail('Richiesta non valida.');
     }
-    if($action==='session'&&$method==='GET') respond(['csrf'=>$_SESSION['csrf'],'version'=>APP_VERSION]);
+    if($action==='session'&&$method==='GET') respond(['csrf'=>$_SESSION['csrf'],'version'=>APP_VERSION,'upload'=>upload_limits()]);
     if($action==='config'&&$method==='GET') respond(public_settings());
     // Recensioni Google per le pagine pubbliche (2.1.33): dati già filtrati, letti da Google al massimo ogni 12 ore.
     if($action==='reviews'&&$method==='GET'){$lang=($_GET['lang']??'it')==='en'?'en':'it';session_write_close();$data=reviews_public($lang);header('Cache-Control: public, max-age=1800');header_remove('Pragma');header_remove('Expires');respond(['reviews'=>$data]);}
@@ -88,7 +88,7 @@ try {
         mail_queue_schema();
         admin_user(); purge_expired_requests(); $rows=db()->query('SELECT * FROM requests ORDER BY created_at DESC LIMIT 1000')->fetchAll();
         foreach($rows as &$row) { $row['payload']=json_decode($row['payload'],true); unset($row['request_key']); $q=db()->prepare('SELECT id,name,size,mime FROM attachments WHERE request_id=?'); $q->execute([$row['id']]); $row['attachments']=$q->fetchAll();$mq=db()->prepare('SELECT kind,status,attempts FROM mail_queue WHERE request_id=?');$mq->execute([$row['id']]);$row['emails']=$mq->fetchAll(); }
-        respond(['requests'=>$rows]);
+        respond(['requests'=>$rows,'upload'=>upload_limits()]);
     }
     if($action==='status'&&$method==='POST') {
         admin_user(); $s=$input['status']??''; if(!in_array($s,['Nuova','Contattato','Appuntamento','Chiusa'],true)) fail('Stato non valido.');
@@ -97,8 +97,19 @@ try {
     if($action==='attachment'&&$method==='GET') {
         admin_user(); $q=db()->prepare('SELECT * FROM attachments WHERE id=?'); $q->execute([$_GET['id']??'']); $f=$q->fetch(); if(!$f) fail('Allegato non trovato.',404);
         $path=ROOT.'/uploads/clienti/'.$f['path']; $inline=($_GET['view']??'')==='preview';
-        if(($_GET['view']??'')==='thumb' && $f['mime']!=='application/pdf') { $path.='-thumb.png'; $inline=true; }
+        if(($_GET['view']??'')==='thumb' && $f['mime']!=='application/pdf' && !str_starts_with($f['mime'],'video/')) { $path.='-thumb.png'; $inline=true; }
         if(!is_file($path)) fail('Allegato non disponibile.',404);
+        // 2.1.80: i video si guardano nell'anteprima, che chiede il file a pezzi (Range).
+        if(str_starts_with($f['mime'],'video/')&&$inline){
+            $size=filesize($path);$start=0;$end=$size-1;
+            if(preg_match('/^bytes=(\d*)-(\d*)$/',$_SERVER['HTTP_RANGE']??'',$m)&&($m[1]!==''||$m[2]!=='')){
+                if($m[1]==='') {$start=max(0,$size-(int)$m[2]);} else {$start=(int)$m[1];if($m[2]!=='')$end=min($end,(int)$m[2]);}
+                if($start>$end||$start>=$size){http_response_code(416);header('Content-Range: bytes */'.$size);exit;}
+                http_response_code(206);header('Content-Range: bytes '.$start.'-'.$end.'/'.$size);
+            } else audit('preview',$f['id']);
+            header('Content-Type: '.$f['mime']);header('Accept-Ranges: bytes');header('Content-Disposition: inline; filename="video"; filename*=UTF-8\'\''.rawurlencode($f['name']));header('Content-Length: '.($end-$start+1));
+            session_write_close();$h=fopen($path,'rb');fseek($h,$start);$left=$end-$start+1;while($left>0&&!feof($h)){$chunk=fread($h,(int)min(1048576,$left));if($chunk===false)break;echo $chunk;$left-=strlen($chunk);flush();}fclose($h);exit;
+        }
         header('Content-Type: '.$f['mime']); header('Content-Disposition: '.($inline?'inline':'attachment').'; filename="attachment"; filename*=UTF-8\'\''.rawurlencode($f['name'])); header('Content-Length: '.filesize($path)); audit($inline?'preview':'download',$f['id']); session_write_close(); readfile($path); exit;
     }
     if($action==='pages'&&$method==='GET') {

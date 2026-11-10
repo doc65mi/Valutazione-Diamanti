@@ -47,8 +47,8 @@
     "valutazione-contenuto-025": "Grading report available",
     "valutazione-contenuto-026": "We do not buy diamonds accompanied by AIG, GRA, GWLAB or ALGT reports.",
     "valutazione-contenuto-027": "Box and papers available",
-    "valutazione-contenuto-028": "Photographs and grading reports",
-    "valutazione-contenuto-029": "Optional: attach clear photographs of your item and any grading reports.",
+    "valutazione-contenuto-028": "Photographs, videos and grading reports",
+    "valutazione-contenuto-029": "Optional: attach clear photographs of your item, any grading reports and a short video.",
     "valutazione-contenuto-030": "Take or upload a photograph",
     "valutazione-contenuto-031": "JPG, PNG, WebP or PDF. Up to 6 files, 5 MB each and 20 MB in total.",
     "valutazione-contenuto-032": "How can we contact you?",
@@ -57,7 +57,7 @@
     "valutazione-contenuto-035": "Telephone",
     "valutazione-contenuto-036": "Email",
     "valutazione-contenuto-037": "How we use your data",
-    "valutazione-contenuto-038": "La Diamanteria uses the contact details and attachments you submit to assess your item and respond to your valuation enquiry. Attachments can only be accessed by authorised administrators. Please do not upload identity documents: these are required only if you decide to sell to us. For information about how your data is used, contact info@valutazionediamanti.it.",
+    "valutazione-contenuto-038": "La Diamanteria uses the contact details and attachments you submit to assess your item and respond to your valuation enquiry. Attachments can only be accessed by authorised administrators. Videos are deleted automatically after 15 days. Please do not upload identity documents: these are required only if you decide to sell to us. For information about how your data is used, contact info@valutazionediamanti.it.",
     "valutazione-contenuto-039": "I have read the information about how my data will be used for this enquiry.",
     "valutazione-contenuto-040": "Your enquiry at a glance",
     "valutazione-contenuto-041": "Back",
@@ -72,6 +72,25 @@
     "valutazione-contenuto-047": {
       "label": "+39 02 466 891",
       "href": "tel:+3902466891"
+    },
+    "valutazione-contenuto-048": "Diamond colour (optional)",
+    "valutazione-contenuto-049": "Diamond clarity (optional)",
+    "valutazione-contenuto-050": "Gemstone colour and clarity (optional)",
+    "valutazione-contenuto-051": "You will find them on the grading report, if you have one. If you are not sure, leave them blank.",
+    "valutazione-contenuto-052": "Report number",
+    "valutazione-contenuto-053": "Diamond shape (optional)",
+    "valutazione-contenuto-054": "Exact carat weight (optional)",
+    "valutazione-contenuto-055": "Gold fineness",
+    "valutazione-contenuto-056": "Approximate weight in grams (optional)",
+    "valutazione-contenuto-057": "The fineness is usually stamped inside the item (e.g. 750 or 18K). If you cannot find it, choose “I am not sure”.",
+    "valutazione-contenuto-058": "Laboratory name",
+    "valutazione-contenuto-059": "For diamonds and solitaire rings with a GIA, IGI or HRD report, please enter the report number or upload a photo or PDF of the report.",
+    "valutazione-contenuto-060": "Photo or PDF of the grading report",
+    "valutazione-contenuto-061": "Short video (optional)",
+    "valutazione-contenuto-062": "MP4 or MOV, one video up to 100 MB (about 30–60 seconds). Please film the item only. Videos are deleted automatically after 15 days.",
+    "valutazione-contenuto-063": {
+      "label": "Alternatively, send the video on WhatsApp",
+      "href": "https://wa.me/393929664987?text=Hello%2C%20I%20am%20sending%20a%20video%20for%20my%20valuation%20enquiry."
     },
     "valutazione-ripristino-001": "How it works",
     "valutazione-ripristino-002": "Request a valuation.",
@@ -93,11 +112,6 @@
     "valutazione-ripristino-016": {
       "href": "https://www.google.com/maps/place/?q=place_id:ChIJFR80gkTBhkcRJGjlclhYteg",
       "label": "Read our Google reviews ↗"
-    },
-    "valutazione-contenuto-048": "Diamond colour (optional)",
-    "valutazione-contenuto-049": "Diamond clarity (optional)",
-    "valutazione-contenuto-050": "Gemstone colour and clarity (optional)",
-    "valutazione-contenuto-051": "You will find them on the grading report, if you have one. If you are not sure, leave them blank.",
-    "valutazione-contenuto-052": "Report number (optional)"
+    }
   }
 }

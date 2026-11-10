@@ -8,3 +8,5 @@ body[data-page=grazie] .language-nav:not(.header-languages){position:static;widt
 .consent-text .consent-link{color:#7a6236;text-decoration:underline;text-underline-offset:2px;white-space:nowrap}
 /* 2.1.71 checklist D11: campi obbligatori con asterisco */
 #valuation-form label:has(>input[required],>select[required],>textarea[required])>span:first-child::after,#valuation-form .consent-row:has(>input[required]) .consent-text::after{content:" *";color:#9a3b2b;font-weight:700}.required-note{font-size:13px;color:#625a50;margin:0 0 14px}.required-note b{color:#9a3b2b}#form-error:not(:empty){scroll-margin-top:90px}
+/* 2.1.80: video breve e alternativa WhatsApp al passo 5, certificato obbligatorio al passo 4 */
+.upload-video{margin-top:24px;padding:24px 20px}.video-whatsapp{margin:10px 0 0}.video-whatsapp a{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border:1px solid #1f7a4d;color:#1f7a4d;background:#fff;text-decoration:none;font-weight:600;font-size:15px}.video-whatsapp a:hover{background:#eef7f1}.cert-required-hint{color:#7a4a1c}#cert-file-field input{margin-top:6px}
