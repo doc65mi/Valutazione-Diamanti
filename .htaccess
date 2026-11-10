@@ -25,6 +25,9 @@ RewriteCond %{HTTP_HOST} ^valutazionediamanti\.it$ [NC]
 RewriteRule ^(.*)$ https://www.valutazionediamanti.it/$1 [R=301,L,NE]
 RewriteCond %{HTTP_HOST} ^(?:www\.)?comprodiamanti\.it$ [NC]
 RewriteRule ^ https://www.valutazionediamanti.it/it/index.html [R=301,L]
+# robots.txt dal sito (2.1.79): risponde robots.php, così un robots.txt WordPress scritto sul server non conta.
+# Se online si vede ancora quello WordPress, la richiesta non arriva qui: regola di nginx o strumento robots.txt di Plesk.
+RewriteRule ^robots\.txt$ robots.php [L]
 # Radice del sito (2.1.63, audit): 301 verso la home italiana anche se il server prova index.html prima di index.php.
 RewriteCond %{REQUEST_URI} ^(.*/)$
 RewriteRule ^$ %1it/index.html [R=301,L]
