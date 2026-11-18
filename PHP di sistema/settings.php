@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 function settings_defaults(): array {
-    return ['mail_enabled'=>false,'mail_from'=>'','mail_to'=>'','recaptcha_enabled'=>false,'recaptcha_site_key'=>'','recaptcha_secret'=>'','recaptcha_hostname'=>'','recaptcha_score'=>0.5,'analytics_enabled'=>false,'analytics_id'=>'','ads_enabled'=>false,'ads_id'=>'','ads_label'=>'','consent_mode'=>'advanced','meta_enabled'=>false,'meta_id'=>'','gtm_enabled'=>false,'gtm_id'=>'','clarity_enabled'=>false,'clarity_id'=>'','custom_codes'=>[],'legal_company'=>'La Diamanteria','legal_address'=>'Via Vincenzo Monti 47, 20123 Milano','legal_vat'=>'','legal_rea'=>'','legal_license'=>'','og_image'=>'','store_geo'=>'','store_hours'=>'','store_email'=>'info@valutazionediamanti.it','legal_email'=>'info@valutazionediamanti.it','retention_months'=>12,'legal_hosting'=>'','log_retention_days'=>30,'form_provider'=>'site','form_provider_name'=>'','gtm_load_analytics'=>false,'gtm_load_ads'=>false,'gtm_load_meta'=>false,'gtm_load_clarity'=>false,'gtm_load_other'=>'','cookie_banner_services'=>true,'site_url'=>'','consent_version'=>1,'menu_hidden'=>['blog'],'home_guides_enabled'=>false,'mail_from_name'=>'Valutazione Diamanti','mail_transport'=>'php','smtp_host'=>'','smtp_port'=>587,'smtp_secure'=>'tls','smtp_user'=>'','smtp_pass'=>'','smtp_verify'=>true,'mail_check_domain'=>true,'google_verification'=>'','google_file'=>'','bing_verification'=>'','indexnow_enabled'=>false,'indexnow_key'=>'','reviews_enabled'=>false,'reviews_place_id'=>'ChIJFR80gkTBhkcRJGjlclhYteg','reviews_api_key'=>'']+customer_email_defaults();
+    return ['mail_enabled'=>false,'mail_from'=>'','mail_to'=>'','recaptcha_enabled'=>false,'recaptcha_site_key'=>'','recaptcha_secret'=>'','recaptcha_hostname'=>'','recaptcha_score'=>0.5,'analytics_enabled'=>false,'analytics_id'=>'','ads_enabled'=>false,'ads_id'=>'','ads_label'=>'','ads_conversion_name'=>'form','ads_value'=>1.0,'ads_currency'=>'EUR','consent_mode'=>'advanced','meta_enabled'=>false,'meta_id'=>'','gtm_enabled'=>false,'gtm_id'=>'','clarity_enabled'=>false,'clarity_id'=>'','custom_codes'=>[],'legal_company'=>'La Diamanteria','legal_address'=>'Via Vincenzo Monti 47, 20123 Milano','legal_vat'=>'','legal_rea'=>'','legal_license'=>'','og_image'=>'','store_geo'=>'','store_hours'=>'','store_email'=>'info@valutazionediamanti.it','legal_email'=>'info@valutazionediamanti.it','retention_months'=>12,'legal_hosting'=>'','log_retention_days'=>30,'form_provider'=>'site','form_provider_name'=>'','gtm_load_analytics'=>false,'gtm_load_ads'=>false,'gtm_load_meta'=>false,'gtm_load_clarity'=>false,'gtm_load_other'=>'','cookie_banner_services'=>true,'site_url'=>'','consent_version'=>1,'menu_hidden'=>['blog'],'home_guides_enabled'=>false,'mail_from_name'=>'Valutazione Diamanti','mail_transport'=>'php','smtp_host'=>'','smtp_port'=>587,'smtp_secure'=>'tls','smtp_user'=>'','smtp_pass'=>'','smtp_verify'=>true,'mail_check_domain'=>true,'google_verification'=>'','google_file'=>'','bing_verification'=>'','indexnow_enabled'=>false,'indexnow_key'=>'','reviews_enabled'=>false,'reviews_place_id'=>'ChIJFR80gkTBhkcRJGjlclhYteg','reviews_api_key'=>'']+customer_email_defaults();
 }
 function settings(): array {
     db()->exec('CREATE TABLE IF NOT EXISTS settings (id INTEGER PRIMARY KEY CHECK(id=1), value TEXT NOT NULL)');
@@ -12,6 +12,11 @@ function settings(): array {
     // Orari e coordinate della sede di partenza per i dati strutturati, finché non vengono compilati dall'area amministrativa.
     if(trim((string)$s['store_hours'])==='')$s['store_hours']='Mo-Fr 09:30-13:30; Mo-Fr 14:30-19:00';
     if(trim((string)$s['store_geo'])==='')$s['store_geo']='45.4685, 9.1680';
+    // 2.1.81: conversione Google Ads «form» chiesta dal titolare (AW-1018519688, etichetta e3yICKjC4QMQiMHV5QM, 1,00 EUR).
+    // Si applica una volta sola alle impostazioni salvate; dopo resta modificabile da Privacy e integrazioni › Tracciamenti.
+    if(empty($s['ads_form_2_1_81'])){$old=$s;$s=array_replace($s,['ads_enabled'=>true,'ads_id'=>'AW-1018519688','ads_label'=>'e3yICKjC4QMQiMHV5QM','ads_conversion_name'=>'form','ads_value'=>1.0,'ads_currency'=>'EUR','ads_form_2_1_81'=>true]);
+        if(!$old['ads_enabled']||$old['ads_id']!==$s['ads_id'])$s['consent_version']=(int)$old['consent_version']+1;
+        try{db()->prepare('INSERT INTO settings(id,value) VALUES(1,?) ON CONFLICT(id) DO UPDATE SET value=excluded.value')->execute([json_encode($s,JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR)]);}catch(Throwable $e){}}
     return $s;
 }
 // Voci del menu (header e footer, IT e EN) che l'amministratore può spegnere. Il link si riconosce dalla destinazione (2.1.27).
@@ -31,6 +36,8 @@ const CUSTOM_CODE_CATEGORIES = ['analytics','marketing','necessary'];
 /** Ricava l'ID anche quando si incolla lo snippet completo o l'ID scritto in minuscolo (es. "aw-123/etichetta"). */
 function settings_tracking_ids(array $input): array {
     $patterns=['analytics_id'=>'/\bG-[A-Z0-9]{4,}\b/i','gtm_id'=>'/\bGTM-[A-Z0-9]{4,}\b/i','ads_id'=>'~\bAW-[0-9]{4,}(?:/([A-Za-z0-9_-]{1,100}))?~i'];
+    // 2.1.81: va bene anche il solo numero dell'ID conversione (es. 1018519688), come lo mostra Google Ads.
+    if(is_string($input['ads_id']??null)&&preg_match('/^\s*(?:AW-)?([0-9]{6,15})\s*$/i',$input['ads_id'],$m))$input['ads_id']='AW-'.$m[1];
     foreach($patterns as $key=>$pattern){
         $v=$input[$key]??'';if(!is_string($v)||strlen($v)>20000)continue;$v=trim($v);
         if($v!==''&&($key==='ads_id'&&preg_match('~\\bAW-[0-9]{4,}/([A-Za-z0-9_-]{1,100})~i',$v,$m)||preg_match($pattern,$v,$m))){$input[$key]=strtoupper(explode('/',$m[0])[0]);if($key==='ads_id'&&!empty($m[1])&&trim((string)($input['ads_label']??''))==='')$input['ads_label']=$m[1];}
@@ -67,6 +74,10 @@ function settings_save(array $input): array {
     if(($input['reviews_clear_key']??false)===true)$s['reviews_api_key']='';
     if($s['reviews_enabled']&&($s['reviews_api_key']===''||$s['reviews_place_id']===''))fail('Per mostrare le recensioni Google servono la chiave API e il Place ID.');
     if($s['ads_label']!==''&&!preg_match('/^[A-Za-z0-9_-]{1,100}$/',$s['ads_label']))fail('Etichetta conversione non valida.');
+    // Conversione Google Ads (2.1.81): nome solo promemoria, valore e valuta inviati con ogni conversione.
+    $name=$input['ads_conversion_name']??$s['ads_conversion_name'];if(!is_string($name)||strlen($name)>100||preg_match('/[<>\x00-\x1F]/',$name))fail('Nome conversione non valido.');$s['ads_conversion_name']=trim($name);
+    $val=$input['ads_value']??$s['ads_value'];if(!is_numeric($val)||(float)$val<0||(float)$val>1000000)fail('Valore conversione non valido: usa un numero, es. 1.');$s['ads_value']=round((float)$val,2);
+    $cur=strtoupper(trim((string)($input['ads_currency']??$s['ads_currency'])));if(!preg_match('/^[A-Z]{3}$/',$cur))fail('Valuta della conversione non valida: usa il codice a 3 lettere, es. EUR.');$s['ads_currency']=$cur;
     if(!filter_var($s['legal_email'],FILTER_VALIDATE_EMAIL)||$s['legal_company']===''||$s['legal_address']==='')fail('Compila titolare, indirizzo e contatto privacy.');
     if($s['site_url']!==''&&(!filter_var($s['site_url'],FILTER_VALIDATE_URL)||!preg_match('~^https?://~',$s['site_url'])||strpbrk($s['site_url'],'?#')))fail('Inserisci l’URL pubblico del sito senza query o frammenti.');
     // Dati della sede per Google (2.1.53): coordinate come le copia Google Maps e orari nel formato schema.org.
@@ -162,7 +173,7 @@ function custom_code_inline_script(string $id,int $n): ?string {
     return isset($inline[$n])?$inline[$n][2]:null;
 }
 function public_settings(): array {
-    $s=settings();$keys=['recaptcha_enabled','recaptcha_site_key','analytics_enabled','analytics_id','ads_enabled','ads_id','ads_label','consent_mode','meta_enabled','meta_id','gtm_enabled','gtm_id','clarity_enabled','clarity_id','consent_version'];$out=array_intersect_key($s,array_flip($keys));
+    $s=settings();$keys=['recaptcha_enabled','recaptcha_site_key','analytics_enabled','analytics_id','ads_enabled','ads_id','ads_label','ads_value','ads_currency','consent_mode','meta_enabled','meta_id','gtm_enabled','gtm_id','clarity_enabled','clarity_id','consent_version'];$out=array_intersect_key($s,array_flip($keys));
     $out['custom_codes']=[];foreach($s['custom_codes'] as $c)if($c['enabled']&&$c['code']!=='')$out['custom_codes'][]=['id'=>$c['id'],'name'=>$c['name'],'category'=>$c['category'],'position'=>$c['position'],'html'=>$c['code'],'v'=>substr(sha1($c['code']),0,10)];
     $out['cookie_info']=['it'=>cookie_disclosure('it',$s),'en'=>cookie_disclosure('en',$s)];
     return $out;
