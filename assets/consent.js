@@ -53,7 +53,7 @@
   // Solo un invio riuscito produce una conversione, una volta per richiesta (transaction_id evita i doppioni anche lato Google).
   const receipt=document.body.dataset.page==='grazie'?receiptId():'';if(!receipt)return;
   if(ga)once('ga_'+receipt,()=>gtag('event','generate_lead',{form_id:'valutazione'}));
-  if(ads&&c.ads_label)once('ads_'+receipt,()=>gtag('event','conversion',{send_to:c.ads_id+'/'+c.ads_label,transaction_id:receipt}));
+  if(ads&&c.ads_label)once('ads_'+receipt,()=>{const v=Number(c.ads_value);const ev={send_to:c.ads_id+'/'+c.ads_label,transaction_id:receipt};if(v>0){ev.value=v;ev.currency=c.ads_currency||'EUR';}gtag('event','conversion',ev);});
  }
  async function activate(c){
   if(!preference||loaded)return;loaded=true;consentUpdate();const p=preference;
